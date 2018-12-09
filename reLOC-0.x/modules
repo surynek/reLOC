@@ -1,0 +1,161 @@
+gen_reLOC
+files
+/
+augment.py checkin codename devel.mds distrib.py incminor major makegen.py minor mkversion modules release.mds version.sh config_dbg.sh config_opt.sh config_devel config_release distrib_devel distrib_release /src/runtest.py
+
+main_reLOC
+files
+/
+author copyright email product codename major minor README url version Makefile /src/Makefile
+
+Core_reLOC
+library
+/src/core
+/src/version.h /src/defs.h /src/config.h /src/compile.h /src/result.h types.h reloc.h hierarch.h multirobot.h search.h cnf.h compress.h statistics.h graph.h complete.h
+types.cpp reloc.cpp hierarch.cpp encodings_direct.cpp encodings_binary.cpp encodings_mdd.cpp encodings_derived.cpp encodings_extract.cpp multirobot.cpp search.cpp cnf.cpp compress.cpp statistics.cpp graph.cpp complete.cpp
+
+Glucose_reLOC
+library
+/src/glucose
+Alg.h Alloc.h BoundedQueue.h Constants.h Dimacs.h Heap.h IntTypes.h Map.h Options.h ParseUtils.h Queue.h Solver.h SolverTypes.h Sort.h System.h Vec.h XAlloc.h
+Options.cc Solver.cc System.cc
+
+test_basic_reLOC
+application
+/src
+version.h defs.h config.h compile.h result.h reloc_test.h
+reloc_test.cpp
+pthread
+/src/core/Core_reLOC /src/glucose/Glucose_reLOC
+
+test_multirobot_reLOC
+application
+/src
+version.h defs.h config.h compile.h result.h multirobot_test.h
+multirobot_test.cpp
+pthread
+/src/core/Core_reLOC /src/glucose/Glucose_reLOC
+
+test_hierarch_reLOC
+application
+/src
+version.h defs.h config.h compile.h result.h hierarch_test.h
+hierarch_test.cpp
+pthread
+/src/core/Core_reLOC /src/glucose/Glucose_reLOC
+
+test_cnf_reLOC
+application
+/src
+version.h defs.h config.h compile.h result.h cnf_test.h
+cnf_test.cpp
+pthread
+/src/core/Core_reLOC /src/glucose/Glucose_reLOC
+
+test_alldiff_reLOC
+application
+/src
+version.h defs.h config.h compile.h result.h alldiff_test.h
+alldiff_test.cpp
+pthread
+/src/core/Core_reLOC /src/glucose/Glucose_reLOC
+
+test_compress_reLOC
+application
+/src
+version.h defs.h config.h compile.h result.h compress_test.h
+compress_test.cpp
+pthread
+/src/core/Core_reLOC /src/glucose/Glucose_reLOC
+
+test_complete_reLOC
+application
+/src
+version.h defs.h config.h compile.h result.h complete_test.h
+complete_test.cpp
+pthread
+/src/core/Core_reLOC /src/glucose/Glucose_reLOC
+
+test_gecode_reLOC
+application
+/src
+version.h defs.h config.h compile.h result.h gecode_test.h
+gecode_test.cpp
+gecodekernel gecodesupport gecodeint pthread
+/src/core/Core_reLOC /src/glucose/Glucose_reLOC
+
+optimizer_reLOC
+application
+/src
+version.h defs.h config.h compile.h result.h optimizer_main.h
+optimizer_main.cpp
+pthread
+/src/core/Core_reLOC /src/glucose/Glucose_reLOC
+
+autooptim_reLOC
+application
+/src
+version.h defs.h config.h compile.h result.h autooptim_main.h
+autooptim_main.cpp
+pthread
+/src/core/Core_reLOC /src/glucose/Glucose_reLOC
+
+resolver_reLOC
+application
+/src
+version.h defs.h config.h compile.h result.h resolver_main.h
+resolver_main.cpp
+pthread
+/src/core/Core_reLOC /src/glucose/Glucose_reLOC
+
+solver_reLOC
+application
+/src
+version.h defs.h config.h compile.h result.h solver_main.h
+solver_main.cpp
+pthread
+/src/core/Core_reLOC /src/glucose/Glucose_reLOC
+
+insolver_reLOC
+application
+/src
+version.h defs.h config.h compile.h result.h insolver_main.h
+insolver_main.cpp
+pthread
+/src/core/Core_reLOC /src/glucose/Glucose_reLOC
+
+gridgen_reLOC
+application
+/src
+version.h defs.h config.h compile.h result.h gridgen_main.h
+gridgen_main.cpp
+pthread
+/src/core/Core_reLOC /src/glucose/Glucose_reLOC
+
+netgen_reLOC
+application
+/src
+version.h defs.h config.h compile.h result.h netgen_main.h
+netgen_main.cpp
+pthread
+/src/core/Core_reLOC /src/glucose/Glucose_reLOC
+
+hypergen_reLOC
+application
+/src
+version.h defs.h config.h compile.h result.h hypergen_main.h
+hypergen_main.cpp
+pthread
+/src/core/Core_reLOC /src/glucose/Glucose_reLOC
+
+simplify_reLOC
+application
+/src
+version.h defs.h config.h compile.h result.h simplify_main.h
+simplify_main.cpp
+pthread
+/src/core/Core_reLOC /src/glucose/Glucose_reLOC
+
+experiment_reLOC
+files
+/scripts

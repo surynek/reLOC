@@ -1,0 +1,3 @@
+./config_release
+python distrib.py release.mds
+tar --directory=../distribution -cvzf ../distribution/`cat product`-`cat version`.rls.tgz `cat product`-`cat version`

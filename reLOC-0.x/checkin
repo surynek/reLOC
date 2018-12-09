@@ -1,0 +1,16 @@
+./mkversion
+./config_devel
+
+python augment.py
+make clean
+
+mv ../`cat product`-`cat major`.x ../`cat product`-`cat version`_`cat step`
+tar -cvzf ../`cat product`-`cat version`_`cat step`.tgz ../`cat product`-`cat version`_`cat step`
+mv ../`cat product`-`cat version`_`cat step` ../`cat product`-`cat major`.x
+
+./incstep
+./mkversion
+./config_devel
+
+python augment.py
+make clean

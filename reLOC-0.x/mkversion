@@ -1,0 +1,2 @@
+VERSION=`cat major`.`cat minor`-`cat codename`
+echo -n $VERSION > version
