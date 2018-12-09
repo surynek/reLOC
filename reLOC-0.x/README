@@ -1,0 +1,60 @@
+reLOC
+------------------------------
+(C) Pavel Surynek, 2011 - 2018
+pavel@surynek.com
+------------------------------
+
+An experimental package for solving
+item relocation problems.
+
+
+Compilation
+-----------
+
+./config-relase
+make optimized
+
+
+Problem Solving
+---------------
+
+The current version (0.20-kruh_043) of the package includes
+solvers for various item relocation problems including:
+
+  - multi-agent path finding (MAPF)
+  - token swapping (TSWAP)
+  - token rotation (TROT)
+  - token permutation (TPERM).
+
+Please see the paper for more details. Most
+of solving algorithms in this package is
+based on reduction to SAT. Indivudual solvers
+can be invoked from command line.
+
+The command line programs are solver_reLOC
+(calls the external glucose executable) and
+insolver_reLOC (the glucose solver is compiled
+in the program, this is faster option, but one
+cannot see the formula in the DIMACS format).
+Following examples of command line options show
+how to run the solver.
+
+./solver_reLOC --encoding=mdd --output-file=solution.txt --input-file=clique_07_t07.cpf
+
+./insolver_reLOC --encoding=mdd --output-file=solution.txt --input-file=clique_07_t07.cpf
+
+Use --help to see all command line options
+and be aware that not all combinations work
+together.
+
+The option --encoding=mdd is for running the solver
+MAPF. Token swapping (TSWAP) can be used with
+--encoding=temdd of tmdd (if the graph is full).
+Token rotation (TROT) is enable through
+--encoding=pmdd (looks like this is a mistake and
+token permutation will be enable, but this is correct).
+And finally, token permutation (TPERM) will be
+enable by --encoding=rmdd.
+
+Please enjoy your problem solving...
+Pavel Surynek, 09/2018
