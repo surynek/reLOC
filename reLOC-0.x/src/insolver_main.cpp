@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* insolver_main.cpp / 0.20-kruh_045                                          */
+/* insolver_main.cpp / 0.20-kruh_048                                          */
 /*----------------------------------------------------------------------------*/
 //
 // Solution generator - main program.
@@ -441,6 +441,7 @@ namespace sReloc
 		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_PERMUTATION_MDD						
 		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_MDD_plus
 		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_MDD_plus_plus
+		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_MDD_plus_plus_fuel			
 		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_LMDD_plus_plus			
 		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_MDD_star)
 	    {	
@@ -1385,6 +1386,10 @@ namespace sReloc
 	    {
 		command_parameters.m_cnf_encoding = sMultirobotSolutionCompressor::ENCODING_MDD_plus_plus;
 	    }
+	    else if (encoding_str == "mddf++")
+	    {
+		command_parameters.m_cnf_encoding = sMultirobotSolutionCompressor::ENCODING_MDD_plus_plus_fuel;
+	    }	    
 	    else if (encoding_str == "lmdd++")
 	    {
 		command_parameters.m_cnf_encoding = sMultirobotSolutionCompressor::ENCODING_LMDD_plus_plus;

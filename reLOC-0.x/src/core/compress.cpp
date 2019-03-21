@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* compress.cpp / 0.20-kruh_045                                               */
+/* compress.cpp / 0.20-kruh_048                                               */
 /*----------------------------------------------------------------------------*/
 //
 // Compression tools for relocation problem solutions.
@@ -79,6 +79,7 @@ namespace sReloc
     const sString sMultirobotSolutionCompressor::CNF_MDD_plus_FILENAME_PREFIX = "_compress/makespan_compression_input.mdd+";
     const sString sMultirobotSolutionCompressor::CNF_MMDD_plus_FILENAME_PREFIX = "_compress/makespan_compression_input.mmdd+";
     const sString sMultirobotSolutionCompressor::CNF_MDD_plus_plus_FILENAME_PREFIX = "_compress/makespan_compression_input.mdd++";
+    const sString sMultirobotSolutionCompressor::CNF_MDD_plus_plus_fuel_FILENAME_PREFIX = "_compress/makespan_compression_input.mddf++";    
     const sString sMultirobotSolutionCompressor::CNF_LMDD_plus_plus_FILENAME_PREFIX = "_compress/makespan_compression_input.lmdd++";
     const sString sMultirobotSolutionCompressor::CNF_MDD_star_FILENAME_PREFIX = "_compress/makespan_compression_input.mdd*";    
     const sString sMultirobotSolutionCompressor::CNF_MMDD_plus_plus_FILENAME_PREFIX = "_compress/makespan_compression_input.mmdd++";        
@@ -125,6 +126,7 @@ namespace sReloc
     const sString sMultirobotSolutionCompressor::OUTPUT_MDD_plus_FILENAME_PREFIX = "_compress/makespan_compression_output.mdd+";
     const sString sMultirobotSolutionCompressor::OUTPUT_MMDD_plus_FILENAME_PREFIX = "_compress/makespan_compression_output.mmdd+";
     const sString sMultirobotSolutionCompressor::OUTPUT_MDD_plus_plus_FILENAME_PREFIX = "_compress/makespan_compression_output.mdd++";
+    const sString sMultirobotSolutionCompressor::OUTPUT_MDD_plus_plus_fuel_FILENAME_PREFIX = "_compress/makespan_compression_output.mddf++";    
     const sString sMultirobotSolutionCompressor::OUTPUT_LMDD_plus_plus_FILENAME_PREFIX = "_compress/makespan_compression_output.lmdd++";
     const sString sMultirobotSolutionCompressor::OUTPUT_MDD_star_FILENAME_PREFIX = "_compress/makespan_compression_output.mdd*";    
     const sString sMultirobotSolutionCompressor::OUTPUT_MMDD_plus_plus_FILENAME_PREFIX = "_compress/makespan_compression_output.mmdd++";    
@@ -8152,7 +8154,29 @@ namespace sReloc
 		return result;
 	    }
 	    break;
-	}	
+	}
+	case ENCODING_MDD_plus_plus_fuel:
+	{
+	    if (thread_id != THREAD_ID_UNDEFINED)
+	    {
+		cnf_filename = CNF_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + ".cnf";
+		cnf_out_filename = CNF_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + "_out.cnf";
+		output_filename = OUTPUT_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + ".txt";
+	    }
+	    else
+	    {
+		cnf_filename = CNF_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + ".cnf";
+		cnf_out_filename = CNF_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + "_out.cnf";
+		output_filename = OUTPUT_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + ".txt";
+	    }
+	    result = instance.to_File_MddPlusPlusFuelCNFsat(cnf_filename, encoding_context, "", false);
+	    
+	    if (sFAILED(result))
+	    {
+		return result;
+	    }
+	    break;
+	}		
 	case ENCODING_MDD_star:
 	case ENCODING_ID_MDD_star:
 	case ENCODING_AD_MDD_star:
@@ -8458,7 +8482,12 @@ namespace sReloc
 	{
 	    instance.to_Memory_LMddPlusPlusCNFsat(*solver, encoding_context, "", false);
 	    break;
-	}	
+	}
+	case ENCODING_MDD_plus_plus_fuel:
+	{
+	    instance.to_Memory_MddPlusPlusFuelCNFsat(*solver, encoding_context, "", false);
+	    break;
+	}		
 	case ENCODING_MDD_star:
 	case ENCODING_ID_MDD_star:
 	case ENCODING_AD_MDD_star:
@@ -10169,7 +10198,30 @@ namespace sReloc
 		return result;
 	    }
 	    break;
-	}	
+	}
+	case ENCODING_MDD_plus_plus_fuel:
+	{
+	    if (thread_id != THREAD_ID_UNDEFINED)
+	    {
+		cnf_filename = CNF_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + ".cnf";
+		cnf_out_filename = CNF_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + "_out.cnf";
+		output_filename = OUTPUT_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + ".txt";
+	    }
+	    else
+	    {
+		cnf_filename = CNF_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + ".cnf";
+		cnf_out_filename = CNF_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + "_out.cnf";
+		output_filename = OUTPUT_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + ".txt";
+	    }
+	    
+	    result = instance.to_File_MddPlusPlusFuelCNFsat(cnf_filename, encoding_context, "", false);
+	    
+	    if (sFAILED(result))
+	    {
+		return result;
+	    }
+	    break;
+	}		
 	case ENCODING_MDD_star:
 	case ENCODING_ID_MDD_star:
 	case ENCODING_AD_MDD_star:
@@ -10452,7 +10504,18 @@ namespace sReloc
 						     solution,
 						     thread_id);
 		break;
-	    }	    
+	    }
+	    case ENCODING_MDD_plus_plus_fuel:
+	    {
+		extract_ComputedMddPlusPlusFuelSolution(instance.m_initial_arrangement,
+						instance.m_environment,
+						instance.m_the_MDD,
+						total_cost,
+						encoding_context,
+						solution,
+						thread_id);
+		break;
+	    }	    	    
 	    case ENCODING_MDD_star:
 	    case ENCODING_ID_MDD_star:
 	    case ENCODING_AD_MDD_star:
@@ -10582,7 +10645,12 @@ namespace sReloc
 	{	    
 	    instance.to_Memory_LMddPlusPlusCNFsat(*solver, encoding_context, "", false);
 	    break;
-	}	
+	}
+	case ENCODING_MDD_plus_plus_fuel:
+	{	    
+	    instance.to_Memory_MddPlusPlusFuelCNFsat(*solver, encoding_context, "", false);
+	    break;
+	}		
 	case ENCODING_MDD_star:
 	case ENCODING_ID_MDD_star:
 	case ENCODING_AD_MDD_star:
@@ -10773,7 +10841,18 @@ namespace sReloc
 						     encoding_context,
 						     solution);
 		break;
-	    }	    
+	    }
+	    case ENCODING_MDD_plus_plus_fuel:
+	    {
+		intract_ComputedMddPlusPlusFuelSolution(*solver,
+						instance.m_initial_arrangement,
+						instance.m_environment,
+						instance.m_the_MDD,
+						total_cost,
+						encoding_context,
+						solution);
+		break;
+	    }	    	    
 	    case ENCODING_MDD_star:
 	    case ENCODING_ID_MDD_star:
 	    case ENCODING_AD_MDD_star:
@@ -12861,7 +12940,22 @@ namespace sReloc
 		    return result;
 		}
 		break;
-	    }	    
+	    }
+	    case ENCODING_MDD_plus_plus_fuel:
+	    {
+		result = extract_ComputedMddPlusPlusFuelSolution(start_arrangement,
+							 environment,
+							 instance.m_the_MDD,
+							 optimal_cost,
+							 final_encoding_context,
+							 optimal_solution,
+							 thread_id);
+		if (sFAILED(result))
+		{
+		    return result;
+		}
+		break;
+	    }	    	    
 	    case ENCODING_MDD_star:
 	    case ENCODING_ID_MDD_star:
 	    case ENCODING_AD_MDD_star:
@@ -13138,7 +13232,22 @@ namespace sReloc
 		    return result;
 		}
 		break;
-	    }	    
+	    }
+	    case ENCODING_MDD_plus_plus_fuel:
+	    {
+		result = intract_ComputedMddPlusPlusFuelSolution(*solver,
+							 start_arrangement,
+							 environment,
+							 instance.m_the_MDD,
+							 optimal_cost,
+							 final_encoding_context,
+							 optimal_solution);
+		if (sFAILED(result))
+		{
+		    return result;
+		}
+		break;
+	    }	    	    
 	    case ENCODING_MDD_star:
 	    case ENCODING_ID_MDD_star:
 	    case ENCODING_AD_MDD_star:

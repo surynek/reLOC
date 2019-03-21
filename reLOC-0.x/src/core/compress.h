@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* compress.h / 0.20-kruh_045                                                 */
+/* compress.h / 0.20-kruh_048                                                 */
 /*----------------------------------------------------------------------------*/
 //
 // Compression tools for relocation problem solutions.
@@ -85,6 +85,7 @@ namespace sReloc
 	static const sString CNF_MDD_plus_FILENAME_PREFIX;
 	static const sString CNF_MMDD_plus_FILENAME_PREFIX;
 	static const sString CNF_MDD_plus_plus_FILENAME_PREFIX;
+	static const sString CNF_MDD_plus_plus_fuel_FILENAME_PREFIX;	
 	static const sString CNF_LMDD_plus_plus_FILENAME_PREFIX;	
 	static const sString CNF_MDD_star_FILENAME_PREFIX;	
 	static const sString CNF_MMDD_plus_plus_FILENAME_PREFIX;		
@@ -131,6 +132,7 @@ namespace sReloc
 	static const sString OUTPUT_MDD_plus_FILENAME_PREFIX;
 	static const sString OUTPUT_MMDD_plus_FILENAME_PREFIX;
 	static const sString OUTPUT_MDD_plus_plus_FILENAME_PREFIX;
+	static const sString OUTPUT_MDD_plus_plus_fuel_FILENAME_PREFIX;	
 	static const sString OUTPUT_LMDD_plus_plus_FILENAME_PREFIX;	
 	static const sString OUTPUT_MDD_star_FILENAME_PREFIX;	
 	static const sString OUTPUT_MMDD_plus_plus_FILENAME_PREFIX;		
@@ -183,6 +185,7 @@ namespace sReloc
 	    ENCODING_MDD_plus,
 	    ENCODING_MMDD_plus,
 	    ENCODING_MDD_plus_plus,
+	    ENCODING_MDD_plus_plus_fuel,	    
 	    ENCODING_LMDD_plus_plus,	    
 	    ENCODING_MDD_star,	    
 	    ENCODING_MMDD_plus_plus,
@@ -1881,6 +1884,14 @@ namespace sReloc
 						    sMultirobotSolution                            &computed_solution,
 						    int                                             thread_id = THREAD_ID_UNDEFINED);
 
+	sResult extract_ComputedMddPlusPlusFuelSolution(const sRobotArrangement                        &start_arrangement,
+						const sUndirectedGraph                         &environment,
+						const sMultirobotInstance::MDD_vector          &MDD,
+						int                                             computed_cost,
+						const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
+						sMultirobotSolution                            &computed_solution,
+						int                                             thread_id = THREAD_ID_UNDEFINED);	
+
 	sResult intract_ComputedMddPlusPlusSolution(Glucose::Solver                                *solver,
 						    const sRobotArrangement                        &start_arrangement,
 						    const sUndirectedGraph                         &environment,
@@ -1888,6 +1899,14 @@ namespace sReloc
 						    int                                             computed_cost,
 						    const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
 						    sMultirobotSolution                            &computed_solution);
+
+	sResult intract_ComputedMddPlusPlusFuelSolution(Glucose::Solver                                *solver,
+						const sRobotArrangement                        &start_arrangement,
+						const sUndirectedGraph                         &environment,
+						const sMultirobotInstance::MDD_vector          &MDD,
+						int                                             computed_cost,
+						const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
+						sMultirobotSolution                            &computed_solution);	
 
 	sResult extract_ComputedLMddPlusPlusSolution(const sRobotArrangement                        &start_arrangement,
 						     const sUndirectedGraph                         &environment,

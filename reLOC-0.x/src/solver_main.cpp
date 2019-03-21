@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* solver_main.cpp / 0.20-kruh_045                                            */
+/* solver_main.cpp / 0.20-kruh_048                                            */
 /*----------------------------------------------------------------------------*/
 //
 // Solution generator - main program.
@@ -104,7 +104,7 @@ namespace sReloc
 	printf("             [--encoding={inverse|advanced|differential|bijection|Hadvanced|Hdifferential|Hbijection|\n");
 	printf("                          bitwise|flow|matching|Hmatching|direct|Hdirect|simplicial|Hsimplicial|\n");
 	printf("                          singular|plural|plural2|heighted|mddnomdd|decomposed|independent|\n");
-	printf("                          mdd|mdd+|mdd++|mmdd|mmdd+|mmdd++|rmdd|rmmdd|lmdd++\n");
+	printf("                          mdd|mdd+|mdd++|mmdd|mmdd+|mmdd++|rmdd|rmmdd|lmdd++|mddf++\n");
 	printf("	                  tmdd|tmmdd|tmdd|temmdd|pmdd|pmmdd\n");	
 	printf("                          idmdd|idmdd+|idmdd++|idmmdd|idmmdd+|idmmdd++|\n");
 	printf("                          admdd|admdd+|admdd++|admmdd|admmdd+|admmdd++|\n");
@@ -434,6 +434,7 @@ namespace sReloc
 		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_PERMUTATION_MDD			
 		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_MDD_plus
 		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_MDD_plus_plus
+		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_MDD_plus_plus_fuel			
 		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_LMDD_plus_plus
 		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_MDD_star)
 	    {
@@ -1348,6 +1349,10 @@ namespace sReloc
 	    {
 		command_parameters.m_cnf_encoding = sMultirobotSolutionCompressor::ENCODING_MDD_plus_plus;
 	    }
+	    else if (encoding_str == "mddf++")
+	    {
+		command_parameters.m_cnf_encoding = sMultirobotSolutionCompressor::ENCODING_MDD_plus_plus_fuel;
+	    }	    
 	    else if (encoding_str == "lmdd++")
 	    {
 		command_parameters.m_cnf_encoding = sMultirobotSolutionCompressor::ENCODING_LMDD_plus_plus;
