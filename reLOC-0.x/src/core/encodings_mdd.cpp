@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.20-kruh                               */
 /*                                                                            */
-/*                      (C) Copyright 2018 Pavel Surynek                      */
+/*                      (C) Copyright 2019 Pavel Surynek                      */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* encodings_mdd.cpp / 0.20-kruh_048                                          */
+/* encodings_mdd.cpp / 0.20-kruh_050                                          */
 /*----------------------------------------------------------------------------*/
 //
 // Multi-robot path-finding encodings based on
@@ -13503,19 +13503,19 @@ namespace sReloc
 
     void sMultirobotInstance::to_Stream_MddPlusPlusFuelCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
-	int extra_cost;
+	int extra_fuel;
 	//	s_GlobalPhaseStatistics.enter_Phase("MDD build");
-	int mdd_depth = construct_MDD(encoding_context.m_max_total_cost, m_the_MDD, extra_cost, m_the_extra_MDD);
+	int mdd_depth = construct_FuelMDD(encoding_context.m_max_total_fuel, m_the_MDD, extra_fuel, m_the_extra_MDD);
 	//s_GlobalPhaseStatistics.leave_Phase();
 
-	if (encoding_context.m_extra_cost >= 0)
+	if (encoding_context.m_extra_fuel >= 0)
 	{
-	    to_Stream_MddPlusPlusFuelCNFsat(fw, encoding_context, encoding_context.m_extra_cost, mdd_depth, m_the_MDD, m_the_extra_MDD, indent, verbose);
+	    to_Stream_MddPlusPlusFuelCNFsat(fw, encoding_context, encoding_context.m_extra_fuel, mdd_depth, m_the_MDD, m_the_extra_MDD, indent, verbose);
 	}
 	else
 	{
-	    encoding_context.m_extra_cost = extra_cost;
-	    to_Stream_MddPlusPlusFuelCNFsat(fw, encoding_context, extra_cost, mdd_depth, m_the_MDD, m_the_extra_MDD, indent, verbose);
+	    encoding_context.m_extra_fuel = extra_fuel;
+	    to_Stream_MddPlusPlusFuelCNFsat(fw, encoding_context, extra_fuel, mdd_depth, m_the_MDD, m_the_extra_MDD, indent, verbose);
 	}
     }    
 
@@ -13561,19 +13561,19 @@ namespace sReloc
 
     void sMultirobotInstance::to_Memory_MddPlusPlusFuelCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
-	int extra_cost;
+	int extra_fuel;
 	//	s_GlobalPhaseStatistics.enter_Phase("MDD build");
-	int mdd_depth = construct_MDD(encoding_context.m_max_total_cost, m_the_MDD, extra_cost, m_the_extra_MDD);
+	int mdd_depth = construct_FuelMDD(encoding_context.m_max_total_fuel, m_the_MDD, extra_fuel, m_the_extra_MDD);
 	//s_GlobalPhaseStatistics.leave_Phase();
 
-	if (encoding_context.m_extra_cost >= 0)
+	if (encoding_context.m_extra_fuel >= 0)
 	{
-	    to_Memory_MddPlusPlusFuelCNFsat(solver, encoding_context, encoding_context.m_extra_cost, mdd_depth, m_the_MDD, m_the_extra_MDD, indent, verbose);
+	    to_Memory_MddPlusPlusFuelCNFsat(solver, encoding_context, encoding_context.m_extra_fuel, mdd_depth, m_the_MDD, m_the_extra_MDD, indent, verbose);
 	}
 	else
 	{
-	    encoding_context.m_extra_cost = extra_cost;
-	    to_Memory_MddPlusPlusFuelCNFsat(solver, encoding_context, extra_cost, mdd_depth, m_the_MDD, m_the_extra_MDD, indent, verbose);
+	    encoding_context.m_extra_fuel = extra_fuel;
+	    to_Memory_MddPlusPlusFuelCNFsat(solver, encoding_context, extra_fuel, mdd_depth, m_the_MDD, m_the_extra_MDD, indent, verbose);
 	}
     }    
 
@@ -15680,7 +15680,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Stream_MddPlusPlusFuelCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Stream_MddPlusPlusFuelCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_fuel, int mdd_depth, const MDD_vector &MDD, const MDD_vector &sUNUSED(extra_MDD), const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();	
 
@@ -15691,6 +15691,11 @@ namespace sReloc
 	int N_Vertices = m_environment.get_VertexCount();
 	int N_Robots = m_initial_arrangement.get_RobotCount();
 	int N_Layers = mdd_depth;
+
+	/*
+	const sUndirectedGraph::Distances_2d_vector &source_Distances = m_environment.get_SourceShortestPaths();
+	const sUndirectedGraph::Distances_2d_vector &goal_Distances = m_environment.get_GoalShortestPaths();	
+	*/
 
 	encoding_context.m_vertex_occupancy_by_water_.resize(N_Robots + 1);
 	encoding_context.m_vertex_water_cardinality_.resize(N_Robots + 1);
@@ -15709,45 +15714,33 @@ namespace sReloc
 								   sIntegerScope(0, MDD[robot_id][layer].size() - 1));
 		encoding_context.m_vertex_occupancy_by_water_[robot_id][layer] = vertex_occupancy_by_water_;
 		encoding_context.register_TranslateIdentifier(encoding_context.m_vertex_occupancy_by_water_[robot_id][layer]);
+	    }
+	}
 
-		if (!extra_MDD[robot_id][layer].empty())
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    for (int layer = 0; layer < N_Layers; ++layer)
+	    {	
+		sIndexableBitIdentifier vertex_water_cardinality_(&encoding_context.m_variable_store,
+								  "vertex_water_cardinality-" + sInt_32_to_String(robot_id) + "_" + sInt_32_to_String(layer),
+								  sIntegerScope(0, 0));
+		encoding_context.m_vertex_water_cardinality_[robot_id][layer] = vertex_water_cardinality_;
+		encoding_context.register_TranslateIdentifier(encoding_context.m_vertex_water_cardinality_[robot_id][layer]);
+
+		for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
 		{
-		    sASSERT(extra_MDD[robot_id][layer].size() == 1);
-
-		    sIndexableBitIdentifier vertex_water_cardinality_(&encoding_context.m_variable_store,
-								      "vertex_water_cardinality-" + sInt_32_to_String(robot_id) + "_" + sInt_32_to_String(layer),
-								      sIntegerScope(0, 0));
-		    encoding_context.m_vertex_water_cardinality_[robot_id][layer] = vertex_water_cardinality_;
-		    encoding_context.register_TranslateIdentifier(encoding_context.m_vertex_water_cardinality_[robot_id][layer]);
-
-		    for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
+		    for (int v = 0; v < MDD[robot_id][layer + 1].size(); ++v)
 		    {
-			if (extra_MDD[robot_id][layer][0] != MDD[robot_id][layer][u])
+			if (m_environment.is_Adjacent(MDD[robot_id][layer][u], MDD[robot_id][layer + 1][v]))
 			{
-			    Clause_cnt += encoding_context.m_bit_generator->count_Implication(aux_Variable_cnt,
-											      total_Literal_cnt,
-											      sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer], sIntegerIndex(u)),
-											      sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][layer], sIntegerIndex(0)));
+			    sASSERT(MDD[robot_id][layer][u] != MDD[robot_id][layer + 1][v]);
+			    Clause_cnt += encoding_context.m_bit_generator->count_Bimplication(aux_Variable_cnt,
+											       total_Literal_cnt,
+											       sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer], sIntegerIndex(u)),
+											       sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer + 1], sIntegerIndex(v)),
+											       sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][layer], sIntegerIndex(0)));
 			}
 		    }
-		    /*
-		    sBitClauseGenerator::SpecifiedBitIdentifiers_vector prev_cardinality_Identifiers;
-
-		    for (int prev_layer = 0; prev_layer < layer; ++prev_layer)
-		    {
-			if (!extra_MDD[robot_id][prev_layer].empty())
-			{
-			    prev_cardinality_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][prev_layer], sIntegerIndex(0)));
-			}
-		    }
-		    if (!prev_cardinality_Identifiers.empty())
-		    {
-			Clause_cnt += encoding_context.m_bit_generator->count_MultiConjunctiveImplication(aux_Variable_cnt,
-													  total_Literal_cnt,
-													  sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][layer], sIntegerIndex(0)),
-													  prev_cardinality_Identifiers);
-		    }
-		    */
 		}
 	    }
 	}
@@ -15755,19 +15748,15 @@ namespace sReloc
 	sBitClauseGenerator::SpecifiedBitIdentifiers_vector cardinality_Identifiers;
 	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
 	{
-	    for (int layer = 0; layer <= N_Layers; ++layer)
+	    for (int layer = 0; layer < N_Layers; ++layer)
 	    {
-		if (!extra_MDD[robot_id][layer].empty())
-		{
-		    cardinality_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][layer], sIntegerIndex(0)));
-		}
+		cardinality_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][layer], sIntegerIndex(0)));
 	    }
 	}
 	if (!cardinality_Identifiers.empty())
 	{
-	    Clause_cnt += encoding_context.m_bit_generator->count_Cardinality(aux_Variable_cnt,total_Literal_cnt, cardinality_Identifiers, extra_cost);
+	    Clause_cnt += encoding_context.m_bit_generator->count_Cardinality(aux_Variable_cnt,total_Literal_cnt, cardinality_Identifiers, encoding_context.m_max_total_cost);
 	}
-
 
 	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
 	{
@@ -15833,8 +15822,8 @@ namespace sReloc
 		if (mutex_occupancy_Identifiers.size() > 1)
 		{
 		    Clause_cnt += encoding_context.m_bit_generator->count_AdaptiveAllMutexConstraint(aux_Variable_cnt,
-												   total_Literal_cnt,
-												   mutex_occupancy_Identifiers);
+												     total_Literal_cnt,
+												     mutex_occupancy_Identifiers);
 		}
 	    }
 	}
@@ -16014,38 +16003,20 @@ namespace sReloc
 
 	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
 	{
-	    for (int layer = 0; layer <= N_Layers; ++layer)
+	    for (int layer = 0; layer < N_Layers; ++layer)
 	    {
-		if (!extra_MDD[robot_id][layer].empty())
+		for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
 		{
-		    sASSERT(extra_MDD[robot_id][layer].size() == 1);
-
-		    for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
+		    for (int v = 0; v < MDD[robot_id][layer + 1].size(); ++v)
 		    {
-			if (extra_MDD[robot_id][layer][0] != MDD[robot_id][layer][u])
-			{
-			    Clause_cnt += encoding_context.m_bit_generator->generate_Implication(fw,
-												 sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer], sIntegerIndex(u)),
-												 sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][layer], sIntegerIndex(0)));
+			if (m_environment.is_Adjacent(MDD[robot_id][layer][u], MDD[robot_id][layer + 1][v]))
+			{			    
+			    Clause_cnt += encoding_context.m_bit_generator->generate_Bimplication(fw,
+												  sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer], sIntegerIndex(u)),
+												  sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer + 1], sIntegerIndex(v)),
+												  sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][layer], sIntegerIndex(0)));
 			}
 		    }
-		    /*
-		    sBitClauseGenerator::SpecifiedBitIdentifiers_vector prev_cardinality_Identifiers;
-
-		    for (int prev_layer = 0; prev_layer < layer; ++prev_layer)
-		    {
-			if (!extra_MDD[robot_id][prev_layer].empty())
-			{
-			    prev_cardinality_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][prev_layer], sIntegerIndex(0)));
-			}
-		    }
-		    if (!prev_cardinality_Identifiers.empty())
-		    {
-			Clause_cnt += encoding_context.m_bit_generator->generate_MultiConjunctiveImplication(fw,
-													     sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][layer], sIntegerIndex(0)),
-													     prev_cardinality_Identifiers);
-		    }
-		    */
 		}
 	    }
 	}
@@ -16054,10 +16025,9 @@ namespace sReloc
 
 	if (!cardinality_Identifiers.empty())
 	{
-//	    printf("----> Cardinality: %d, %d, %d <----\n", cardinality_Identifiers.size(), extra_cost, encoding_context.m_max_total_cost);
-	    Clause_cnt += encoding_context.m_bit_generator->generate_Cardinality(fw, cardinality_Identifiers, extra_cost);
+//	    printf("----> Cardinality: %d, %d, %d <----\n", cardinality_Identifiers.size(), extra_fuel, encoding_context.m_max_total_cost);
+	    Clause_cnt += encoding_context.m_bit_generator->generate_Cardinality(fw, cardinality_Identifiers, encoding_context.m_max_total_cost);
 	}
-
 
 	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
 	{
@@ -17180,7 +17150,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_MddPlusPlusFuelCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_MddPlusPlusFuelCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int sUNUSED(extra_fuel), int mdd_depth, const MDD_vector &MDD, const MDD_vector &sUNUSED(extra_MDD), const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();	
 
@@ -17205,40 +17175,30 @@ namespace sReloc
 								   sIntegerScope(0, MDD[robot_id][layer].size() - 1));
 		encoding_context.m_vertex_occupancy_by_water_[robot_id][layer] = vertex_occupancy_by_water_;
 		encoding_context.register_TranslateIdentifier(encoding_context.m_vertex_occupancy_by_water_[robot_id][layer]);
+	    }
+	}
 
-		if (!extra_MDD[robot_id][layer].empty())
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    for (int layer = 0; layer < N_Layers; ++layer)
+	    {
+		sIndexableBitIdentifier vertex_water_cardinality_(&encoding_context.m_variable_store,
+								  "vertex_water_cardinality-" + sInt_32_to_String(robot_id) + "_" + sInt_32_to_String(layer),
+								  sIntegerScope(0, 0));
+		encoding_context.m_vertex_water_cardinality_[robot_id][layer] = vertex_water_cardinality_;
+		encoding_context.register_TranslateIdentifier(encoding_context.m_vertex_water_cardinality_[robot_id][layer]);
+		
+		for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
 		{
-		    sASSERT(extra_MDD[robot_id][layer].size() == 1);
-
-		    sIndexableBitIdentifier vertex_water_cardinality_(&encoding_context.m_variable_store,
-								      "vertex_water_cardinality-" + sInt_32_to_String(robot_id) + "_" + sInt_32_to_String(layer),
-								      sIntegerScope(0, 0));
-		    encoding_context.m_vertex_water_cardinality_[robot_id][layer] = vertex_water_cardinality_;
-		    encoding_context.register_TranslateIdentifier(encoding_context.m_vertex_water_cardinality_[robot_id][layer]);
-
-		    for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
+		    for (int v = 0; v < MDD[robot_id][layer + 1].size(); ++v)
 		    {
-			if (extra_MDD[robot_id][layer][0] != MDD[robot_id][layer][u])
+			if (m_environment.is_Adjacent(MDD[robot_id][layer][u], MDD[robot_id][layer + 1][v]))
 			{
-			    encoding_context.m_bit_generator->cast_Implication(solver,
-											     sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer], sIntegerIndex(u)),
-											     sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][layer], sIntegerIndex(0)));
+			    encoding_context.m_bit_generator->cast_Bimplication(solver,
+										sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer], sIntegerIndex(u)),
+										sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer + 1], sIntegerIndex(v)),
+										sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][layer], sIntegerIndex(0)));
 			}
-		    }
-		    sBitClauseGenerator::SpecifiedBitIdentifiers_vector prev_cardinality_Identifiers;
-
-		    for (int prev_layer = 0; prev_layer < layer; ++prev_layer)
-		    {
-			if (!extra_MDD[robot_id][prev_layer].empty())
-			{
-			    prev_cardinality_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][prev_layer], sIntegerIndex(0)));
-			}
-		    }
-		    if (!prev_cardinality_Identifiers.empty())
-		    {
-			encoding_context.m_bit_generator->cast_MultiConjunctiveImplication(solver,
-											   sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][layer], sIntegerIndex(0)),
-											   prev_cardinality_Identifiers);
 		    }
 		}
 	    }
@@ -17247,17 +17207,14 @@ namespace sReloc
 	sBitClauseGenerator::SpecifiedBitIdentifiers_vector cardinality_Identifiers;
 	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
 	{
-	    for (int layer = 0; layer <= N_Layers; ++layer)
+	    for (int layer = 0; layer < N_Layers; ++layer)
 	    {
-		if (!extra_MDD[robot_id][layer].empty())
-		{
-		    cardinality_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][layer], sIntegerIndex(0)));
-		}
+		cardinality_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][layer], sIntegerIndex(0)));
 	    }
 	}
 	if (!cardinality_Identifiers.empty())
 	{
-	    encoding_context.m_bit_generator->cast_Cardinality(solver, cardinality_Identifiers, extra_cost);
+	    encoding_context.m_bit_generator->cast_Cardinality(solver, cardinality_Identifiers, encoding_context.m_max_total_cost);
 	}
 
 

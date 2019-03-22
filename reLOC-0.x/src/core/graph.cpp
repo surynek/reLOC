@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.20-kruh                               */
 /*                                                                            */
-/*                      (C) Copyright 2018 Pavel Surynek                      */
+/*                      (C) Copyright 2019 Pavel Surynek                      */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* graph.cpp / 0.20-kruh_048                                                  */
+/* graph.cpp / 0.20-kruh_050                                                  */
 /*----------------------------------------------------------------------------*/
 //
 // Algorithmic graph theory.

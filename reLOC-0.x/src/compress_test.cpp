@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.20-kruh                               */
 /*                                                                            */
-/*                      (C) Copyright 2018 Pavel Surynek                      */
+/*                      (C) Copyright 2019 Pavel Surynek                      */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* compress_test.cpp / 0.20-kruh_048                                          */
+/* compress_test.cpp / 0.20-kruh_050                                          */
 /*----------------------------------------------------------------------------*/
 //
 // Compression tools for relocation problem solutions - testing program.

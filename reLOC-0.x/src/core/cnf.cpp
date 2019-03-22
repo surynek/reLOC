@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.20-kruh                               */
 /*                                                                            */
-/*                      (C) Copyright 2018 Pavel Surynek                      */
+/*                      (C) Copyright 2019 Pavel Surynek                      */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* cnf.cpp / 0.20-kruh_048                                                    */
+/* cnf.cpp / 0.20-kruh_050                                                    */
 /*----------------------------------------------------------------------------*/
 //
 // Dimacs CNF formula production tools.
@@ -7753,8 +7753,63 @@ namespace sReloc
 	    ++s_GlobalPhaseStatistics.get_CurrentPhase().m_produced_cnf_Clauses;
 	}
 	#endif
-    }    
+    }
 
+
+    int sBitClauseGenerator::count_Bimplication(int                           &sUNUSED(aux_Variable_cnt),
+						int                           &total_Literal_cnt,
+						const sSpecifiedBitIdentifier &sUNUSED(spec_identifier_PREC_A),
+						const sSpecifiedBitIdentifier &sUNUSED(spec_identifier_PREC_B),						
+						const sSpecifiedBitIdentifier &sUNUSED(spec_identifier_POST)) const
+    {
+	total_Literal_cnt += 3;
+
+	return 1;
+    }
+
+
+
+    int sBitClauseGenerator::generate_Bimplication(FILE                          *fw,
+						   const sSpecifiedBitIdentifier &spec_identifier_PREC_A,
+						   const sSpecifiedBitIdentifier &spec_identifier_PREC_B,						   
+						   const sSpecifiedBitIdentifier &spec_identifier_POST,
+						   bool                           string,
+						   int                            sUNUSED(weight))
+    {
+	if (string)
+	{
+	    fprintf(fw, "-%s -%s %s 0\n", spec_identifier_PREC_A.calc_String().c_str(), spec_identifier_PREC_B.calc_String().c_str(), spec_identifier_POST.calc_String().c_str());
+	}
+	else
+	{
+	    fprintf(fw, "-%d -%d %d 0\n", spec_identifier_PREC_A.calc_CNF(), spec_identifier_PREC_B.calc_CNF(), spec_identifier_POST.calc_CNF());
+	}
+
+        #ifdef sSTATISTICS
+	{
+	    ++s_GlobalPhaseStatistics.get_CurrentPhase().m_produced_cnf_Clauses;
+	}
+	#endif
+
+	return 1;
+    }
+
+
+    void sBitClauseGenerator::cast_Bimplication(Glucose::Solver               *solver,
+						const sSpecifiedBitIdentifier &spec_identifier_PREC_A,
+						const sSpecifiedBitIdentifier &spec_identifier_PREC_B,						
+						const sSpecifiedBitIdentifier &spec_identifier_POST,
+						int                            sUNUSED(weight))
+    {
+	cast_Clause(solver, -spec_identifier_PREC_A.calc_CNF(), -spec_identifier_PREC_B.calc_CNF(), spec_identifier_POST.calc_CNF());
+
+        #ifdef sSTATISTICS
+	{
+	    ++s_GlobalPhaseStatistics.get_CurrentPhase().m_produced_cnf_Clauses;
+	}
+	#endif
+    }    
+    
 
     int sBitClauseGenerator::count_Implication(int                           &sUNUSED(aux_Variable_cnt),
 					       int                           &total_Literal_cnt,

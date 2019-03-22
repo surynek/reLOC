@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.20-kruh                               */
 /*                                                                            */
-/*                      (C) Copyright 2018 Pavel Surynek                      */
+/*                      (C) Copyright 2019 Pavel Surynek                      */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* multirobot.cpp / 0.20-kruh_048                                             */
+/* multirobot.cpp / 0.20-kruh_050                                             */
 /*----------------------------------------------------------------------------*/
 //
 // Multirobot coordinated path-finding solving package.
@@ -1655,6 +1655,8 @@ namespace sReloc
 	: m_N_Layers(UNDEFINED_LAYER_COUNT)
 	, m_max_total_cost(0)
 	, m_extra_cost(-1)
+	, m_max_total_fuel(0)
+	, m_extra_fuel(-1)	  
 	, m_state_clause_generator(NULL)
 	, m_advanced_clause_generator(NULL)
 	, m_bitwise_clause_generator(NULL)
@@ -1670,6 +1672,8 @@ namespace sReloc
 	: m_N_Layers(N_Layers)
 	, m_max_total_cost(0)
 	, m_extra_cost(-1)
+	, m_max_total_fuel(0)
+	, m_extra_fuel(-1)	  
 	, m_state_clause_generator(&m_variable_store)
 	, m_advanced_clause_generator(&m_variable_store)
 	, m_bitwise_clause_generator(&m_variable_store)
@@ -1685,6 +1689,8 @@ namespace sReloc
 	: m_N_Layers(encoding_context.m_N_Layers)
 	, m_max_total_cost(encoding_context.m_max_total_cost)
 	, m_extra_cost(encoding_context.m_extra_cost)
+	, m_max_total_fuel(encoding_context.m_max_total_fuel)
+	, m_extra_fuel(encoding_context.m_extra_fuel)	  
 	, m_variable_store(encoding_context.m_variable_store)
 	, m_state_clause_generator(encoding_context.m_state_clause_generator)
 	, m_advanced_clause_generator(encoding_context.m_advanced_clause_generator)
@@ -1718,6 +1724,8 @@ namespace sReloc
 	m_N_Layers = encoding_context.m_N_Layers;
 	m_max_total_cost = encoding_context.m_max_total_cost;
 	m_extra_cost = encoding_context.m_extra_cost;
+	m_max_total_fuel = encoding_context.m_max_total_fuel;
+	m_extra_fuel = encoding_context.m_extra_fuel;	
 	m_variable_store = encoding_context.m_variable_store;
 	m_clause_generator = encoding_context.m_clause_generator;
 	m_bit_generator = encoding_context.m_bit_generator;
@@ -2774,10 +2782,67 @@ namespace sReloc
     }
 
 
+    int sMultirobotInstance::estimate_TotalFuel(int &max_individual_fuel)
+    {	
+	VertexIDs_vector source_IDs;
+	VertexIDs_vector goal_IDs;
+
+	collect_Endpoints(source_IDs, goal_IDs);
+	m_environment.calc_SourceGoalShortestPaths(source_IDs, goal_IDs);
+
+	const sUndirectedGraph::Distances_2d_vector &source_Distances = m_environment.get_SourceShortestPaths();
+//	const sUndirectedGraph::Distances_2d_vector &goal_Distances = m_environment.get_GoalShortestPaths();
+
+	int min_total_fuel = 0;
+	max_individual_fuel = 0;
+
+	int N_Robots = m_initial_arrangement.get_RobotCount();
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    int robot_source_vertex_id = m_initial_arrangement.get_RobotLocation(robot_id);
+	    int robot_sink_vertex_id;
+	    
+	    switch (m_goal_type)
+	    {
+	    case GOAL_TYPE_ARRANGEMENT:
+	    {
+		robot_sink_vertex_id = m_goal_arrangement.get_RobotLocation(robot_id);
+		break;
+	    }
+	    case GOAL_TYPE_SPECIFICATION:
+	    {
+		const sRobotGoal::Vertices_set &goal_IDs = m_goal_specification.get_RobotGoal(robot_id);
+		sASSERT(goal_IDs.size() == 1);
+		robot_sink_vertex_id = *goal_IDs.begin();
+		break;
+	    }
+	    default:
+	    {
+		break;
+	    }
+	    }
+	    int robot_fuel = source_Distances[robot_source_vertex_id][robot_sink_vertex_id];
+	    min_total_fuel += robot_fuel;
+
+	    if (robot_fuel > max_individual_fuel)
+	    {
+		max_individual_fuel = robot_fuel;
+	    }
+	}
+	return min_total_fuel;
+    }    
+
+
     int sMultirobotInstance::construct_MDD(int max_total_cost, MDD_vector &MDD, int &extra_cost, MDD_vector &extra_MDD)
     {
 	return construct_GraphMDD(m_environment, max_total_cost, MDD, extra_cost, extra_MDD);
     }
+
+
+    int sMultirobotInstance::construct_FuelMDD(int max_total_fuel, MDD_vector &MDD, int &extra_fuel, MDD_vector &extra_MDD)
+    {
+	return construct_GraphFuelMDD(m_environment, max_total_fuel, MDD, extra_fuel, extra_MDD);
+    }    
 
 
     int sMultirobotInstance::construct_DisplacementMDD(int max_total_cost, MDD_vector &MDD, int &extra_cost, MDD_vector &extra_MDD)
@@ -2986,14 +3051,18 @@ namespace sReloc
 	}
 	printf("<----\n");
 */
-	/*
+/*
 	printf("MDD printout\n");
 	for (int mdd_robot = 1; mdd_robot <= N_Robots; ++mdd_robot)
 	{	    
 	    printf("robot:%d\n", mdd_robot);
 	    for (int mdd_level = 0; mdd_level <= mdd_depth; ++mdd_level)
 	    {
-		for (int i = 0; i < MDD[mdd_robot][mdd_level].size(); ++i)
+		if (!extra_MDD[mdd_robot][mdd_level].empty())
+		{
+		    printf("* ");
+		}		
+		for (int i = 0; i < MDD[mdd_robot][mdd_level].size(); ++i)		    
 		{		    
 		    printf("%d ", MDD[mdd_robot][mdd_level][i]);
 		}
@@ -3001,8 +3070,9 @@ namespace sReloc
 	    }
 	    printf("\n");
 	}
-	printf("<----\n");		
-	*/
+	printf("<----\n");
+	getchar();
+*/
 	std::vector<int> distribution;
 	distribution.resize(N_Robots + 1);
 	for (int robot_id = 0; robot_id <= N_Robots; ++robot_id)
@@ -3012,6 +3082,211 @@ namespace sReloc
 	return mdd_depth;
     }
 
+
+    int sMultirobotInstance::construct_GraphFuelMDD(sUndirectedGraph &graph, int max_total_fuel, MDD_vector &MDD, int &extra_fuel, MDD_vector &extra_MDD)
+    {	
+	int max_individual_fuel;
+	int N_Vertices = graph.get_VertexCount();	
+
+	MDD.clear();
+	extra_MDD.clear();
+
+	VertexIDs_vector source_IDs;
+	VertexIDs_vector goal_IDs;
+	collect_Endpoints(source_IDs, goal_IDs);
+
+	graph.calc_SourceGoalShortestPaths(source_IDs, goal_IDs);
+	int min_total_fuel = estimate_TotalFuel(max_individual_fuel);
+	
+	const sUndirectedGraph::Distances_2d_vector &source_Distances = graph.get_SourceShortestPaths();
+	const sUndirectedGraph::Distances_2d_vector &goal_Distances = graph.get_GoalShortestPaths();	
+
+	extra_fuel = max_total_fuel - min_total_fuel;
+	int mdd_depth = max_total_fuel;//max_individual_fuel + extra_fuel;
+	
+	int N_Robots = m_initial_arrangement.get_RobotCount();
+
+	MDD.resize(N_Robots + 1);
+	extra_MDD.resize(N_Robots + 1);
+
+	RobotIndices_mmap sorted_mdd_Robots;
+
+	for (int mdd_robot_id = 1; mdd_robot_id <= N_Robots; ++mdd_robot_id)
+	{
+	    MDD[mdd_robot_id].resize(mdd_depth + 1);
+	    extra_MDD[mdd_robot_id].resize(mdd_depth + 1);
+
+	    int robot_source_vertex_id = m_initial_arrangement.get_RobotLocation(mdd_robot_id);
+	    int robot_sink_vertex_id;
+
+	    switch (m_goal_type)
+	    {
+	    case GOAL_TYPE_ARRANGEMENT:
+	    {
+		robot_sink_vertex_id = m_goal_arrangement.get_RobotLocation(mdd_robot_id);
+		break;
+	    }
+	    case GOAL_TYPE_SPECIFICATION:
+	    {
+		const sRobotGoal::Vertices_set &goal_IDs = m_goal_specification.get_RobotGoal(mdd_robot_id);
+		sASSERT(goal_IDs.size() == 1);
+		robot_sink_vertex_id = *goal_IDs.begin();
+		break;
+	    }
+	    default:
+	    {
+		break;
+	    }
+	    }
+	    
+	    int robot_fuel = source_Distances[robot_source_vertex_id][robot_sink_vertex_id];
+
+	    sorted_mdd_Robots.insert(RobotIndices_mmap::value_type(robot_fuel, mdd_robot_id));
+	}
+
+	int sort_index = 0;
+	for (RobotIndices_mmap::const_reverse_iterator sort_robot = sorted_mdd_Robots.rbegin(); sort_robot != sorted_mdd_Robots.rend(); ++sort_robot)
+	{
+	    int add_index = (sort_index++ * (sizeof(sMDD_Addition) / sizeof(int))) / N_Robots;
+	    int extra_addition = sMDD_Addition[add_index];
+
+	    int mdd_robot_id = sort_robot->second;
+	    
+	    MDD[mdd_robot_id].resize(mdd_depth + 1);
+	    extra_MDD[mdd_robot_id].resize(mdd_depth + 1);
+
+	    int robot_source_vertex_id = m_initial_arrangement.get_RobotLocation(mdd_robot_id);
+	    int robot_sink_vertex_id;
+
+	    switch (m_goal_type)
+	    {
+	    case GOAL_TYPE_ARRANGEMENT:
+	    {
+		robot_sink_vertex_id = m_goal_arrangement.get_RobotLocation(mdd_robot_id);
+		break;
+	    }
+	    case GOAL_TYPE_SPECIFICATION:
+	    {
+		const sRobotGoal::Vertices_set &goal_IDs = m_goal_specification.get_RobotGoal(mdd_robot_id);
+		sASSERT(goal_IDs.size() == 1);
+		robot_sink_vertex_id = *goal_IDs.begin();
+		break;
+	    }
+	    default:
+	    {
+		break;
+	    }
+	    }
+	    
+	    int robot_fuel = source_Distances[robot_source_vertex_id][robot_sink_vertex_id];
+
+	    for (int mdd_level = 0; mdd_level <= mdd_depth; ++mdd_level)
+	    {
+		for (int vertex_id = 0; vertex_id < N_Vertices; ++vertex_id)
+		{
+		    if (   source_Distances[robot_source_vertex_id][vertex_id] <= mdd_level
+			&& goal_Distances[robot_sink_vertex_id][vertex_id] <= mdd_depth - mdd_level
+			&& goal_Distances[robot_sink_vertex_id][vertex_id] <= robot_fuel + extra_fuel - source_Distances[robot_source_vertex_id][vertex_id])
+		    {
+			MDD[mdd_robot_id][mdd_level].push_back(vertex_id);
+		    }
+		}
+	    }
+
+/*
+	    for (int vertex_id = 0; vertex_id < N_Vertices; ++vertex_id)
+	    {
+		for (int mdd_level = source_Distances[robot_source_vertex_id][vertex_id];		     
+		     mdd_level <= mdd_depth - goal_Distances[robot_sink_vertex_id][vertex_id];
+		     ++mdd_level)
+		{
+		    MDD[mdd_robot_id][mdd_level].push_back(vertex_id);
+		}
+	    }
+*/
+	    for (int mdd_level = 0; mdd_level <= mdd_depth; ++mdd_level)
+	    {
+		if (MDD[mdd_robot_id][mdd_level].empty())
+		{
+		    MDD[mdd_robot_id][mdd_level].push_back(robot_sink_vertex_id);
+		}
+/*		
+		if (mdd_level >= source_Distances[robot_source_vertex_id][robot_sink_vertex_id])
+		{
+		    extra_MDD[mdd_robot_id][mdd_level].push_back(robot_sink_vertex_id);
+		}
+*/
+	    }
+	}
+/*
+	printf("Distance printout\n");
+	for (int mdd_robot = 1; mdd_robot <= N_Robots; ++mdd_robot)
+	{	    
+	    int robot_source_vertex_id = m_initial_arrangement.get_RobotLocation(mdd_robot);
+	    int robot_sink_vertex_id;
+
+	    switch (m_goal_type)
+	    {
+	    case GOAL_TYPE_ARRANGEMENT:
+	    {
+		robot_sink_vertex_id = m_goal_arrangement.get_RobotLocation(mdd_robot);
+		break;
+	    }
+	    case GOAL_TYPE_SPECIFICATION:
+	    {
+		const sRobotGoal::Vertices_set &goal_IDs = m_goal_specification.get_RobotGoal(mdd_robot);
+		sASSERT(goal_IDs.size() == 1);
+		robot_sink_vertex_id = *goal_IDs.begin();
+		break;
+	    }
+	    default:
+	    {
+		break;
+	    }
+	    }
+	    printf("robot:%d (%d,%d)\n", mdd_robot, robot_source_vertex_id, robot_sink_vertex_id);
+	    
+	    for (int vertex_id = 0; vertex_id < N_Vertices; ++vertex_id)
+	    {
+		int  source_dist = source_Distances[robot_source_vertex_id][vertex_id];
+		int  goal_dist = goal_Distances[robot_sink_vertex_id][vertex_id];
+
+		printf("  %d:%d,%d\n", vertex_id, source_dist, goal_dist);
+	    }	   
+	}
+	printf("<----\n");
+*/
+/*
+	printf("MDD printout\n");
+	for (int mdd_robot = 1; mdd_robot <= N_Robots; ++mdd_robot)
+	{	    
+	    printf("robot:%d\n", mdd_robot);
+	    for (int mdd_level = 0; mdd_level <= mdd_depth; ++mdd_level)
+	    {
+		if (!extra_MDD[mdd_robot][mdd_level].empty())
+		{
+		    printf("* ");
+		}
+		for (int i = 0; i < MDD[mdd_robot][mdd_level].size(); ++i)
+		{		    
+		    printf("%d ", MDD[mdd_robot][mdd_level][i]);
+		}
+		printf("\n");		
+	    }
+	    printf("\n");
+	}
+	printf("<----\n");
+	getchar();
+*/
+	std::vector<int> distribution;
+	distribution.resize(N_Robots + 1);
+	for (int robot_id = 0; robot_id <= N_Robots; ++robot_id)
+	{
+	    distribution[robot_id] = 0;
+	}	
+	return mdd_depth;
+    }
+    
 
     int sMultirobotInstance::construct_GraphDisplacementMDD(sUndirectedGraph &graph, int max_total_cost, MDD_vector &MDD, int &extra_cost, MDD_vector &extra_MDD)
     {	

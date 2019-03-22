@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.20-kruh                               */
 /*                                                                            */
-/*                      (C) Copyright 2018 Pavel Surynek                      */
+/*                      (C) Copyright 2019 Pavel Surynek                      */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* solver_main.h / 0.20-kruh_048                                              */
+/* solver_main.h / 0.20-kruh_050                                              */
 /*----------------------------------------------------------------------------*/
 //
 // Solution generator - main program.
@@ -66,6 +66,7 @@ namespace sReloc
 	int m_makespan_specified;	
 	int m_layer_upper_bound;
 	int m_total_cost_bound;
+	int m_total_fuel_bound;	
 	int m_minisat_timeout;
 	int m_total_timeout;
 

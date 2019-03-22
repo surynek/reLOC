@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.20-kruh                               */
 /*                                                                            */
-/*                      (C) Copyright 2018 Pavel Surynek                      */
+/*                      (C) Copyright 2019 Pavel Surynek                      */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* insolver_main.cpp / 0.20-kruh_048                                          */
+/* insolver_main.cpp / 0.20-kruh_050                                          */
 /*----------------------------------------------------------------------------*/
 //
 // Solution generator - main program.
@@ -57,6 +57,7 @@ namespace sReloc
       , m_makespan_specified(-1)		
       , m_layer_upper_bound(65536)
       , m_total_cost_bound(65536)
+      , m_total_fuel_bound(65536)	
       , m_minisat_timeout(-1)
       , m_total_timeout(600)
       , m_independence_detection(false)
@@ -113,6 +114,8 @@ namespace sReloc
 	printf("             [--makespan-limit=<int>]\n");
 	printf("             [--makespan-specified=<int>]\n");	
 	printf("             [--layer-limit=<int>]\n");
+	printf("             [--cost-limit=<int>]\n");
+	printf("             [--fuel-limit=<int>]\n");	
 	printf("             [--suboptimal-ratio=<double>]\n");
 	printf("             [--directed]\n");	
 	printf("\n");
@@ -126,7 +129,8 @@ namespace sReloc
 	printf("          --total-timeout=600\n");
 	printf("          --makespan-limit=65536\n");
 	printf("          --layer-limit=65536\n");
-	printf("          --cost-limit=65536\n");	
+	printf("          --cost-limit=65536\n");
+	printf("          --fuel-limit=65536\n");		
 	printf("          --completion=simultaneous\n");
     }
 
@@ -285,7 +289,7 @@ namespace sReloc
 
 	if (!command_parameters.m_output_filename.empty() || !command_parameters.m_lusc_output_filename.empty())
 	{
-	    int optimal_makespan, optimal_cost;
+	    int optimal_makespan, optimal_cost, optimal_fuel;
 	    sMultirobotSolution optimal_solution;
 	    
 	    if (command_parameters.m_completion == sCommandParameters::COMPLETION_UNIROBOT)
@@ -441,7 +445,6 @@ namespace sReloc
 		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_PERMUTATION_MDD						
 		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_MDD_plus
 		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_MDD_plus_plus
-		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_MDD_plus_plus_fuel			
 		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_LMDD_plus_plus			
 		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_MDD_star)
 	    {	
@@ -478,7 +481,43 @@ namespace sReloc
 		    printf("Cost <= 1.000 * optimum.\n");
 		    printf("Optimality ratio = 1.000\n");
 		}		
-	    }	    
+	    }
+	    else if (command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_MDD_plus_plus_fuel)
+	    {
+		sMultirobotInstance::MDD_vector MDD;
+
+		sMultirobotSolutionCompressor compressor(sRELOC_SAT_SOLVER_PATH,
+							 command_parameters.m_minisat_timeout,
+							 command_parameters.m_total_timeout,
+							 command_parameters.m_makespan_upper_bound,
+							 sDEFAULT_N_PARALLEL_THREADS,
+							 command_parameters.m_cnf_encoding);
+		compressor.set_Ratio(command_parameters.m_suboptimal_ratio);
+		compressor.set_Robustness(command_parameters.m_robustness);		
+
+		Glucose::Solver *solver;
+		result = compressor.incompute_CostOptimalSolution(&solver,
+								  initial_arrangement,
+								  robot_goal,
+								  environment,
+								  instance.m_sparse_environment,
+								  MDD,
+								  command_parameters.m_total_fuel_bound,
+								  optimal_fuel,
+								  optimal_solution);
+
+		printf("Computed total fuel:%d\n", optimal_fuel);
+		if (optimal_solution.m_optimality_ratio >= 0.0)
+		{
+		    printf("Fuel <= %.3f * optimum.\n", optimal_solution.m_optimality_ratio);
+		    printf("Optimality ratio = %.3f\n", optimal_solution.m_optimality_ratio);
+		}
+		else
+		{
+		    printf("Cost <= 1.000 * optimum.\n");
+		    printf("Optimality ratio = 1.000\n");
+		}				
+	    }
 	    else if (   command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_ID_MDD
 		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_ID_WATER_MDD
 		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_ID_MDD_plus
@@ -1120,6 +1159,10 @@ namespace sReloc
 	{
 	    command_parameters.m_total_cost_bound = sInt_32_from_String(parameter.substr(13, parameter.size()));
 	}
+	else if (parameter.find("--fuel-limit=") == 0)
+	{
+	    command_parameters.m_total_fuel_bound = sInt_32_from_String(parameter.substr(13, parameter.size()));
+	}	
 	else if (parameter.find("--encoding=") == 0)
 	{
 	    sString encoding_str = parameter.substr(11, parameter.size());

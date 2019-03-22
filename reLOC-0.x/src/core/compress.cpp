@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.20-kruh                               */
 /*                                                                            */
-/*                      (C) Copyright 2018 Pavel Surynek                      */
+/*                      (C) Copyright 2019 Pavel Surynek                      */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* compress.cpp / 0.20-kruh_048                                               */
+/* compress.cpp / 0.20-kruh_050                                               */
 /*----------------------------------------------------------------------------*/
 //
 // Compression tools for relocation problem solutions.
@@ -7274,6 +7274,7 @@ namespace sReloc
 	{
 	    sMultirobotEncodingContext_CNFsat encoding_context(0);
 	    encoding_context.m_max_total_cost = total_cost;
+	    encoding_context.m_max_total_fuel = total_cost;	    
 
 #ifdef sVERBOSE
 	    printf("Solving cost %d (%d) ...\n", total_cost, max_individual_cost);
@@ -7357,6 +7358,7 @@ namespace sReloc
 
 	    sMultirobotEncodingContext_CNFsat encoding_context(0);
 	    encoding_context.m_max_total_cost = total_cost;
+	    encoding_context.m_max_total_fuel = total_cost;	    
 
 #ifdef sVERBOSE
 	    printf("Solving cost %d (%d) ...\n", total_cost, max_individual_cost);
@@ -7615,6 +7617,7 @@ namespace sReloc
 
 	sMultirobotEncodingContext_CNFsat encoding_context(0);
 	encoding_context.m_max_total_cost = optimal_cost;
+	encoding_context.m_max_total_fuel = optimal_cost;	
 
 #ifdef sVERBOSE
 	printf("Solving avoiding for cost %d ...\n", optimal_cost);
@@ -7664,6 +7667,7 @@ namespace sReloc
 
 	sMultirobotEncodingContext_CNFsat encoding_context(0);
 	encoding_context.m_max_total_cost = optimal_cost;
+	encoding_context.m_max_total_fuel = optimal_cost;	
 
 #ifdef sVERBOSE
 	printf("Solving avoiding for cost %d ...\n", optimal_cost);
@@ -7849,6 +7853,7 @@ namespace sReloc
 
 	sMultirobotEncodingContext_CNFsat encoding_context(0);
 	encoding_context.m_max_total_cost = total_cost;
+	encoding_context.m_max_total_fuel = total_cost;	
 
 #ifdef sVERBOSE
 	printf("Solving cost %d ...\n", total_cost);
@@ -8406,6 +8411,7 @@ namespace sReloc
     {
 	sMultirobotEncodingContext_CNFsat encoding_context(0);
 	encoding_context.m_max_total_cost = total_cost;
+	encoding_context.m_max_total_fuel = total_cost;		
 
 #ifdef sVERBOSE
 	printf("Solving cost %d ...\n", total_cost);
@@ -8574,6 +8580,7 @@ namespace sReloc
 
 	sMultirobotEncodingContext_CNFsat encoding_context(0);
 	encoding_context.m_max_total_cost = total_cost;
+	encoding_context.m_max_total_fuel = total_cost;		
 
 #ifdef sVERBOSE
 	printf("Solving avoid cost %d ...\n", total_cost);
@@ -8864,6 +8871,7 @@ namespace sReloc
 
 	sMultirobotEncodingContext_CNFsat encoding_context(0);
 	encoding_context.m_max_total_cost = total_cost;
+	encoding_context.m_max_total_fuel = total_cost;		
 
 #ifdef sVERBOSE
 	printf("Solving avoid cost %d ...\n", total_cost);
@@ -9411,6 +9419,7 @@ namespace sReloc
 
 	    sMultirobotEncodingContext_CNFsat encoding_context(0);
 	    encoding_context.m_max_total_cost = total_cost;
+	    encoding_context.m_max_total_fuel = total_cost;		    
 
 #ifdef sVERBOSE
 	    printf("Solving cost %d ...\n", total_cost);
@@ -9565,6 +9574,7 @@ namespace sReloc
 
 	    sMultirobotEncodingContext_CNFsat encoding_context(0);
 	    encoding_context.m_max_total_cost = total_cost;
+	    encoding_context.m_max_total_fuel = total_cost;		    
 
 #ifdef sVERBOSE
 	    printf("Solving cost %d ...\n", total_cost);
@@ -9933,6 +9943,9 @@ namespace sReloc
 
 	encoding_context.m_max_total_cost = total_cost;
 	encoding_context.m_extra_cost = extra_cost;
+
+	encoding_context.m_max_total_fuel = total_cost;
+	encoding_context.m_extra_fuel = extra_cost;	
 
 	switch (m_encoding)
 	{
@@ -10578,6 +10591,9 @@ namespace sReloc
 
 	encoding_context.m_max_total_cost = total_cost;
 	encoding_context.m_extra_cost = extra_cost;
+
+	encoding_context.m_max_total_fuel = total_cost;
+	encoding_context.m_extra_fuel = extra_cost;	
 
 	switch (m_encoding)
 	{
@@ -12229,6 +12245,7 @@ namespace sReloc
 	{
 	    sMultirobotEncodingContext_CNFsat encoding_context(0);
 	    encoding_context.m_max_total_cost = total_cost;
+	    encoding_context.m_max_total_fuel = total_cost;	    
 
 #ifdef sVERBOSE
 	    printf("Solving cost %d ...\n", total_cost);
@@ -12499,6 +12516,7 @@ namespace sReloc
 	    
 	    sMultirobotEncodingContext_CNFsat encoding_context(0);
 	    encoding_context.m_max_total_cost = total_cost;
+	    encoding_context.m_max_total_fuel = total_cost;	    
 
 #ifdef sVERBOSE
 	    printf("Solving cost %d ...\n", total_cost);
