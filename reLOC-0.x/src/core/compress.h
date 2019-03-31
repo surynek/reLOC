@@ -8,11 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-<<<<<<< HEAD
-/* compress.h / 0.20-kruh_055                                                 */
-=======
-/* compress.h / 0.20-kruh_051                                                 */
->>>>>>> fa5fdfe3b98f4658d47e231f3f04e086da930ff8
+/* compress.h / 0.20-kruh_054                                                 */
 /*----------------------------------------------------------------------------*/
 //
 // Compression tools for relocation problem solutions.
@@ -1965,7 +1961,6 @@ namespace sReloc
 						    int                                             thread_id = THREAD_ID_UNDEFINED);
 
 	sResult extract_ComputedMddPlusPlusFuelSolution(const sRobotArrangement                        &start_arrangement,
-<<<<<<< HEAD
 							const sUndirectedGraph                         &environment,
 							const sMultirobotInstance::MDD_vector          &MDD,
 							int                                             computed_cost,
@@ -1973,14 +1968,6 @@ namespace sReloc
 							const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
 							sMultirobotSolution                            &computed_solution,
 							int                                             thread_id = THREAD_ID_UNDEFINED);	
-=======
-						const sUndirectedGraph                         &environment,
-						const sMultirobotInstance::MDD_vector          &MDD,
-						int                                             computed_cost,
-						const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
-						sMultirobotSolution                            &computed_solution,
-						int                                             thread_id = THREAD_ID_UNDEFINED);	
->>>>>>> fa5fdfe3b98f4658d47e231f3f04e086da930ff8
 
 	sResult intract_ComputedMddPlusPlusSolution(Glucose::Solver                                *solver,
 						    const sRobotArrangement                        &start_arrangement,
@@ -1991,7 +1978,6 @@ namespace sReloc
 						    sMultirobotSolution                            &computed_solution);
 
 	sResult intract_ComputedMddPlusPlusFuelSolution(Glucose::Solver                                *solver,
-<<<<<<< HEAD
 							const sRobotArrangement                        &start_arrangement,
 							const sUndirectedGraph                         &environment,
 							const sMultirobotInstance::MDD_vector          &MDD,
@@ -1999,14 +1985,6 @@ namespace sReloc
 							int                                             fuel_makespan,
 							const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
 							sMultirobotSolution                            &computed_solution);	
-=======
-						const sRobotArrangement                        &start_arrangement,
-						const sUndirectedGraph                         &environment,
-						const sMultirobotInstance::MDD_vector          &MDD,
-						int                                             computed_cost,
-						const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
-						sMultirobotSolution                            &computed_solution);	
->>>>>>> fa5fdfe3b98f4658d47e231f3f04e086da930ff8
 
 	sResult extract_ComputedLMddPlusPlusSolution(const sRobotArrangement                        &start_arrangement,
 						     const sUndirectedGraph                         &environment,

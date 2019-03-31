@@ -8,11 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-<<<<<<< HEAD
-/* solver_main.cpp / 0.20-kruh_055                                            */
-=======
-/* solver_main.cpp / 0.20-kruh_051                                            */
->>>>>>> fa5fdfe3b98f4658d47e231f3f04e086da930ff8
+/* solver_main.cpp / 0.20-kruh_054                                            */
 /*----------------------------------------------------------------------------*/
 //
 // Solution generator - main program.
@@ -488,43 +484,21 @@ namespace sReloc
 							 sDEFAULT_N_PARALLEL_THREADS,
 							 command_parameters.m_cnf_encoding);
 		compressor.set_Ratio(command_parameters.m_suboptimal_ratio);
-<<<<<<< HEAD
 		compressor.set_Robustness(command_parameters.m_robustness);
 
 		int fuel_makespan;
 		
 		result = compressor.compute_FuelOptimalSolution(initial_arrangement,
-=======
-		compressor.set_Robustness(command_parameters.m_robustness);		
-		
-		result = compressor.compute_CostOptimalSolution(initial_arrangement,
->>>>>>> fa5fdfe3b98f4658d47e231f3f04e086da930ff8
 								robot_goal,
 								environment,
 								instance.m_sparse_environment,
 								MDD,
 								command_parameters.m_total_fuel_bound,
 								optimal_fuel,
-<<<<<<< HEAD
 								fuel_makespan,
 								optimal_solution);
 
 		printf("Computed total fuel:%d (makespan = %d)\n", optimal_fuel, fuel_makespan);
-=======
-								optimal_solution);
-
-		printf("Computed total fuel:%d\n", optimal_fuel);
-		if (optimal_solution.m_optimality_ratio >= 0.0)
-		{
-		    printf("Fuel <= %.3f * optimum.\n", optimal_solution.m_optimality_ratio);
-		    printf("Optimality ratio = %.3f\n", optimal_solution.m_optimality_ratio);
-		}
-		else
-		{
-		    printf("Fuel <= 1.000 * optimum.\n");
-		    printf("Optimality ratio = 1.000\n");
-		}		
->>>>>>> fa5fdfe3b98f4658d47e231f3f04e086da930ff8
 	    }
 	    else if (   command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_ID_MDD
 		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_ID_WATER_MDD

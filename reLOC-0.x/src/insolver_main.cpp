@@ -8,11 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-<<<<<<< HEAD
-/* insolver_main.cpp / 0.20-kruh_055                                          */
-=======
-/* insolver_main.cpp / 0.20-kruh_051                                          */
->>>>>>> fa5fdfe3b98f4658d47e231f3f04e086da930ff8
+/* insolver_main.cpp / 0.20-kruh_054                                          */
 /*----------------------------------------------------------------------------*/
 //
 // Solution generator - main program.
@@ -500,12 +496,8 @@ namespace sReloc
 		compressor.set_Robustness(command_parameters.m_robustness);		
 
 		Glucose::Solver *solver;
-<<<<<<< HEAD
 		int fuel_makespan;
 		result = compressor.incompute_FuelOptimalSolution(&solver,
-=======
-		result = compressor.incompute_CostOptimalSolution(&solver,
->>>>>>> fa5fdfe3b98f4658d47e231f3f04e086da930ff8
 								  initial_arrangement,
 								  robot_goal,
 								  environment,
@@ -513,26 +505,10 @@ namespace sReloc
 								  MDD,
 								  command_parameters.m_total_fuel_bound,
 								  optimal_fuel,
-<<<<<<< HEAD
 								  fuel_makespan,
 								  optimal_solution);
 
 		printf("Computed total fuel:%d (makespan = %d)\n", optimal_fuel, fuel_makespan);		
-=======
-								  optimal_solution);
-
-		printf("Computed total fuel:%d\n", optimal_fuel);
-		if (optimal_solution.m_optimality_ratio >= 0.0)
-		{
-		    printf("Fuel <= %.3f * optimum.\n", optimal_solution.m_optimality_ratio);
-		    printf("Optimality ratio = %.3f\n", optimal_solution.m_optimality_ratio);
-		}
-		else
-		{
-		    printf("Cost <= 1.000 * optimum.\n");
-		    printf("Optimality ratio = 1.000\n");
-		}				
->>>>>>> fa5fdfe3b98f4658d47e231f3f04e086da930ff8
 	    }
 	    else if (   command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_ID_MDD
 		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_ID_WATER_MDD
