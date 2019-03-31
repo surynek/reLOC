@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* compress_test.cpp / 0.20-kruh_054                                          */
+/* compress_test.cpp / 0.20-kruh_056                                          */
 /*----------------------------------------------------------------------------*/
 //
 // Compression tools for relocation problem solutions - testing program.

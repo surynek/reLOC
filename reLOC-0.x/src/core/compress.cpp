@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* compress.cpp / 0.20-kruh_054                                               */
+/* compress.cpp / 0.20-kruh_056                                               */
 /*----------------------------------------------------------------------------*/
 //
 // Compression tools for relocation problem solutions.
@@ -7594,7 +7594,7 @@ namespace sReloc
 		printf("Solving fuel %d (individual = %d) ...\n", total_fuel, max_individual_fuel);
 #endif	    
 
-	    for (int fuel_makespan_ = max_individual_fuel + expansion_count; fuel_makespan_ <= encoding_context.m_max_total_fuel; ++fuel_makespan_)
+	    for (int fuel_makespan_ = max_individual_fuel; fuel_makespan_ <= encoding_context.m_max_total_fuel; ++fuel_makespan_)
 	    {
 		encoding_context.m_fuel_makespan = fuel_makespan_;
 
@@ -7682,7 +7682,7 @@ namespace sReloc
 		printf("Solving fuel %d (individual = %d) ...\n", total_fuel, max_individual_fuel);
 #endif	    
 
-	    for (int fuel_makespan_ = max_individual_fuel + expansion_count; fuel_makespan_ <= encoding_context.m_max_total_fuel; ++fuel_makespan_)
+	    for (int fuel_makespan_ = max_individual_fuel; fuel_makespan_ <= encoding_context.m_max_total_fuel; ++fuel_makespan_)
 	    {
 		if (*solver != NULL)
 		{
