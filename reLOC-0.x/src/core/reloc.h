@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.20-kruh                               */
 /*                                                                            */
-/*                      (C) Copyright 2018 Pavel Surynek                      */
+/*                      (C) Copyright 2019 Pavel Surynek                      */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* reloc.h / 0.20-kruh_045                                                    */
+/* reloc.h / 0.20-kruh_054                                                    */
 /*----------------------------------------------------------------------------*/
 //
 // Relocation problem solving package - original development header.

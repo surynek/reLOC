@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.20-kruh                               */
 /*                                                                            */
-/*                      (C) Copyright 2018 Pavel Surynek                      */
+/*                      (C) Copyright 2019 Pavel Surynek                      */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* statistics.cpp / 0.20-kruh_045                                             */
+/* statistics.cpp / 0.20-kruh_054                                             */
 /*----------------------------------------------------------------------------*/
 //
 // Statistical data collection and analytical tools.
@@ -345,6 +345,140 @@ po	sUndirectedGraph::VertexIDs_vector source_IDs;
 //	printf("Total cost = %d\n", m_total_cost);
 	return m_total_cost;
     }
+
+
+    int sMultirobotSolutionAnalyzer::calc_TotalFuel(const sMultirobotSolution &solution,
+						    const sRobotArrangement   &initial_arrangement,
+						    sUndirectedGraph          &sUNUSED(environment))
+    {
+	int N_Steps = solution.m_Steps.size();       
+/*
+	m_distribution_Parallelisms.clear();
+	m_distribution_Distances.clear();
+	m_distribution_Trajectories.clear();
+
+	int total_N_Moves = 0;
+
+	for (int i = 0; i < N_Steps; ++i)
+	{
+	    const sMultirobotSolution::Step &step = solution.m_Steps[i];
+
+	    int step_size = step.m_Moves.size();
+
+	    Distribution_map::iterator distribution_record = m_distribution_Parallelisms.find(step_size);
+	    if (distribution_record != m_distribution_Parallelisms.end())
+	    {
+		++distribution_record->second;
+	    }
+	    else
+	    {
+		m_distribution_Parallelisms[step_size] = 1;
+	    }
+	    total_N_Moves += step_size;
+	}
+	m_average_parallelism = (double)total_N_Moves / N_Steps;
+*/
+	sRobotArrangement final_arrangement;
+	solution.execute_Solution(initial_arrangement, final_arrangement);
+/*
+	printf("beta 1\n");
+	sMultirobotInstance instance(environment, initial_arrangement, final_arrangement);
+
+po	sUndirectedGraph::VertexIDs_vector source_IDs;
+	sUndirectedGraph::VertexIDs_vector goal_IDs;
+	instance.collect_Endpoints(source_IDs, goal_IDs);
+	printf("beta 2\n");
+
+	environment.calc_SourceGoalShortestPaths(source_IDs, goal_IDs);
+	sUndirectedGraph::Distances_2d_vector &source_Distances = environment.get_SourceShortestPaths();
+	sUndirectedGraph::Distances_2d_vector &goal_Distances = environment.get_GoalShortestPaths();
+*/
+	m_total_distance = 0;
+
+	int N_Robots = initial_arrangement.get_RobotCount();
+/*
+	for (int robot_id = 1; robot_id < N_Robots; ++robot_id)
+	{
+	    int distance = all_pairs_Distances[initial_arrangement.get_RobotLocation(robot_id)][final_arrangement.get_RobotLocation(robot_id)];
+	    Distribution_map::iterator distribution_record = m_distribution_Distances.find(distance);
+	    if (distribution_record != m_distribution_Distances.end())
+	    {
+		++distribution_record->second;
+	    }
+	    else
+	    {
+		m_distribution_Distances[distance] = 1;
+	    }
+	    m_total_distance += distance;
+	}
+	m_average_distance = (double)m_total_distance / N_Robots;
+
+	Trajectories_map robot_Trajectories;
+
+	for (int i = 0; i < N_Steps; ++i)
+	{
+	    const sMultirobotSolution::Step &step = solution.m_Steps[i];
+
+	    for (sMultirobotSolution::Moves_list::const_iterator move = step.m_Moves.begin(); move != step.m_Moves.end(); ++move)
+	    {
+		move->m_robot_id;
+
+		Trajectories_map::iterator trajectory_record = robot_Trajectories.find(move->m_robot_id);
+		if (trajectory_record != robot_Trajectories.end())
+		{
+		    ++trajectory_record->second;
+		}
+		else
+		{
+		    robot_Trajectories[move->m_robot_id] = 1;
+		}
+	    }
+	}
+
+	int total_trajectory = 0;
+	for (Trajectories_map::const_iterator trajectory_record = robot_Trajectories.begin(); trajectory_record != robot_Trajectories.end(); ++trajectory_record)
+	{
+	    Distribution_map::iterator distribution_record = m_distribution_Trajectories.find(trajectory_record->second);
+	    if (distribution_record != m_distribution_Trajectories.end())
+	    {
+		++distribution_record->second;
+	    }
+	    else
+	    {
+		m_distribution_Trajectories[trajectory_record->second] = 1;
+	    }
+	    total_trajectory += trajectory_record->second;
+	}
+	m_average_trajectory = (double)total_trajectory / N_Robots;
+
+	m_total_makespan = N_Steps;
+	m_total_trajectory = total_N_Moves;
+*/
+	m_total_fuel = N_Steps * N_Robots;
+
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    int robot_last_move_step = -1;
+
+	    int st = 0;
+	    for (sMultirobotSolution::Steps_vector::const_iterator step =  solution.m_Steps.begin(); step != solution.m_Steps.end(); ++step)
+	    {
+		for (sMultirobotSolution::Moves_list::const_iterator move = step->m_Moves.begin(); move != step->m_Moves.end(); ++move)
+		{
+		    if (move->m_robot_id == robot_id && move->m_dest_vrtx_id == final_arrangement.get_RobotLocation(robot_id) && move->m_dest_vrtx_id != move->m_src_vrtx_id)
+		    {
+			robot_last_move_step = st;
+		    }
+		}
+		++st;
+	    }
+	    int placed_steps = N_Steps - robot_last_move_step - 1;
+	    m_total_fuel -= placed_steps;
+	}
+//	printf("Total fuel = %d\n", m_total_fuel);
+	return m_total_fuel;
+    }    
 
 /*
     int sMultirobotSolutionAnalyzer::calc_TotalCost(const sMultirobotSolution &solution,

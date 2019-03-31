@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.20-kruh                               */
 /*                                                                            */
-/*                      (C) Copyright 2018 Pavel Surynek                      */
+/*                      (C) Copyright 2019 Pavel Surynek                      */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* netgen_main.h / 0.20-kruh_045                                              */
+/* netgen_main.h / 0.20-kruh_054                                              */
 /*----------------------------------------------------------------------------*/
 //
 // Network Instance Generator - main program.

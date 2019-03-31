@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.20-kruh                               */
 /*                                                                            */
-/*                      (C) Copyright 2018 Pavel Surynek                      */
+/*                      (C) Copyright 2019 Pavel Surynek                      */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* compress.cpp / 0.20-kruh_045                                               */
+/* compress.cpp / 0.20-kruh_054                                               */
 /*----------------------------------------------------------------------------*/
 //
 // Compression tools for relocation problem solutions.
@@ -79,6 +79,7 @@ namespace sReloc
     const sString sMultirobotSolutionCompressor::CNF_MDD_plus_FILENAME_PREFIX = "_compress/makespan_compression_input.mdd+";
     const sString sMultirobotSolutionCompressor::CNF_MMDD_plus_FILENAME_PREFIX = "_compress/makespan_compression_input.mmdd+";
     const sString sMultirobotSolutionCompressor::CNF_MDD_plus_plus_FILENAME_PREFIX = "_compress/makespan_compression_input.mdd++";
+    const sString sMultirobotSolutionCompressor::CNF_MDD_plus_plus_fuel_FILENAME_PREFIX = "_compress/makespan_compression_input.mddf++";    
     const sString sMultirobotSolutionCompressor::CNF_LMDD_plus_plus_FILENAME_PREFIX = "_compress/makespan_compression_input.lmdd++";
     const sString sMultirobotSolutionCompressor::CNF_MDD_star_FILENAME_PREFIX = "_compress/makespan_compression_input.mdd*";    
     const sString sMultirobotSolutionCompressor::CNF_MMDD_plus_plus_FILENAME_PREFIX = "_compress/makespan_compression_input.mmdd++";        
@@ -125,6 +126,7 @@ namespace sReloc
     const sString sMultirobotSolutionCompressor::OUTPUT_MDD_plus_FILENAME_PREFIX = "_compress/makespan_compression_output.mdd+";
     const sString sMultirobotSolutionCompressor::OUTPUT_MMDD_plus_FILENAME_PREFIX = "_compress/makespan_compression_output.mmdd+";
     const sString sMultirobotSolutionCompressor::OUTPUT_MDD_plus_plus_FILENAME_PREFIX = "_compress/makespan_compression_output.mdd++";
+    const sString sMultirobotSolutionCompressor::OUTPUT_MDD_plus_plus_fuel_FILENAME_PREFIX = "_compress/makespan_compression_output.mddf++";    
     const sString sMultirobotSolutionCompressor::OUTPUT_LMDD_plus_plus_FILENAME_PREFIX = "_compress/makespan_compression_output.lmdd++";
     const sString sMultirobotSolutionCompressor::OUTPUT_MDD_star_FILENAME_PREFIX = "_compress/makespan_compression_output.mdd*";    
     const sString sMultirobotSolutionCompressor::OUTPUT_MMDD_plus_plus_FILENAME_PREFIX = "_compress/makespan_compression_output.mmdd++";    
@@ -7272,6 +7274,7 @@ namespace sReloc
 	{
 	    sMultirobotEncodingContext_CNFsat encoding_context(0);
 	    encoding_context.m_max_total_cost = total_cost;
+	    encoding_context.m_max_total_fuel = total_cost;	    
 
 #ifdef sVERBOSE
 	    printf("Solving cost %d (%d) ...\n", total_cost, max_individual_cost);
@@ -7355,6 +7358,7 @@ namespace sReloc
 
 	    sMultirobotEncodingContext_CNFsat encoding_context(0);
 	    encoding_context.m_max_total_cost = total_cost;
+	    encoding_context.m_max_total_fuel = total_cost;	    
 
 #ifdef sVERBOSE
 	    printf("Solving cost %d (%d) ...\n", total_cost, max_individual_cost);
@@ -7557,7 +7561,236 @@ namespace sReloc
 
 	return sRESULT_SUCCESS;
     }
-*/    
+*/
+
+
+    sResult sMultirobotSolutionCompressor::compute_OptimalFuel(sMultirobotInstance               &instance,
+							       int                                max_total_fuel,
+							       int                               &optimal_fuel,
+							       int                               &fuel_makespan,
+							       int                               &expansion_count,
+							       sMultirobotEncodingContext_CNFsat &final_encoding_context,
+							       int                                thread_id)
+    {
+	sResult result;
+	sString cnf_filename, cnf_out_filename, output_filename;
+	optimal_fuel = MAKESPAN_UNDEFINED;
+
+	int max_individual_fuel;
+	int total_fuel = instance.estimate_TotalFuel(max_individual_fuel);
+
+	double start_seconds = sGet_CPU_Seconds();
+	double finish_seconds = sGet_CPU_Seconds();
+
+	expansion_count = 0;
+
+	while (true)
+	{
+	    sMultirobotEncodingContext_CNFsat encoding_context(0);
+	    
+	    encoding_context.m_max_total_fuel = total_fuel;
+
+#ifdef sVERBOSE
+		printf("Solving fuel %d (individual = %d) ...\n", total_fuel, max_individual_fuel);
+#endif	    
+
+	    for (int fuel_makespan_ = max_individual_fuel + expansion_count; fuel_makespan_ <= encoding_context.m_max_total_fuel; ++fuel_makespan_)
+	    {
+		encoding_context.m_fuel_makespan = fuel_makespan_;
+
+#ifdef sVERBOSE
+		printf("  Checking makespan = %d ...\n", fuel_makespan_);
+#endif	    		
+	    
+		if (sFAILED(result = compute_FuelSolvability(instance, total_fuel, fuel_makespan_, final_encoding_context, thread_id)))
+		{
+		    return result;
+		}
+		
+		switch (result)
+		{
+		case sMULTIROBOT_SOLUTION_COMPRESSOR_SAT_INFO:
+		{
+		    optimal_fuel = total_fuel;
+		    fuel_makespan = fuel_makespan_;
+		    return sRESULT_SUCCESS;
+		}
+		case sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO:
+		{
+		    break;
+		}
+		case sMULTIROBOT_SOLUTION_COMPRESSOR_INDET_INFO:
+		{
+		    optimal_fuel = MAKESPAN_UNDEFINED;
+		    fuel_makespan = MAKESPAN_UNDEFINED;
+		    return result;
+		}
+		default:
+		{
+		    sASSERT(false);
+		    break;
+		}
+		}
+
+		finish_seconds = sGet_CPU_Seconds();
+		
+		if (finish_seconds - start_seconds  > m_total_timeout)
+		{
+		    break;
+		}
+		
+	    }
+	    ++expansion_count;			    
+	    total_fuel += 1;
+	    
+	    if (total_fuel > max_total_fuel)
+	    {
+		break;
+	    }
+	}
+	return sRESULT_SUCCESS;
+    }
+
+
+    sResult sMultirobotSolutionCompressor::incompute_OptimalFuel(Glucose::Solver                   **solver,
+								 sMultirobotInstance               &instance,
+								 int                                max_total_fuel,
+								 int                               &optimal_fuel,
+								 int                               &fuel_makespan,
+								 int                               &expansion_count,
+								 sMultirobotEncodingContext_CNFsat &final_encoding_context,
+								 int                                thread_id)
+    {
+	sResult result;
+	sString cnf_filename, cnf_out_filename, output_filename;
+	optimal_fuel = MAKESPAN_UNDEFINED;
+
+	int max_individual_fuel;
+	int total_fuel = instance.estimate_TotalFuel(max_individual_fuel);
+
+	double start_seconds = sGet_CPU_Seconds();
+	double finish_seconds = sGet_CPU_Seconds();
+
+	expansion_count = 0;
+
+	while (true)
+	{
+	    sMultirobotEncodingContext_CNFsat encoding_context(0);
+	    encoding_context.m_max_total_fuel = total_fuel;
+
+#ifdef sVERBOSE
+		printf("Solving fuel %d (individual = %d) ...\n", total_fuel, max_individual_fuel);
+#endif	    
+
+	    for (int fuel_makespan_ = max_individual_fuel + expansion_count; fuel_makespan_ <= encoding_context.m_max_total_fuel; ++fuel_makespan_)
+	    {
+		if (*solver != NULL)
+		{
+		    delete *solver;
+		}
+		*solver = new Glucose::Solver;
+		
+		encoding_context.m_fuel_makespan = fuel_makespan_;
+
+#ifdef sVERBOSE
+		printf("  Checking makespan = %d ...\n", fuel_makespan_);
+#endif	    		
+
+		if (sFAILED(result = incompute_FuelSolvability(solver, instance, total_fuel, fuel_makespan_, final_encoding_context, thread_id)))
+		{
+		    return result;
+		}
+		
+		switch (result)
+		{
+		case sMULTIROBOT_SOLUTION_COMPRESSOR_SAT_INFO:
+		{
+		    optimal_fuel = total_fuel;
+		    fuel_makespan = fuel_makespan_;
+		    return sRESULT_SUCCESS;
+		}
+		case sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO:
+		{
+		    break;
+		}
+		case sMULTIROBOT_SOLUTION_COMPRESSOR_INDET_INFO:
+		{
+		    optimal_fuel = MAKESPAN_UNDEFINED;
+		    fuel_makespan = MAKESPAN_UNDEFINED;
+		    return result;
+		}
+		default:
+		{
+		    sASSERT(false);
+		    break;
+		}
+		}
+
+		finish_seconds = sGet_CPU_Seconds();
+		
+		if (finish_seconds - start_seconds  > m_total_timeout)
+		{
+		    return sRESULT_SUCCESS;
+		}
+	    }
+	    ++expansion_count;				
+	    total_fuel += 1;
+		
+	    if (total_fuel > max_total_fuel)
+	    {
+		break;
+	    }		    
+	}
+	return sRESULT_SUCCESS;
+    }
+    
+    
+    sResult sMultirobotSolutionCompressor::compute_OptimalFuel(const sRobotArrangement           &start_arrangement,
+							       const sRobotGoal                  &final_arrangement,
+							       const sUndirectedGraph            &environment,
+							       const sUndirectedGraph            &sparse_environment,
+							       int                                max_total_fuel,
+							       int                               &optimal_fuel,
+							       int                               &fuel_makespan,
+							       int                               &expansion_count,
+							       sMultirobotEncodingContext_CNFsat &final_encoding_context,
+							       int                                thread_id)
+    {
+	sResult result;
+	sMultirobotInstance instance(environment, sparse_environment, start_arrangement, final_arrangement, m_ratio, m_robustness, m_range);
+
+	if (sFAILED(result = compute_OptimalFuel(instance, max_total_fuel, optimal_fuel, fuel_makespan, expansion_count, final_encoding_context, thread_id)))
+	{
+	    return result;
+	}
+
+	return sRESULT_SUCCESS;
+    }
+
+
+    sResult sMultirobotSolutionCompressor::incompute_OptimalFuel(Glucose::Solver                   **solver,
+								 const sRobotArrangement           &start_arrangement,
+								 const sRobotGoal                  &final_arrangement,
+								 const sUndirectedGraph            &environment,
+								 const sUndirectedGraph            &sparse_environment,
+								 int                                max_total_fuel,
+								 int                               &optimal_fuel,
+								 int                               &fuel_makespan,
+								 int                               &expansion_count,
+								 sMultirobotEncodingContext_CNFsat &final_encoding_context,
+								 int                                thread_id)
+    {
+	sResult result;
+	sMultirobotInstance instance(environment, sparse_environment, start_arrangement, final_arrangement, m_ratio, m_robustness, m_range);
+
+	if (sFAILED(result = incompute_OptimalFuel(solver, instance, max_total_fuel, optimal_fuel, fuel_makespan, expansion_count, final_encoding_context, thread_id)))
+	{
+	    return result;
+	}
+
+	return sRESULT_SUCCESS;
+    }    
+    
 
     sResult sMultirobotSolutionCompressor::compute_OptimalCost_avoid(const sRobotArrangement           &start_arrangement,
 								     const sRobotGoal                  &final_arrangement,
@@ -7613,6 +7846,7 @@ namespace sReloc
 
 	sMultirobotEncodingContext_CNFsat encoding_context(0);
 	encoding_context.m_max_total_cost = optimal_cost;
+	encoding_context.m_max_total_fuel = optimal_cost;	
 
 #ifdef sVERBOSE
 	printf("Solving avoiding for cost %d ...\n", optimal_cost);
@@ -7662,6 +7896,7 @@ namespace sReloc
 
 	sMultirobotEncodingContext_CNFsat encoding_context(0);
 	encoding_context.m_max_total_cost = optimal_cost;
+	encoding_context.m_max_total_fuel = optimal_cost;	
 
 #ifdef sVERBOSE
 	printf("Solving avoiding for cost %d ...\n", optimal_cost);
@@ -7847,6 +8082,7 @@ namespace sReloc
 
 	sMultirobotEncodingContext_CNFsat encoding_context(0);
 	encoding_context.m_max_total_cost = total_cost;
+	encoding_context.m_max_total_fuel = total_cost;	
 
 #ifdef sVERBOSE
 	printf("Solving cost %d ...\n", total_cost);
@@ -8152,7 +8388,29 @@ namespace sReloc
 		return result;
 	    }
 	    break;
-	}	
+	}
+	case ENCODING_MDD_plus_plus_fuel:
+	{
+	    if (thread_id != THREAD_ID_UNDEFINED)
+	    {
+		cnf_filename = CNF_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + ".cnf";
+		cnf_out_filename = CNF_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + "_out.cnf";
+		output_filename = OUTPUT_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + ".txt";
+	    }
+	    else
+	    {
+		cnf_filename = CNF_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + ".cnf";
+		cnf_out_filename = CNF_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + "_out.cnf";
+		output_filename = OUTPUT_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + ".txt";
+	    }
+	    result = instance.to_File_MddPlusPlusFuelCNFsat(cnf_filename, encoding_context, "", false);
+	    
+	    if (sFAILED(result))
+	    {
+		return result;
+	    }
+	    break;
+	}		
 	case ENCODING_MDD_star:
 	case ENCODING_ID_MDD_star:
 	case ENCODING_AD_MDD_star:
@@ -8382,6 +8640,7 @@ namespace sReloc
     {
 	sMultirobotEncodingContext_CNFsat encoding_context(0);
 	encoding_context.m_max_total_cost = total_cost;
+	encoding_context.m_max_total_fuel = total_cost;		
 
 #ifdef sVERBOSE
 	printf("Solving cost %d ...\n", total_cost);
@@ -8458,7 +8717,12 @@ namespace sReloc
 	{
 	    instance.to_Memory_LMddPlusPlusCNFsat(*solver, encoding_context, "", false);
 	    break;
-	}	
+	}
+	case ENCODING_MDD_plus_plus_fuel:
+	{
+	    instance.to_Memory_MddPlusPlusFuelCNFsat(*solver, encoding_context, "", false);
+	    break;
+	}		
 	case ENCODING_MDD_star:
 	case ENCODING_ID_MDD_star:
 	case ENCODING_AD_MDD_star:
@@ -8531,7 +8795,241 @@ namespace sReloc
 	}
 	return sRESULT_SUCCESS;
     }
-        
+
+
+    sResult sMultirobotSolutionCompressor::compute_FuelSolvability(sMultirobotInstance               &instance,
+								   int                                total_fuel,
+								   int                                fuel_makespan,
+								   sMultirobotEncodingContext_CNFsat &final_encoding_context,
+								   int                                thread_id)
+    {
+	sResult result;
+
+	sString cnf_filename, cnf_out_filename, output_filename;
+
+	sMultirobotEncodingContext_CNFsat encoding_context(0);
+	encoding_context.m_max_total_fuel = total_fuel;
+	encoding_context.m_fuel_makespan = fuel_makespan;	
+	
+	switch (m_encoding)
+	{
+	case ENCODING_MDD_plus_plus_fuel:
+	{
+	    if (thread_id != THREAD_ID_UNDEFINED)
+	    {
+		cnf_filename = CNF_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(total_fuel) + "-" + sInt_32_to_String(fuel_makespan) + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + ".cnf";
+		cnf_out_filename = CNF_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(total_fuel) + "-" + sInt_32_to_String(fuel_makespan) + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + "_out.cnf";
+		output_filename = OUTPUT_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(total_fuel) + "-" + sInt_32_to_String(fuel_makespan) + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + ".txt";
+	    }
+	    else
+	    {
+		cnf_filename = CNF_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(total_fuel) + "-" + sInt_32_to_String(fuel_makespan) + "-" + sInt_32_to_String(getpid()) + ".cnf";
+		cnf_out_filename = CNF_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(total_fuel) + "-" + sInt_32_to_String(fuel_makespan) + "-" + sInt_32_to_String(getpid()) + "_out.cnf";
+		output_filename = OUTPUT_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(total_fuel) + "-" + sInt_32_to_String(fuel_makespan) + "-" + sInt_32_to_String(getpid()) + ".txt";
+	    }
+	    result = instance.to_File_MddPlusPlusFuelCNFsat(cnf_filename, encoding_context, "", false);
+	    
+	    if (sFAILED(result))
+	    {
+		return result;
+	    }
+	    break;
+	}		
+	default:
+	{
+	    sASSERT(false);
+	}
+	}
+	
+#ifdef PREPROCESS
+	sString preprocess_call;
+	preprocess_call = "../../pre/HyPre/hypre -v 0 -o " + cnf_out_filename + " " + cnf_filename +  " 1>/dev/null";
+	
+	int preprocess_result = system(preprocess_call.c_str());
+	
+	if (preprocess_result < 0)
+	{
+	    return sMULTIROBOT_SOLUTION_COMPRESSOR_SYSTEM_CALL_ERROR;
+	}
+	FILE *fro;
+	if ((fro = fopen(cnf_out_filename.c_str(), "r")) == NULL)
+	{
+	    cnf_out_filename = cnf_filename;
+	}
+	else
+	{
+	    fclose(fro);
+	}
+	
+#else
+	cnf_out_filename = cnf_filename;
+#endif
+	
+	sString system_call;
+	if (m_minisat_timeout != MINISAT_TIMEOUT_UNDEFINED)
+	{
+	    system_call = m_minisat_path + " -cpu-lim=" + sInt_32_to_String(m_minisat_timeout) + " " + cnf_out_filename + " " + output_filename +  " 1>/dev/null";
+	}
+	else
+	{
+	    system_call = m_minisat_path + " " + cnf_out_filename + " " + output_filename +  " 1>/dev/null";
+	}
+
+	//	    s_GlobalPhaseStatistics.enter_Phase("SAT Solving");
+	int system_result = system(system_call.c_str());
+	//	    s_GlobalPhaseStatistics.leave_Phase();
+	
+	if (system_result < 0)
+	{
+	    return sMULTIROBOT_SOLUTION_COMPRESSOR_SYSTEM_CALL_ERROR;
+	}
+	    
+#ifdef sSTATISTICS
+	{
+	    ++s_GlobalPhaseStatistics.get_CurrentPhase().m_total_sat_solver_Calls;
+	}
+//      s_GlobalPhaseStatistics.leave_Phase();
+#endif
+	
+	FILE *fr;
+	if ((fr = fopen(output_filename.c_str(), "r")) == NULL)
+	{
+	    return sMULTIROBOT_SOLUTION_COMPRESSOR_OPEN_ERROR;
+	}
+	
+	char answer[32];
+	answer[0] = '\0';
+	
+	fscanf(fr, "%s\n", answer);
+	fclose(fr);
+	    
+#ifndef sDEBUG
+	{
+	    if (unlink(cnf_filename.c_str()) < 0)
+	    {
+		return sMULTIROBOT_SOLUTION_COMPRESSOR_UNLINK_ERROR;
+	    }
+	}
+#endif  
+	if (strcmp(answer, "UNSAT") == 0)
+	{
+#ifdef sSTATISTICS
+	    {
+		++s_GlobalPhaseStatistics.get_CurrentPhase().m_UNSAT_sat_solver_Calls;
+	    }
+#endif
+		
+#ifndef sDEBUG
+	    {
+		if (unlink(output_filename.c_str()) < 0)
+		{
+		    return sMULTIROBOT_SOLUTION_COMPRESSOR_UNLINK_ERROR;
+		}
+	    }
+#endif
+	    return sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO;
+	}
+	else if (strcmp(answer, "INDET") == 0)
+	{
+#ifdef sSTATISTICS
+	    {
+		++s_GlobalPhaseStatistics.get_CurrentPhase().m_INDET_sat_solver_Calls;
+	    }
+#endif
+		
+#ifndef sDEBUG
+	    {
+		if (unlink(output_filename.c_str()) < 0)
+		{
+		    return sMULTIROBOT_SOLUTION_COMPRESSOR_UNLINK_ERROR;
+		}
+	    }
+#endif
+	    return sMULTIROBOT_SOLUTION_COMPRESSOR_INDET_INFO;
+	}
+	else /*if (strcmp(answer, "SAT") == 0)*/
+	{
+#ifdef sSTATISTICS
+	    {
+		++s_GlobalPhaseStatistics.get_CurrentPhase().m_SAT_sat_solver_Calls;
+	    }
+#endif
+	    final_encoding_context = encoding_context;
+	    
+	    return sMULTIROBOT_SOLUTION_COMPRESSOR_SAT_INFO;
+	}	
+	return sRESULT_SUCCESS;
+    }
+
+
+    sResult sMultirobotSolutionCompressor::incompute_FuelSolvability(Glucose::Solver                   **solver,
+								     sMultirobotInstance               &instance,
+								     int                                total_fuel,
+								     int                                fuel_makespan,
+								     sMultirobotEncodingContext_CNFsat &final_encoding_context,
+								     int                                sUNUSED(thread_id))
+    {
+	sMultirobotEncodingContext_CNFsat encoding_context(0);
+	encoding_context.m_max_total_fuel = total_fuel;
+	encoding_context.m_fuel_makespan = fuel_makespan;
+
+	switch (m_encoding)
+	{
+	case ENCODING_MDD_plus_plus_fuel:
+	{
+	    instance.to_Memory_MddPlusPlusFuelCNFsat(*solver, encoding_context, "", false);
+	    break;
+	}		
+	default:
+	{
+	    sASSERT(false);
+	}
+	}
+
+	if (!(*solver)->simplify())
+	{
+#ifdef sSTATISTICS
+	    {
+		++s_GlobalPhaseStatistics.get_CurrentPhase().m_UNSAT_sat_solver_Calls;
+	    }
+#endif		
+	    return sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO;
+	}
+	
+	Glucose::vec<Glucose::Lit> dummy;
+	Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	
+	if (ret == l_True)
+	{
+#ifdef sSTATISTICS
+	    {
+		++s_GlobalPhaseStatistics.get_CurrentPhase().m_total_sat_solver_Calls;
+	    }
+#endif
+	    final_encoding_context = encoding_context;	    
+	    return sMULTIROBOT_SOLUTION_COMPRESSOR_SAT_INFO;	    
+	}
+	else if (ret == l_False)
+	{
+#ifdef sSTATISTICS
+	    {
+		++s_GlobalPhaseStatistics.get_CurrentPhase().m_UNSAT_sat_solver_Calls;
+	    }
+#endif
+	    return sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO;
+	}
+	else
+	{
+#ifdef sSTATISTICS
+	    {
+		++s_GlobalPhaseStatistics.get_CurrentPhase().m_INDET_sat_solver_Calls;
+	    }
+#endif
+	    return sMULTIROBOT_SOLUTION_COMPRESSOR_INDET_INFO;	    
+	}
+	return sRESULT_SUCCESS;
+    }
+    
 
     sResult sMultirobotSolutionCompressor::compute_CostSolvability_avoid(sMultirobotInstance               &instance,
 									 int                                total_cost,
@@ -8545,6 +9043,7 @@ namespace sReloc
 
 	sMultirobotEncodingContext_CNFsat encoding_context(0);
 	encoding_context.m_max_total_cost = total_cost;
+	encoding_context.m_max_total_fuel = total_cost;		
 
 #ifdef sVERBOSE
 	printf("Solving avoid cost %d ...\n", total_cost);
@@ -8835,6 +9334,7 @@ namespace sReloc
 
 	sMultirobotEncodingContext_CNFsat encoding_context(0);
 	encoding_context.m_max_total_cost = total_cost;
+	encoding_context.m_max_total_fuel = total_cost;		
 
 #ifdef sVERBOSE
 	printf("Solving avoid cost %d ...\n", total_cost);
@@ -9382,6 +9882,7 @@ namespace sReloc
 
 	    sMultirobotEncodingContext_CNFsat encoding_context(0);
 	    encoding_context.m_max_total_cost = total_cost;
+	    encoding_context.m_max_total_fuel = total_cost;		    
 
 #ifdef sVERBOSE
 	    printf("Solving cost %d ...\n", total_cost);
@@ -9536,6 +10037,7 @@ namespace sReloc
 
 	    sMultirobotEncodingContext_CNFsat encoding_context(0);
 	    encoding_context.m_max_total_cost = total_cost;
+	    encoding_context.m_max_total_fuel = total_cost;		    
 
 #ifdef sVERBOSE
 	    printf("Solving cost %d ...\n", total_cost);
@@ -9905,6 +10407,9 @@ namespace sReloc
 	encoding_context.m_max_total_cost = total_cost;
 	encoding_context.m_extra_cost = extra_cost;
 
+	encoding_context.m_max_total_fuel = total_cost;
+	encoding_context.m_extra_fuel = extra_cost;	
+
 	switch (m_encoding)
 	{
 	case ENCODING_MDD:
@@ -10169,7 +10674,30 @@ namespace sReloc
 		return result;
 	    }
 	    break;
-	}	
+	}
+	case ENCODING_MDD_plus_plus_fuel:
+	{
+	    if (thread_id != THREAD_ID_UNDEFINED)
+	    {
+		cnf_filename = CNF_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + ".cnf";
+		cnf_out_filename = CNF_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + "_out.cnf";
+		output_filename = OUTPUT_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + ".txt";
+	    }
+	    else
+	    {
+		cnf_filename = CNF_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + ".cnf";
+		cnf_out_filename = CNF_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + "_out.cnf";
+		output_filename = OUTPUT_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + ".txt";
+	    }
+	    
+	    result = instance.to_File_MddPlusPlusFuelCNFsat(cnf_filename, encoding_context, "", false);
+	    
+	    if (sFAILED(result))
+	    {
+		return result;
+	    }
+	    break;
+	}		
 	case ENCODING_MDD_star:
 	case ENCODING_ID_MDD_star:
 	case ENCODING_AD_MDD_star:
@@ -10452,7 +10980,19 @@ namespace sReloc
 						     solution,
 						     thread_id);
 		break;
-	    }	    
+	    }
+	    case ENCODING_MDD_plus_plus_fuel:
+	    {
+		extract_ComputedMddPlusPlusFuelSolution(instance.m_initial_arrangement,
+							instance.m_environment,
+							instance.m_the_MDD,
+							total_cost,
+							total_cost,
+							encoding_context,
+							solution,
+							thread_id);
+		break;
+	    }	    	    
 	    case ENCODING_MDD_star:
 	    case ENCODING_ID_MDD_star:
 	    case ENCODING_AD_MDD_star:
@@ -10515,6 +11055,9 @@ namespace sReloc
 
 	encoding_context.m_max_total_cost = total_cost;
 	encoding_context.m_extra_cost = extra_cost;
+
+	encoding_context.m_max_total_fuel = total_cost;
+	encoding_context.m_extra_fuel = extra_cost;	
 
 	switch (m_encoding)
 	{
@@ -10582,7 +11125,12 @@ namespace sReloc
 	{	    
 	    instance.to_Memory_LMddPlusPlusCNFsat(*solver, encoding_context, "", false);
 	    break;
-	}	
+	}
+	case ENCODING_MDD_plus_plus_fuel:
+	{	    
+	    instance.to_Memory_MddPlusPlusFuelCNFsat(*solver, encoding_context, "", false);
+	    break;
+	}		
 	case ENCODING_MDD_star:
 	case ENCODING_ID_MDD_star:
 	case ENCODING_AD_MDD_star:
@@ -10773,7 +11321,19 @@ namespace sReloc
 						     encoding_context,
 						     solution);
 		break;
-	    }	    
+	    }
+	    case ENCODING_MDD_plus_plus_fuel:
+	    {
+		intract_ComputedMddPlusPlusFuelSolution(*solver,
+							instance.m_initial_arrangement,
+							instance.m_environment,
+							instance.m_the_MDD,
+							total_cost,
+							total_cost,
+							encoding_context,
+							solution);
+		break;
+	    }	    	    
 	    case ENCODING_MDD_star:
 	    case ENCODING_ID_MDD_star:
 	    case ENCODING_AD_MDD_star:
@@ -12150,6 +12710,7 @@ namespace sReloc
 	{
 	    sMultirobotEncodingContext_CNFsat encoding_context(0);
 	    encoding_context.m_max_total_cost = total_cost;
+	    encoding_context.m_max_total_fuel = total_cost;	    
 
 #ifdef sVERBOSE
 	    printf("Solving cost %d ...\n", total_cost);
@@ -12420,6 +12981,7 @@ namespace sReloc
 	    
 	    sMultirobotEncodingContext_CNFsat encoding_context(0);
 	    encoding_context.m_max_total_cost = total_cost;
+	    encoding_context.m_max_total_fuel = total_cost;	    
 
 #ifdef sVERBOSE
 	    printf("Solving cost %d ...\n", total_cost);
@@ -12861,7 +13423,23 @@ namespace sReloc
 		    return result;
 		}
 		break;
-	    }	    
+	    }
+	    case ENCODING_MDD_plus_plus_fuel:
+	    {
+		result = extract_ComputedMddPlusPlusFuelSolution(start_arrangement,
+								 environment,
+								 instance.m_the_MDD,
+								 optimal_cost,
+								 optimal_cost,
+								 final_encoding_context,
+								 optimal_solution,
+								 thread_id);
+		if (sFAILED(result))
+		{
+		    return result;
+		}
+		break;
+	    }	    	    
 	    case ENCODING_MDD_star:
 	    case ENCODING_ID_MDD_star:
 	    case ENCODING_AD_MDD_star:
@@ -13138,7 +13716,23 @@ namespace sReloc
 		    return result;
 		}
 		break;
-	    }	    
+	    }
+	    case ENCODING_MDD_plus_plus_fuel:
+	    {
+		result = intract_ComputedMddPlusPlusFuelSolution(*solver,
+								 start_arrangement,
+								 environment,
+								 instance.m_the_MDD,
+								 optimal_cost,
+								 optimal_cost,
+								 final_encoding_context,
+								 optimal_solution);
+		if (sFAILED(result))
+		{
+		    return result;
+		}
+		break;
+	    }	    	    
 	    case ENCODING_MDD_star:
 	    case ENCODING_ID_MDD_star:
 	    case ENCODING_AD_MDD_star:
@@ -13214,7 +13808,124 @@ namespace sReloc
 	optimal_solution.m_optimality_ratio = (double)real_cost / final_encoding_context.m_max_total_cost;
 
  	return sRESULT_SUCCESS;
-    }    
+    }
+
+
+    sResult sMultirobotSolutionCompressor::compute_FuelOptimalSolution(const sRobotArrangement                        &start_arrangement,
+								       const sRobotGoal                               &final_arrangement,
+								       const sUndirectedGraph                         &environment,
+								       const sUndirectedGraph                         &sparse_environment,
+								       const sMultirobotInstance::MDD_vector          &sUNUSED(MDD),
+								       int                                             max_total_fuel,
+								       int                                            &optimal_fuel,
+								       int                                            &fuel_makespan,
+								       sMultirobotSolution                            &optimal_solution,
+								       int                                             thread_id)
+    {
+	sResult result;
+
+	int expansion_count;
+	sMultirobotEncodingContext_CNFsat final_encoding_context;
+	sMultirobotInstance instance(environment, sparse_environment, start_arrangement, final_arrangement, m_ratio, m_robustness, m_range);
+	
+	result = compute_OptimalFuel(instance, max_total_fuel, optimal_fuel, fuel_makespan, expansion_count, final_encoding_context, thread_id);
+	if (sFAILED(result))
+	{
+	    return result;
+	}	
+	if (optimal_fuel != MAKESPAN_UNDEFINED)
+	{	    	   
+	    switch (m_encoding)
+	    {
+	    case ENCODING_MDD_plus_plus_fuel:
+	    {
+		result = extract_ComputedMddPlusPlusFuelSolution(start_arrangement,
+								 environment,
+								 instance.m_the_MDD,
+								 optimal_fuel,
+								 fuel_makespan,
+								 final_encoding_context,
+								 optimal_solution,
+								 thread_id);
+		if (sFAILED(result))
+		{
+		    return result;
+		}
+		break;
+	    }	    	    
+	    default:
+	    {
+		sASSERT(false);
+	    }
+	    }
+	}
+	sMultirobotSolutionAnalyzer solution_analyzer;
+	sUndirectedGraph environment_copy(environment);       
+	int real_fuel = solution_analyzer.calc_TotalFuel(optimal_solution, start_arrangement, environment_copy);
+
+	optimal_solution.m_optimality_ratio = (double)real_fuel / final_encoding_context.m_max_total_fuel;
+
+ 	return sRESULT_SUCCESS;
+    }
+
+
+    sResult sMultirobotSolutionCompressor::incompute_FuelOptimalSolution(Glucose::Solver                                **solver,
+									 const sRobotArrangement                        &start_arrangement,
+									 const sRobotGoal                               &final_arrangement,
+									 const sUndirectedGraph                         &environment,
+									 const sUndirectedGraph                         &sparse_environment,
+									 const sMultirobotInstance::MDD_vector          &sUNUSED(MDD),
+									 int                                             max_total_fuel,
+									 int                                            &optimal_fuel,
+									 int                                            &fuel_makespan,
+									 sMultirobotSolution                            &optimal_solution,
+									 int                                             thread_id)
+    {
+	sResult result;
+
+	int expansion_count;
+	sMultirobotEncodingContext_CNFsat final_encoding_context;
+	sMultirobotInstance instance(environment, sparse_environment, start_arrangement, final_arrangement, m_ratio, m_robustness, m_range);
+	
+	result = incompute_OptimalFuel(solver, instance, max_total_fuel, optimal_fuel, fuel_makespan, expansion_count, final_encoding_context, thread_id);
+	if (sFAILED(result))
+	{
+	    return result;
+	}	
+	if (optimal_fuel != MAKESPAN_UNDEFINED)
+	{	    	   
+	    switch (m_encoding)
+	    {
+	    case ENCODING_MDD_plus_plus_fuel:
+	    {
+		result = intract_ComputedMddPlusPlusFuelSolution(*solver,
+								 start_arrangement,
+								 environment,
+								 instance.m_the_MDD,
+								 optimal_fuel,
+								 fuel_makespan,
+								 final_encoding_context,
+								 optimal_solution);
+		if (sFAILED(result))
+		{
+		    return result;
+		}
+		break;
+	    }	    	    
+	    default:
+	    {
+		sASSERT(false);
+	    }
+	    }
+	}
+	sMultirobotSolutionAnalyzer solution_analyzer;
+	sUndirectedGraph environment_copy(environment);       
+	int real_fuel = solution_analyzer.calc_TotalFuel(optimal_solution, start_arrangement, environment_copy);
+
+	optimal_solution.m_optimality_ratio = (double)real_fuel / final_encoding_context.m_max_total_fuel;
+
+ 	return sRESULT_SUCCESS;
+    }        
 
 
     sResult sMultirobotSolutionCompressor::compute_CostOptimalSolution_avoid(const sRobotArrangement                        &start_arrangement,

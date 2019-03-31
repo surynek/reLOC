@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.20-kruh                               */
 /*                                                                            */
-/*                      (C) Copyright 2018 Pavel Surynek                      */
+/*                      (C) Copyright 2019 Pavel Surynek                      */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* multirobot_test.cpp / 0.20-kruh_045                                        */
+/* multirobot_test.cpp / 0.20-kruh_054                                        */
 /*----------------------------------------------------------------------------*/
 //
 // Multirobot coordinated path-finding - testing program.

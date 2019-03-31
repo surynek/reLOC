@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.20-kruh                               */
 /*                                                                            */
-/*                      (C) Copyright 2018 Pavel Surynek                      */
+/*                      (C) Copyright 2019 Pavel Surynek                      */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* multirobot.h / 0.20-kruh_045                                               */
+/* multirobot.h / 0.20-kruh_054                                               */
 /*----------------------------------------------------------------------------*/
 //
 // Multirobot coordinated path-finding solving package.
@@ -234,8 +234,14 @@ namespace sReloc
 
     public:
 	int m_N_Layers;
+	
 	int m_max_total_cost;
 	int m_extra_cost;
+
+	int m_max_total_fuel;
+	int m_extra_fuel;
+	int m_fuel_makespan;
+	
 	sVariableStore_CNF m_variable_store;
 
 	GeneratingMode m_generating_mode;
@@ -370,8 +376,10 @@ namespace sReloc
 	void collect_Endpoints(VertexIDs_vector &source_IDs, VertexIDs_vector &goal_IDs);
 
 	int estimate_TotalCost(int &max_individual_cost);
+	int estimate_TotalFuel(int &max_individual_fuel);	
 	
 	int construct_MDD(int max_total_cost, MDD_vector &MDD, int &extra_cost, MDD_vector &extra_MDD);
+	int construct_FuelMDD(int max_total_fuel, int fuel_makespan, MDD_vector &MDD, int &extra_fuel, MDD_vector &extra_MDD);	
 	int construct_DisplacementMDD(int max_total_cost, MDD_vector &MDD, int &extra_cost, MDD_vector &extra_MDD);
 	int construct_LimitedMDD(int max_total_cost, MDD_vector &MDD, int &extra_cost, MDD_vector &extra_MDD);	
 	
@@ -389,6 +397,7 @@ namespace sReloc
 	int construct_SparseNoMDD(int max_total_cost, MDD_vector &MDD, int &extra_cost, MDD_vector &extra_MDD);
 
 	int construct_GraphMDD(sUndirectedGraph &graph, int max_total_cost, MDD_vector &MDD, int &extra_cost, MDD_vector &extra_MDD);
+	int construct_GraphFuelMDD(sUndirectedGraph &graph, int max_total_fuel, int fuel_makespan, MDD_vector &MDD, int &extra_fuel, MDD_vector &extra_MDD);	
 	int construct_GraphDisplacementMDD(sUndirectedGraph &graph, int max_total_cost, MDD_vector &MDD, int &extra_cost, MDD_vector &extra_MDD);
 	int construct_GraphLimitedMDD(sUndirectedGraph &graph, int max_total_cost, MDD_vector &MDD, int &extra_cost, MDD_vector &extra_MDD);		
 	int construct_GraphNoMDD(sUndirectedGraph &graph, int max_total_cost, MDD_vector &MDD, int &extra_cost, MDD_vector &extra_MDD);
@@ -445,6 +454,7 @@ namespace sReloc
 	virtual void to_Screen_MddPlusCNFsat(sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);	
 	virtual void to_Screen_MmddPlusCNFsat(sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 	virtual void to_Screen_MddPlusPlusCNFsat(sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual void to_Screen_MddPlusPlusFuelCNFsat(sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);	
 	virtual void to_Screen_LMddPlusPlusCNFsat(sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);	
 	virtual void to_Screen_MddStarCNFsat(sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);	
 	virtual void to_Screen_MmddPlusPlusCNFsat(sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
@@ -507,6 +517,7 @@ namespace sReloc
 	virtual sResult to_File_MddPlusCNFsat(const sString &filename, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 	virtual sResult to_File_MmddPlusCNFsat(const sString &filename, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);	
 	virtual sResult to_File_MddPlusPlusCNFsat(const sString &filename, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual sResult to_File_MddPlusPlusFuelCNFsat(const sString &filename, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);	
 	virtual sResult to_File_LMddPlusPlusCNFsat(const sString &filename, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);		
 	virtual sResult to_File_MddStarCNFsat(const sString &filename, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);	
 	virtual sResult to_File_MmddPlusPlusCNFsat(const sString &filename, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
@@ -649,6 +660,9 @@ namespace sReloc
 	
 	virtual void to_Stream_MddPlusPlusCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 	virtual void to_Memory_MddPlusPlusCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+
+	virtual void to_Stream_MddPlusPlusFuelCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual void to_Memory_MddPlusPlusFuelCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);	
 
 	virtual void to_Stream_LMddPlusPlusCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 	virtual void to_Memory_LMddPlusPlusCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);	
@@ -966,6 +980,22 @@ namespace sReloc
 						 const sString                     &indent = "",
 						 bool                              verbose = false);
 
+	virtual void to_Stream_MddPlusPlusFuelCNFsat(FILE                              *fw,
+						     sMultirobotEncodingContext_CNFsat &encoding_context,
+						     int                                extra_fuel,
+						     int                                mdd_depth,
+						     const MDD_vector                  &MDD,
+						     const MDD_vector                  &extra_MDD,
+						     const sString                     &indent = "",
+						     bool                              verbose = false);
+	virtual void to_Memory_MddPlusPlusFuelCNFsat(Glucose::Solver                   *solver,
+						     sMultirobotEncodingContext_CNFsat &encoding_context,
+						     int                                extra_fuel,
+						     int                                mdd_depth,
+						     const MDD_vector                  &MDD,
+						     const MDD_vector                  &extra_MDD,
+						     const sString                     &indent = "",
+						     bool                              verbose = false);		
 
 	virtual void to_Stream_LMddPlusPlusCNFsat(FILE                              *fw,
 						  sMultirobotEncodingContext_CNFsat &encoding_context,

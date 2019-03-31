@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.20-kruh                               */
 /*                                                                            */
-/*                      (C) Copyright 2018 Pavel Surynek                      */
+/*                      (C) Copyright 2019 Pavel Surynek                      */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* cnf.h / 0.20-kruh_045                                                      */
+/* cnf.h / 0.20-kruh_054                                                      */
 /*----------------------------------------------------------------------------*/
 //
 // Dimacs CNF formula production tools.
@@ -1547,7 +1547,24 @@ namespace sReloc
 	virtual void cast_Implication(Glucose::Solver               *solver,
 				      const sSpecifiedBitIdentifier &spec_identifier_PREC,
 				      const sSpecifiedBitIdentifier &spec_identifier_POST,
-				      int                            weight = 0);	
+				      int                            weight = 0);
+
+	virtual int count_Bimplication(int                           &aux_Variable_cnt,
+				       int                           &total_Literal_cnt,
+				       const sSpecifiedBitIdentifier &spec_identifier_PREC_A,
+				       const sSpecifiedBitIdentifier &spec_identifier_PREC_B,				       
+				       const sSpecifiedBitIdentifier &spec_identifier_POST) const;
+	virtual int generate_Bimplication(FILE                          *fw,
+					  const sSpecifiedBitIdentifier &spec_identifier_PREC_A,
+					  const sSpecifiedBitIdentifier &spec_identifier_PREC_B,					  
+					  const sSpecifiedBitIdentifier &spec_identifier_POST,
+					  bool                           string = false,
+					  int                            weight = 0);
+	virtual void cast_Bimplication(Glucose::Solver               *solver,
+				       const sSpecifiedBitIdentifier &spec_identifier_PREC_A,
+				       const sSpecifiedBitIdentifier &spec_identifier_PREC_B,				       
+				       const sSpecifiedBitIdentifier &spec_identifier_POST,
+				       int                            weight = 0);		
 
 	virtual int count_Implication(int                           &aux_Variable_cnt,
 				      int                           &total_Literal_cnt,

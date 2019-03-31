@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.20-kruh                               */
 /*                                                                            */
-/*                      (C) Copyright 2018 Pavel Surynek                      */
+/*                      (C) Copyright 2019 Pavel Surynek                      */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* statistics.h / 0.20-kruh_045                                               */
+/* statistics.h / 0.20-kruh_054                                               */
 /*----------------------------------------------------------------------------*/
 //
 // Statistical data collection and analytical tools.
@@ -56,6 +56,9 @@ namespace sReloc
 	int calc_TotalCost(const sMultirobotSolution &solution,
 			   const sRobotArrangement   &initial_arrangement,
 			   sUndirectedGraph          &environment);
+	int calc_TotalFuel(const sMultirobotSolution &solution,
+			   const sRobotArrangement   &initial_arrangement,
+			   sUndirectedGraph          &environment);	
 
     public:
 	virtual void to_Screen(const sString &indent = "") const;
@@ -69,6 +72,7 @@ namespace sReloc
 	int m_total_distance;
 	int m_total_trajectory;
 	int m_total_cost;
+	int m_total_fuel;	
 
 	double m_average_parallelism;
 	double m_average_distance;

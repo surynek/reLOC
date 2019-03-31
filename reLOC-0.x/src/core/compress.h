@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.20-kruh                               */
 /*                                                                            */
-/*                      (C) Copyright 2018 Pavel Surynek                      */
+/*                      (C) Copyright 2019 Pavel Surynek                      */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* compress.h / 0.20-kruh_045                                                 */
+/* compress.h / 0.20-kruh_054                                                 */
 /*----------------------------------------------------------------------------*/
 //
 // Compression tools for relocation problem solutions.
@@ -85,6 +85,7 @@ namespace sReloc
 	static const sString CNF_MDD_plus_FILENAME_PREFIX;
 	static const sString CNF_MMDD_plus_FILENAME_PREFIX;
 	static const sString CNF_MDD_plus_plus_FILENAME_PREFIX;
+	static const sString CNF_MDD_plus_plus_fuel_FILENAME_PREFIX;	
 	static const sString CNF_LMDD_plus_plus_FILENAME_PREFIX;	
 	static const sString CNF_MDD_star_FILENAME_PREFIX;	
 	static const sString CNF_MMDD_plus_plus_FILENAME_PREFIX;		
@@ -131,6 +132,7 @@ namespace sReloc
 	static const sString OUTPUT_MDD_plus_FILENAME_PREFIX;
 	static const sString OUTPUT_MMDD_plus_FILENAME_PREFIX;
 	static const sString OUTPUT_MDD_plus_plus_FILENAME_PREFIX;
+	static const sString OUTPUT_MDD_plus_plus_fuel_FILENAME_PREFIX;	
 	static const sString OUTPUT_LMDD_plus_plus_FILENAME_PREFIX;	
 	static const sString OUTPUT_MDD_star_FILENAME_PREFIX;	
 	static const sString OUTPUT_MMDD_plus_plus_FILENAME_PREFIX;		
@@ -183,6 +185,7 @@ namespace sReloc
 	    ENCODING_MDD_plus,
 	    ENCODING_MMDD_plus,
 	    ENCODING_MDD_plus_plus,
+	    ENCODING_MDD_plus_plus_fuel,	    
 	    ENCODING_LMDD_plus_plus,	    
 	    ENCODING_MDD_star,	    
 	    ENCODING_MMDD_plus_plus,
@@ -730,7 +733,47 @@ namespace sReloc
 				      int                               &optimal_cost,
 				      int                               &expansion_count,
 				      sMultirobotEncodingContext_CNFsat &final_encoding_context,
+				      int                                thread_id = THREAD_ID_UNDEFINED);
+
+	sResult compute_OptimalFuel(const sRobotArrangement           &start_arrangement,
+				    const sRobotGoal                  &final_arrangement,
+				    const sUndirectedGraph            &environment,
+				    const sUndirectedGraph            &sparse_environment,
+				    int                                max_total_fuel,
+				    int                               &optimal_fuel,
+				    int                               &fuel_makespan,
+				    int                               &expansion_count,
+				    sMultirobotEncodingContext_CNFsat &final_encoding_context,
+				    int                                thread_id = THREAD_ID_UNDEFINED);
+
+	sResult incompute_OptimalFuel(Glucose::Solver                  **solver,
+				      const sRobotArrangement           &start_arrangement,
+				      const sRobotGoal                  &final_arrangement,
+				      const sUndirectedGraph            &environment,
+				      const sUndirectedGraph            &sparse_environment,
+				      int                                max_total_fuel,
+				      int                               &optimal_fuel,
+				      int                               &fuel_makespan,
+				      int                               &expansion_count,
+				      sMultirobotEncodingContext_CNFsat &final_encoding_context,
 				      int                                thread_id = THREAD_ID_UNDEFINED);	
+	
+	sResult compute_OptimalFuel(sMultirobotInstance               &instance,
+				    int                                max_total_fuel,
+				    int                               &optimal_fuel,
+				    int                               &fuel_makespan,
+				    int                               &expansion_count,
+				    sMultirobotEncodingContext_CNFsat &final_encoding_context,
+				    int                                thread_id = THREAD_ID_UNDEFINED);
+	
+	sResult incompute_OptimalFuel(Glucose::Solver                  **solver,
+				      sMultirobotInstance               &instance,
+				      int                                max_total_fuel,
+				      int                               &optimal_fuel,
+				      int                               &fuel_makespan,
+				      int                               &expansion_count,
+				      sMultirobotEncodingContext_CNFsat &final_encoding_context,
+				      int                                thread_id = THREAD_ID_UNDEFINED);		
 
 	sResult compute_OptimalCost_avoid(sMultirobotInstance               &instance,
 					  const Arrangements_vector         &blocking_solution,
@@ -841,7 +884,20 @@ namespace sReloc
 					  sMultirobotInstance               &instance,
 					  int                                total_cost,
 					  sMultirobotEncodingContext_CNFsat &final_encoding_context,
-					  int                                thread_id);	
+					  int                                thread_id);
+
+	sResult compute_FuelSolvability(sMultirobotInstance               &instance,
+					int                                total_fuel,
+					int                                fuel_makespan,
+					sMultirobotEncodingContext_CNFsat &final_encoding_context,
+					int                                thread_id);
+
+	sResult incompute_FuelSolvability(Glucose::Solver                  **solver,
+					  sMultirobotInstance               &instance,
+					  int                                total_fuel,
+					  int                                fuel_makespan,					  
+					  sMultirobotEncodingContext_CNFsat &final_encoding_context,
+					  int                                thread_id);		
 
 	sResult compute_CostSolvability_avoid(sMultirobotInstance               &instance,
 					      int                                total_cost,
@@ -998,7 +1054,30 @@ namespace sReloc
 					      int                                             max_total_cost,
 					      int                                            &optimal_cost,
 					      sMultirobotSolution                            &optimal_solution,
-					      int                                             thread_id = THREAD_ID_UNDEFINED);	
+					      int                                             thread_id = THREAD_ID_UNDEFINED);
+
+	sResult compute_FuelOptimalSolution(const sRobotArrangement                        &start_arrangement,
+					    const sRobotGoal                               &final_arrangement,
+					    const sUndirectedGraph                         &environment,
+					    const sUndirectedGraph                         &sparse_environment,
+					    const sMultirobotInstance::MDD_vector          &MDD,
+					    int                                             max_total_fuel,
+					    int                                            &optimal_fuel,
+					    int                                            &fuel_makespan,
+					    sMultirobotSolution                            &optimal_solution,
+					    int                                             thread_id = THREAD_ID_UNDEFINED);
+
+	sResult incompute_FuelOptimalSolution(Glucose::Solver                               **solver,
+					      const sRobotArrangement                        &start_arrangement,
+					      const sRobotGoal                               &final_arrangement,
+					      const sUndirectedGraph                         &environment,
+					      const sUndirectedGraph                         &sparse_environment,
+					      const sMultirobotInstance::MDD_vector          &MDD,
+					      int                                             max_total_fuel,
+					      int                                            &optimal_fuel,
+					      int                                            &fuel_makespan,
+					      sMultirobotSolution                            &optimal_solution,
+					      int                                             thread_id = THREAD_ID_UNDEFINED);
 
 	sResult compute_CostOptimalSolution_avoid(const sRobotArrangement                        &start_arrangement,
 						  const sRobotGoal                               &final_arrangement,
@@ -1881,6 +1960,15 @@ namespace sReloc
 						    sMultirobotSolution                            &computed_solution,
 						    int                                             thread_id = THREAD_ID_UNDEFINED);
 
+	sResult extract_ComputedMddPlusPlusFuelSolution(const sRobotArrangement                        &start_arrangement,
+							const sUndirectedGraph                         &environment,
+							const sMultirobotInstance::MDD_vector          &MDD,
+							int                                             computed_cost,
+							int                                             fuel_makespan,
+							const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
+							sMultirobotSolution                            &computed_solution,
+							int                                             thread_id = THREAD_ID_UNDEFINED);	
+
 	sResult intract_ComputedMddPlusPlusSolution(Glucose::Solver                                *solver,
 						    const sRobotArrangement                        &start_arrangement,
 						    const sUndirectedGraph                         &environment,
@@ -1888,6 +1976,15 @@ namespace sReloc
 						    int                                             computed_cost,
 						    const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
 						    sMultirobotSolution                            &computed_solution);
+
+	sResult intract_ComputedMddPlusPlusFuelSolution(Glucose::Solver                                *solver,
+							const sRobotArrangement                        &start_arrangement,
+							const sUndirectedGraph                         &environment,
+							const sMultirobotInstance::MDD_vector          &MDD,
+							int                                             computed_cost,
+							int                                             fuel_makespan,
+							const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
+							sMultirobotSolution                            &computed_solution);	
 
 	sResult extract_ComputedLMddPlusPlusSolution(const sRobotArrangement                        &start_arrangement,
 						     const sUndirectedGraph                         &environment,

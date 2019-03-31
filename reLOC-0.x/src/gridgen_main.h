@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.20-kruh                               */
 /*                                                                            */
-/*                      (C) Copyright 2018 Pavel Surynek                      */
+/*                      (C) Copyright 2019 Pavel Surynek                      */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* gridgen_main.h / 0.20-kruh_045                                             */
+/* gridgen_main.h / 0.20-kruh_054                                             */
 /*----------------------------------------------------------------------------*/
 //
 // Grid Instance Generator - main program.
