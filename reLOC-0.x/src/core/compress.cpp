@@ -8,7 +8,11 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
+<<<<<<< HEAD
 /* compress.cpp / 0.20-kruh_055                                               */
+=======
+/* compress.cpp / 0.20-kruh_051                                               */
+>>>>>>> fa5fdfe3b98f4658d47e231f3f04e086da930ff8
 /*----------------------------------------------------------------------------*/
 //
 // Compression tools for relocation problem solutions.
@@ -8970,12 +8974,118 @@ namespace sReloc
 								     int                                sUNUSED(thread_id))
     {
 	sMultirobotEncodingContext_CNFsat encoding_context(0);
+<<<<<<< HEAD
 	encoding_context.m_max_total_fuel = total_fuel;
 	encoding_context.m_fuel_makespan = fuel_makespan;
 
 	switch (m_encoding)
 	{
 	case ENCODING_MDD_plus_plus_fuel:
+=======
+	encoding_context.m_max_total_cost = total_cost;
+	encoding_context.m_max_total_fuel = total_cost;		
+
+#ifdef sVERBOSE
+	printf("Solving cost %d ...\n", total_cost);
+#endif
+
+	switch (m_encoding)
+	{
+	case ENCODING_HEIGHTED:
+	{
+	    instance.to_Memory_HeightedCNFsat(*solver, encoding_context, "", false);
+	    break;
+	}
+	case ENCODING_MDD:
+	case ENCODING_ID_MDD:
+	case ENCODING_AD_MDD:
+	case ENCODING_BMDD:
+	case ENCODING_BCMDD:
+	{
+	    instance.to_Memory_MddCNFsat(*solver, encoding_context, "", false);
+	    break;
+	}
+	case ENCODING_GMDD:
+	{
+	    instance.to_Memory_GMddCNFsat(*solver, encoding_context, "", false);
+	    break;
+	}
+	case ENCODING_GEMDD:
+	{
+	    instance.to_Memory_GEMddCNFsat(*solver, encoding_context, "", false);
+	    break;
+	}
+	case ENCODING_WATER_MDD:
+	case ENCODING_ID_WATER_MDD:
+	case ENCODING_AD_WATER_MDD:
+	{
+	    instance.to_Memory_WaterMddCNFsat(*solver, encoding_context, "", false);
+	    break;
+	}	
+	case ENCODING_RELAXED_MDD:
+	{
+	    instance.to_Memory_RelaxedMddCNFsat(*solver, encoding_context, "", false);
+	    break;
+	}
+	case ENCODING_TOKEN_MDD:
+	{
+	    instance.to_Memory_TokenMddCNFsat(*solver, encoding_context, "", false);
+	    break;
+	}
+	case ENCODING_TOKEN_EMPTY_MDD:
+	{
+	    instance.to_Memory_TokenEmptyMddCNFsat(*solver, encoding_context, "", false);
+	    break;
+	}	
+	case ENCODING_PERMUTATION_MDD:
+	{
+	    instance.to_Memory_PermutationMddCNFsat(*solver, encoding_context, "", false);
+	    break;
+	}			
+	case ENCODING_MDD_plus:
+	case ENCODING_ID_MDD_plus:
+	case ENCODING_AD_MDD_plus:
+	{
+	    instance.to_Memory_MddPlusCNFsat(*solver, encoding_context, "", false);
+	    break;
+	}
+	case ENCODING_MDD_plus_plus:
+	case ENCODING_ID_MDD_plus_plus:
+	case ENCODING_AD_MDD_plus_plus:
+	{
+	    instance.to_Memory_MddPlusPlusCNFsat(*solver, encoding_context, "", false);
+	    break;
+	}
+	case ENCODING_LMDD_plus_plus:
+	{
+	    instance.to_Memory_LMddPlusPlusCNFsat(*solver, encoding_context, "", false);
+	    break;
+	}
+	case ENCODING_MDD_plus_plus_fuel:
+	{
+	    instance.to_Memory_MddPlusPlusFuelCNFsat(*solver, encoding_context, "", false);
+	    break;
+	}		
+	case ENCODING_MDD_star:
+	case ENCODING_ID_MDD_star:
+	case ENCODING_AD_MDD_star:
+	{
+	    instance.to_Memory_MddStarCNFsat(*solver, encoding_context, "", false);
+	    break;
+	}	    	    	
+	case ENCODING_RXMDD:
+	case ENCODING_RXMDD_BINARY:
+	{
+	    instance.to_Memory_RXMddCNFsat(*solver, encoding_context, "", false);
+	    break;
+	}
+	case ENCODING_NOMDD:
+	{
+	    instance.to_Memory_NoMddCNFsat(*solver, encoding_context, "", false);
+	    break;
+	}
+	case ENCODING_RXNOMDD:
+>>>>>>> fa5fdfe3b98f4658d47e231f3f04e086da930ff8
 	{
 	    instance.to_Memory_MddPlusPlusFuelCNFsat(*solver, encoding_context, "", false);
 	    break;
@@ -10984,6 +11094,7 @@ namespace sReloc
 	    case ENCODING_MDD_plus_plus_fuel:
 	    {
 		extract_ComputedMddPlusPlusFuelSolution(instance.m_initial_arrangement,
+<<<<<<< HEAD
 							instance.m_environment,
 							instance.m_the_MDD,
 							total_cost,
@@ -10991,6 +11102,14 @@ namespace sReloc
 							encoding_context,
 							solution,
 							thread_id);
+=======
+						instance.m_environment,
+						instance.m_the_MDD,
+						total_cost,
+						encoding_context,
+						solution,
+						thread_id);
+>>>>>>> fa5fdfe3b98f4658d47e231f3f04e086da930ff8
 		break;
 	    }	    	    
 	    case ENCODING_MDD_star:
@@ -11325,6 +11444,7 @@ namespace sReloc
 	    case ENCODING_MDD_plus_plus_fuel:
 	    {
 		intract_ComputedMddPlusPlusFuelSolution(*solver,
+<<<<<<< HEAD
 							instance.m_initial_arrangement,
 							instance.m_environment,
 							instance.m_the_MDD,
@@ -11332,6 +11452,14 @@ namespace sReloc
 							total_cost,
 							encoding_context,
 							solution);
+=======
+						instance.m_initial_arrangement,
+						instance.m_environment,
+						instance.m_the_MDD,
+						total_cost,
+						encoding_context,
+						solution);
+>>>>>>> fa5fdfe3b98f4658d47e231f3f04e086da930ff8
 		break;
 	    }	    	    
 	    case ENCODING_MDD_star:
@@ -13427,6 +13555,7 @@ namespace sReloc
 	    case ENCODING_MDD_plus_plus_fuel:
 	    {
 		result = extract_ComputedMddPlusPlusFuelSolution(start_arrangement,
+<<<<<<< HEAD
 								 environment,
 								 instance.m_the_MDD,
 								 optimal_cost,
@@ -13434,6 +13563,14 @@ namespace sReloc
 								 final_encoding_context,
 								 optimal_solution,
 								 thread_id);
+=======
+							 environment,
+							 instance.m_the_MDD,
+							 optimal_cost,
+							 final_encoding_context,
+							 optimal_solution,
+							 thread_id);
+>>>>>>> fa5fdfe3b98f4658d47e231f3f04e086da930ff8
 		if (sFAILED(result))
 		{
 		    return result;
@@ -13720,6 +13857,7 @@ namespace sReloc
 	    case ENCODING_MDD_plus_plus_fuel:
 	    {
 		result = intract_ComputedMddPlusPlusFuelSolution(*solver,
+<<<<<<< HEAD
 								 start_arrangement,
 								 environment,
 								 instance.m_the_MDD,
@@ -13727,6 +13865,14 @@ namespace sReloc
 								 optimal_cost,
 								 final_encoding_context,
 								 optimal_solution);
+=======
+							 start_arrangement,
+							 environment,
+							 instance.m_the_MDD,
+							 optimal_cost,
+							 final_encoding_context,
+							 optimal_solution);
+>>>>>>> fa5fdfe3b98f4658d47e231f3f04e086da930ff8
 		if (sFAILED(result))
 		{
 		    return result;

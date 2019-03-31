@@ -8,7 +8,11 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
+<<<<<<< HEAD
 /* encodings_extract.cpp / 0.20-kruh_055                                      */
+=======
+/* encodings_extract.cpp / 0.20-kruh_051                                      */
+>>>>>>> fa5fdfe3b98f4658d47e231f3f04e086da930ff8
 /*----------------------------------------------------------------------------*/
 //
 // Multi-robot path-finding encodings related
@@ -8200,6 +8204,7 @@ namespace sReloc
 
     sResult sMultirobotSolutionCompressor::extract_ComputedMddPlusPlusFuelSolution(const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
+<<<<<<< HEAD
 										   const sUndirectedGraph                  &environment,
 #else
 										   const sUndirectedGraph                  &,
@@ -8210,6 +8215,17 @@ namespace sReloc
 										   const sMultirobotEncodingContext_CNFsat &final_encoding_context,
 										   sMultirobotSolution                     &computed_solution,
 										   int                                      thread_id)
+=======
+									       const sUndirectedGraph                  &environment,
+#else
+									       const sUndirectedGraph                  &,
+#endif									       
+									       const sMultirobotInstance::MDD_vector   &MDD,
+									       int                                      computed_cost,
+									       const sMultirobotEncodingContext_CNFsat &final_encoding_context,
+									       sMultirobotSolution                     &computed_solution,
+									       int                                      thread_id)
+>>>>>>> fa5fdfe3b98f4658d47e231f3f04e086da930ff8
     {
 	sString output_filename;
 
@@ -8217,11 +8233,19 @@ namespace sReloc
 
 	if (thread_id != THREAD_ID_UNDEFINED)
 	{
+<<<<<<< HEAD
 	    output_filename = OUTPUT_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(computed_fuel) + "-" + sInt_32_to_String(fuel_makespan) + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + ".txt";
 	}
 	else
 	{
 	    output_filename = OUTPUT_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(computed_fuel) + "-" + sInt_32_to_String(fuel_makespan) + "-" + sInt_32_to_String(getpid()) + ".txt";
+=======
+	    output_filename = OUTPUT_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(computed_cost) + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + ".txt";
+	}
+	else
+	{
+	    output_filename = OUTPUT_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(computed_cost) + "-" + sInt_32_to_String(getpid()) + ".txt";
+>>>>>>> fa5fdfe3b98f4658d47e231f3f04e086da930ff8
 	}
 	FILE *fr;
 	
@@ -8546,6 +8570,7 @@ namespace sReloc
 
 
     sResult sMultirobotSolutionCompressor::intract_ComputedMddPlusPlusFuelSolution(Glucose::Solver                         *solver,
+<<<<<<< HEAD
 										   const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 										   const sUndirectedGraph                  &environment,
@@ -8557,6 +8582,18 @@ namespace sReloc
 										   int                                     sUNUSED(fuel_makespan),
 										   const sMultirobotEncodingContext_CNFsat &final_encoding_context,
 										   sMultirobotSolution                     &computed_solution)
+=======
+									       const sRobotArrangement                 &start_arrangement,
+#ifdef sDEBUG
+									       const sUndirectedGraph                  &environment,
+#else
+									       const sUndirectedGraph                  &,
+#endif									       
+									       const sMultirobotInstance::MDD_vector   &MDD,
+									       int                                     sUNUSED(computed_cost),
+									       const sMultirobotEncodingContext_CNFsat &final_encoding_context,
+									       sMultirobotSolution                     &computed_solution)
+>>>>>>> fa5fdfe3b98f4658d47e231f3f04e086da930ff8
     {
 	printf("Intracting Fuel MDD++ ...\n");
 		
