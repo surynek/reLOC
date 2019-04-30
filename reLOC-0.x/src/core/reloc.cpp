@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* reloc.cpp / 0.20-kruh_058                                                  */
+/* reloc.cpp / 0.20-kruh_059                                                  */
 /*----------------------------------------------------------------------------*/
 //
 // Relocation problem solving package - original development source.
@@ -51,6 +51,9 @@ namespace sReloc
 
     sVertex::sVertex()
 	: m_id(0)
+	, m_visited(false)
+	, m_distance(-1)
+	, m_prev_id(-1)
     {
 	// nothing
     }
@@ -58,6 +61,9 @@ namespace sReloc
 
     sVertex::sVertex(int id)
 	: m_id(id)
+	, m_visited(false)
+	, m_distance(-1)
+	, m_prev_id(-1)	  
     {
 	// nothing
     }
@@ -65,6 +71,9 @@ namespace sReloc
 
     sVertex::sVertex(const sVertex &vertex)
 	: m_id(vertex.m_id)
+	, m_visited(vertex.m_visited)
+	, m_distance(vertex.m_distance)
+	, m_prev_id(vertex.m_prev_id)
 	, m_Conflicts(vertex.m_Conflicts)
     {	
 	sASSERT(m_Neighbors.empty() && vertex.m_Neighbors.empty());
@@ -74,7 +83,13 @@ namespace sReloc
     const sVertex& sVertex::operator=(const sVertex &vertex)
     {
 	m_id = vertex.m_id;
+
+	m_visited = vertex.m_visited;
+	m_distance = vertex.m_distance;
+	m_prev_id = vertex.m_prev_id;
+
 	m_Conflicts = vertex.m_Conflicts;
+	
 	sASSERT(m_Neighbors.empty() && vertex.m_Neighbors.empty());
 
 	return *this;
