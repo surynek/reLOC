@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* insolver_main.cpp / 0.20-kruh_051                                          */
+/* insolver_main.cpp / 0.20-kruh_055                                          */
 /*----------------------------------------------------------------------------*/
 //
 // Solution generator - main program.
@@ -496,7 +496,8 @@ namespace sReloc
 		compressor.set_Robustness(command_parameters.m_robustness);		
 
 		Glucose::Solver *solver;
-		result = compressor.incompute_CostOptimalSolution(&solver,
+		int fuel_makespan;
+		result = compressor.incompute_FuelOptimalSolution(&solver,
 								  initial_arrangement,
 								  robot_goal,
 								  environment,
@@ -504,19 +505,10 @@ namespace sReloc
 								  MDD,
 								  command_parameters.m_total_fuel_bound,
 								  optimal_fuel,
+								  fuel_makespan,
 								  optimal_solution);
 
-		printf("Computed total fuel:%d\n", optimal_fuel);
-		if (optimal_solution.m_optimality_ratio >= 0.0)
-		{
-		    printf("Fuel <= %.3f * optimum.\n", optimal_solution.m_optimality_ratio);
-		    printf("Optimality ratio = %.3f\n", optimal_solution.m_optimality_ratio);
-		}
-		else
-		{
-		    printf("Cost <= 1.000 * optimum.\n");
-		    printf("Optimality ratio = 1.000\n");
-		}				
+		printf("Computed total fuel:%d (makespan = %d)\n", optimal_fuel, fuel_makespan);		
 	    }
 	    else if (   command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_ID_MDD
 		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_ID_WATER_MDD

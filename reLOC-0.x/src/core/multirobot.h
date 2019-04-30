@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* multirobot.h / 0.20-kruh_051                                               */
+/* multirobot.h / 0.20-kruh_055                                               */
 /*----------------------------------------------------------------------------*/
 //
 // Multirobot coordinated path-finding solving package.
@@ -240,6 +240,7 @@ namespace sReloc
 
 	int m_max_total_fuel;
 	int m_extra_fuel;
+	int m_fuel_makespan;
 	
 	sVariableStore_CNF m_variable_store;
 
@@ -378,7 +379,7 @@ namespace sReloc
 	int estimate_TotalFuel(int &max_individual_fuel);	
 	
 	int construct_MDD(int max_total_cost, MDD_vector &MDD, int &extra_cost, MDD_vector &extra_MDD);
-	int construct_FuelMDD(int max_total_fuel, MDD_vector &MDD, int &extra_fuel, MDD_vector &extra_MDD);	
+	int construct_FuelMDD(int max_total_fuel, int fuel_makespan, MDD_vector &MDD, int &extra_fuel, MDD_vector &extra_MDD);	
 	int construct_DisplacementMDD(int max_total_cost, MDD_vector &MDD, int &extra_cost, MDD_vector &extra_MDD);
 	int construct_LimitedMDD(int max_total_cost, MDD_vector &MDD, int &extra_cost, MDD_vector &extra_MDD);	
 	
@@ -396,7 +397,7 @@ namespace sReloc
 	int construct_SparseNoMDD(int max_total_cost, MDD_vector &MDD, int &extra_cost, MDD_vector &extra_MDD);
 
 	int construct_GraphMDD(sUndirectedGraph &graph, int max_total_cost, MDD_vector &MDD, int &extra_cost, MDD_vector &extra_MDD);
-	int construct_GraphFuelMDD(sUndirectedGraph &graph, int max_total_fuel, MDD_vector &MDD, int &extra_fuel, MDD_vector &extra_MDD);	
+	int construct_GraphFuelMDD(sUndirectedGraph &graph, int max_total_fuel, int fuel_makespan, MDD_vector &MDD, int &extra_fuel, MDD_vector &extra_MDD);	
 	int construct_GraphDisplacementMDD(sUndirectedGraph &graph, int max_total_cost, MDD_vector &MDD, int &extra_cost, MDD_vector &extra_MDD);
 	int construct_GraphLimitedMDD(sUndirectedGraph &graph, int max_total_cost, MDD_vector &MDD, int &extra_cost, MDD_vector &extra_MDD);		
 	int construct_GraphNoMDD(sUndirectedGraph &graph, int max_total_cost, MDD_vector &MDD, int &extra_cost, MDD_vector &extra_MDD);

@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* solver_main.cpp / 0.20-kruh_051                                            */
+/* solver_main.cpp / 0.20-kruh_055                                            */
 /*----------------------------------------------------------------------------*/
 //
 // Solution generator - main program.
@@ -484,28 +484,21 @@ namespace sReloc
 							 sDEFAULT_N_PARALLEL_THREADS,
 							 command_parameters.m_cnf_encoding);
 		compressor.set_Ratio(command_parameters.m_suboptimal_ratio);
-		compressor.set_Robustness(command_parameters.m_robustness);		
+		compressor.set_Robustness(command_parameters.m_robustness);
+
+		int fuel_makespan;
 		
-		result = compressor.compute_CostOptimalSolution(initial_arrangement,
+		result = compressor.compute_FuelOptimalSolution(initial_arrangement,
 								robot_goal,
 								environment,
 								instance.m_sparse_environment,
 								MDD,
 								command_parameters.m_total_fuel_bound,
 								optimal_fuel,
+								fuel_makespan,
 								optimal_solution);
 
-		printf("Computed total fuel:%d\n", optimal_fuel);
-		if (optimal_solution.m_optimality_ratio >= 0.0)
-		{
-		    printf("Fuel <= %.3f * optimum.\n", optimal_solution.m_optimality_ratio);
-		    printf("Optimality ratio = %.3f\n", optimal_solution.m_optimality_ratio);
-		}
-		else
-		{
-		    printf("Fuel <= 1.000 * optimum.\n");
-		    printf("Optimality ratio = 1.000\n");
-		}		
+		printf("Computed total fuel:%d (makespan = %d)\n", optimal_fuel, fuel_makespan);
 	    }
 	    else if (   command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_ID_MDD
 		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_ID_WATER_MDD

@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* encodings_extract.cpp / 0.20-kruh_051                                      */
+/* encodings_extract.cpp / 0.20-kruh_055                                      */
 /*----------------------------------------------------------------------------*/
 //
 // Multi-robot path-finding encodings related
@@ -8200,15 +8200,16 @@ namespace sReloc
 
     sResult sMultirobotSolutionCompressor::extract_ComputedMddPlusPlusFuelSolution(const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
-									       const sUndirectedGraph                  &environment,
+										   const sUndirectedGraph                  &environment,
 #else
-									       const sUndirectedGraph                  &,
+										   const sUndirectedGraph                  &,
 #endif									       
-									       const sMultirobotInstance::MDD_vector   &MDD,
-									       int                                      computed_cost,
-									       const sMultirobotEncodingContext_CNFsat &final_encoding_context,
-									       sMultirobotSolution                     &computed_solution,
-									       int                                      thread_id)
+										   const sMultirobotInstance::MDD_vector   &MDD,
+										   int                                      computed_fuel,
+										   int                                      fuel_makespan,
+										   const sMultirobotEncodingContext_CNFsat &final_encoding_context,
+										   sMultirobotSolution                     &computed_solution,
+										   int                                      thread_id)
     {
 	sString output_filename;
 
@@ -8216,11 +8217,11 @@ namespace sReloc
 
 	if (thread_id != THREAD_ID_UNDEFINED)
 	{
-	    output_filename = OUTPUT_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(computed_cost) + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + ".txt";
+	    output_filename = OUTPUT_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(computed_fuel) + "-" + sInt_32_to_String(fuel_makespan) + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + ".txt";
 	}
 	else
 	{
-	    output_filename = OUTPUT_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(computed_cost) + "-" + sInt_32_to_String(getpid()) + ".txt";
+	    output_filename = OUTPUT_MDD_plus_plus_fuel_FILENAME_PREFIX + "_" + sInt_32_to_String(computed_fuel) + "-" + sInt_32_to_String(fuel_makespan) + "-" + sInt_32_to_String(getpid()) + ".txt";
 	}
 	FILE *fr;
 	
@@ -8545,16 +8546,17 @@ namespace sReloc
 
 
     sResult sMultirobotSolutionCompressor::intract_ComputedMddPlusPlusFuelSolution(Glucose::Solver                         *solver,
-									       const sRobotArrangement                 &start_arrangement,
+										   const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
-									       const sUndirectedGraph                  &environment,
+										   const sUndirectedGraph                  &environment,
 #else
-									       const sUndirectedGraph                  &,
+										   const sUndirectedGraph                  &,
 #endif									       
-									       const sMultirobotInstance::MDD_vector   &MDD,
-									       int                                     sUNUSED(computed_cost),
-									       const sMultirobotEncodingContext_CNFsat &final_encoding_context,
-									       sMultirobotSolution                     &computed_solution)
+										   const sMultirobotInstance::MDD_vector   &MDD,
+										   int                                     sUNUSED(computed_cost),
+										   int                                     sUNUSED(fuel_makespan),
+										   const sMultirobotEncodingContext_CNFsat &final_encoding_context,
+										   sMultirobotSolution                     &computed_solution)
     {
 	printf("Intracting Fuel MDD++ ...\n");
 		

@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* multirobot.cpp / 0.20-kruh_051                                             */
+/* multirobot.cpp / 0.20-kruh_055                                             */
 /*----------------------------------------------------------------------------*/
 //
 // Multirobot coordinated path-finding solving package.
@@ -1656,7 +1656,8 @@ namespace sReloc
 	, m_max_total_cost(0)
 	, m_extra_cost(-1)
 	, m_max_total_fuel(0)
-	, m_extra_fuel(-1)	  
+	, m_extra_fuel(-1)
+	, m_fuel_makespan(-1)
 	, m_state_clause_generator(NULL)
 	, m_advanced_clause_generator(NULL)
 	, m_bitwise_clause_generator(NULL)
@@ -1673,7 +1674,8 @@ namespace sReloc
 	, m_max_total_cost(0)
 	, m_extra_cost(-1)
 	, m_max_total_fuel(0)
-	, m_extra_fuel(-1)	  
+	, m_extra_fuel(-1)
+	, m_fuel_makespan(-1)
 	, m_state_clause_generator(&m_variable_store)
 	, m_advanced_clause_generator(&m_variable_store)
 	, m_bitwise_clause_generator(&m_variable_store)
@@ -1690,7 +1692,8 @@ namespace sReloc
 	, m_max_total_cost(encoding_context.m_max_total_cost)
 	, m_extra_cost(encoding_context.m_extra_cost)
 	, m_max_total_fuel(encoding_context.m_max_total_fuel)
-	, m_extra_fuel(encoding_context.m_extra_fuel)	  
+	, m_extra_fuel(encoding_context.m_extra_fuel)
+	, m_fuel_makespan(encoding_context.m_fuel_makespan)
 	, m_variable_store(encoding_context.m_variable_store)
 	, m_state_clause_generator(encoding_context.m_state_clause_generator)
 	, m_advanced_clause_generator(encoding_context.m_advanced_clause_generator)
@@ -1725,7 +1728,8 @@ namespace sReloc
 	m_max_total_cost = encoding_context.m_max_total_cost;
 	m_extra_cost = encoding_context.m_extra_cost;
 	m_max_total_fuel = encoding_context.m_max_total_fuel;
-	m_extra_fuel = encoding_context.m_extra_fuel;	
+	m_extra_fuel = encoding_context.m_extra_fuel;
+	m_fuel_makespan = encoding_context.m_fuel_makespan;
 	m_variable_store = encoding_context.m_variable_store;
 	m_clause_generator = encoding_context.m_clause_generator;
 	m_bit_generator = encoding_context.m_bit_generator;
@@ -2839,9 +2843,9 @@ namespace sReloc
     }
 
 
-    int sMultirobotInstance::construct_FuelMDD(int max_total_fuel, MDD_vector &MDD, int &extra_fuel, MDD_vector &extra_MDD)
+    int sMultirobotInstance::construct_FuelMDD(int max_total_fuel, int fuel_makespan, MDD_vector &MDD, int &extra_fuel, MDD_vector &extra_MDD)
     {
-	return construct_GraphFuelMDD(m_environment, max_total_fuel, MDD, extra_fuel, extra_MDD);
+	return construct_GraphFuelMDD(m_environment, max_total_fuel, fuel_makespan, MDD, extra_fuel, extra_MDD);
     }    
 
 
@@ -3083,7 +3087,7 @@ namespace sReloc
     }
 
 
-    int sMultirobotInstance::construct_GraphFuelMDD(sUndirectedGraph &graph, int max_total_fuel, MDD_vector &MDD, int &extra_fuel, MDD_vector &extra_MDD)
+    int sMultirobotInstance::construct_GraphFuelMDD(sUndirectedGraph &graph, int max_total_fuel, int fuel_makespan, MDD_vector &MDD, int &extra_fuel, MDD_vector &extra_MDD)
     {	
 	int max_individual_fuel;
 	int N_Vertices = graph.get_VertexCount();	
@@ -3102,7 +3106,7 @@ namespace sReloc
 	const sUndirectedGraph::Distances_2d_vector &goal_Distances = graph.get_GoalShortestPaths();	
 
 	extra_fuel = max_total_fuel - min_total_fuel;
-	int mdd_depth = max_total_fuel;//max_individual_fuel + extra_fuel;
+	int mdd_depth = fuel_makespan;
 	
 	int N_Robots = m_initial_arrangement.get_RobotCount();
 
@@ -3144,11 +3148,11 @@ namespace sReloc
 	    sorted_mdd_Robots.insert(RobotIndices_mmap::value_type(robot_fuel, mdd_robot_id));
 	}
 
-	int sort_index = 0;
+	//int sort_index = 0;
 	for (RobotIndices_mmap::const_reverse_iterator sort_robot = sorted_mdd_Robots.rbegin(); sort_robot != sorted_mdd_Robots.rend(); ++sort_robot)
 	{
-	    int add_index = (sort_index++ * (sizeof(sMDD_Addition) / sizeof(int))) / N_Robots;
-	    int extra_addition = sMDD_Addition[add_index];
+	    //int add_index = (sort_index++ * (sizeof(sMDD_Addition) / sizeof(int))) / N_Robots;
+	    //int extra_addition = sMDD_Addition[add_index];
 
 	    int mdd_robot_id = sort_robot->second;
 	    

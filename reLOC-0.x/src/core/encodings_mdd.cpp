@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* encodings_mdd.cpp / 0.20-kruh_051                                          */
+/* encodings_mdd.cpp / 0.20-kruh_055                                          */
 /*----------------------------------------------------------------------------*/
 //
 // Multi-robot path-finding encodings based on
@@ -13505,7 +13505,7 @@ namespace sReloc
     {
 	int extra_fuel;
 	//	s_GlobalPhaseStatistics.enter_Phase("MDD build");
-	int mdd_depth = construct_FuelMDD(encoding_context.m_max_total_fuel, m_the_MDD, extra_fuel, m_the_extra_MDD);
+	int mdd_depth = construct_FuelMDD(encoding_context.m_max_total_fuel, encoding_context.m_fuel_makespan, m_the_MDD, extra_fuel, m_the_extra_MDD);
 	//s_GlobalPhaseStatistics.leave_Phase();
 
 	if (encoding_context.m_extra_fuel >= 0)
@@ -13563,7 +13563,7 @@ namespace sReloc
     {
 	int extra_fuel;
 	//	s_GlobalPhaseStatistics.enter_Phase("MDD build");
-	int mdd_depth = construct_FuelMDD(encoding_context.m_max_total_fuel, m_the_MDD, extra_fuel, m_the_extra_MDD);
+	int mdd_depth = construct_FuelMDD(encoding_context.m_max_total_fuel, encoding_context.m_fuel_makespan, m_the_MDD, extra_fuel, m_the_extra_MDD);
 	//s_GlobalPhaseStatistics.leave_Phase();
 
 	if (encoding_context.m_extra_fuel >= 0)
@@ -15680,7 +15680,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Stream_MddPlusPlusFuelCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_fuel, int mdd_depth, const MDD_vector &MDD, const MDD_vector &sUNUSED(extra_MDD), const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Stream_MddPlusPlusFuelCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, int sUNUSED(extra_fuel), int mdd_depth, const MDD_vector &MDD, const MDD_vector &sUNUSED(extra_MDD), const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();	
 
@@ -15755,7 +15755,7 @@ namespace sReloc
 	}
 	if (!cardinality_Identifiers.empty())
 	{
-	    Clause_cnt += encoding_context.m_bit_generator->count_Cardinality(aux_Variable_cnt,total_Literal_cnt, cardinality_Identifiers, encoding_context.m_max_total_cost);
+	    Clause_cnt += encoding_context.m_bit_generator->count_Cardinality(aux_Variable_cnt,total_Literal_cnt, cardinality_Identifiers, encoding_context.m_max_total_fuel);
 	}
 
 	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
@@ -16025,8 +16025,8 @@ namespace sReloc
 
 	if (!cardinality_Identifiers.empty())
 	{
-//	    printf("----> Cardinality: %d, %d, %d <----\n", cardinality_Identifiers.size(), extra_fuel, encoding_context.m_max_total_cost);
-	    Clause_cnt += encoding_context.m_bit_generator->generate_Cardinality(fw, cardinality_Identifiers, encoding_context.m_max_total_cost);
+//	    printf("----> Cardinality: %d, %d, %d <----\n", cardinality_Identifiers.size(), encoding_context.m_max_total_fuel, encoding_context.m_fuel_makespan);
+	    Clause_cnt += encoding_context.m_bit_generator->generate_Cardinality(fw, cardinality_Identifiers, encoding_context.m_max_total_fuel);
 	}
 
 	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
@@ -17214,9 +17214,8 @@ namespace sReloc
 	}
 	if (!cardinality_Identifiers.empty())
 	{
-	    encoding_context.m_bit_generator->cast_Cardinality(solver, cardinality_Identifiers, encoding_context.m_max_total_cost);
+	    encoding_context.m_bit_generator->cast_Cardinality(solver, cardinality_Identifiers, encoding_context.m_max_total_fuel);
 	}
-
 
 	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
 	{
@@ -17279,7 +17278,7 @@ namespace sReloc
 		if (mutex_occupancy_Identifiers.size() > 1)
 		{
 		    encoding_context.m_bit_generator->cast_AdaptiveAllMutexConstraint(solver,
-												    mutex_occupancy_Identifiers);
+										      mutex_occupancy_Identifiers);
 		}
 	    }
 	}
