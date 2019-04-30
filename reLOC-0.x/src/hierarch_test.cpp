@@ -8,11 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-<<<<<<< HEAD
-/* hierarch_test.cpp / 0.20-kruh_055                                          */
-=======
-/* hierarch_test.cpp / 0.20-kruh_056                                          */
->>>>>>> f57c68398eae7b055f31a50698a3a79978214a2b
+/* hierarch_test.cpp / 0.20-kruh_058                                          */
 /*----------------------------------------------------------------------------*/
 //
 // Hierarchical version of relocation problem - testing program.
