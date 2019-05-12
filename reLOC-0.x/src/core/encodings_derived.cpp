@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* encodings_derived.cpp / 0.20-kruh_056                                      */
+/* encodings_derived.cpp / 0.20-kruh_058                                      */
 /*----------------------------------------------------------------------------*/
 //
 // Multi-robot path-finding encodings derived from the standard MDD encoding.
