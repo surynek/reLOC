@@ -1,14 +1,14 @@
 /*============================================================================*/
 /*                                                                            */
 /*                                                                            */
-/*                              reLOC 0.20-kruh                               */
+/*                              reLOC 0.21-robik                              */
 /*                                                                            */
 /*                      (C) Copyright 2019 Pavel Surynek                      */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* multirobot.cpp / 0.20-kruh_058                                             */
+/* multirobot.cpp / 0.21-robik_013                                            */
 /*----------------------------------------------------------------------------*/
 //
 // Multirobot coordinated path-finding solving package.
@@ -266,6 +266,16 @@ namespace sReloc
 	m_robot_Locs[robot_id] = vertex_id;
 	m_vertex_Occups[vertex_id] = robot_id;
     }
+
+
+    void sRobotArrangement::place_CapacityRobot(int robot_id, int vertex_id)
+    {
+	sASSERT(robot_id > 0 && robot_id < m_robot_Locs.size());
+	sASSERT(vertex_id < m_vertex_Occups.size());
+	
+	m_robot_Locs[robot_id] = vertex_id;
+//	m_vertex_Occups[vertex_id] = robot_id;
+    }    
 
 
     void sRobotArrangement::remove_Robot(int robot_id)
@@ -1011,6 +1021,181 @@ namespace sReloc
     }
 
 
+    sResult sRobotArrangement::to_File_capacitated_multirobot(const sString &filename, const sUndirectedGraph &environment, const sString &indent) const
+    {
+	FILE *fw;
+
+	if ((fw = fopen(filename.c_str(), "w")) == NULL)
+	{
+	    return sROBOT_ARRANGEMENT_OPEN_ERROR;
+	}
+	
+	to_Stream_capacitated_multirobot(fw, environment, indent);
+	fclose(fw);
+
+	return sRESULT_SUCCESS;
+    }
+
+
+    void sRobotArrangement::to_Stream_capacitated_multirobot(FILE *fw, const sUndirectedGraph &environment, const sString &indent) const
+    {
+	fprintf(fw, "%sV =\n", indent.c_str());
+	
+	int N_Vertices = m_vertex_Occups.size();
+	for (int i = 0; i < N_Vertices; ++i)
+	{
+	    fprintf(fw, "(%d:-1:%d)[%d:-1:-1]\n", i, environment.m_Vertices[i].m_capacity, m_vertex_Occups[i]);
+	}
+    }
+
+
+    sResult sRobotArrangement::from_File_capacitated_multirobot(const sString &filename, sUndirectedGraph &environment, int component)
+    {
+	sResult result;
+	FILE *fr;
+
+	if ((fr = fopen(filename.c_str(), "r")) == NULL)
+	{
+	    return sROBOT_ARRANGEMENT_OPEN_ERROR;
+	}
+	
+	result = from_Stream_capacitated_multirobot(fr, environment, component);
+	if (sFAILED(result))
+	{
+	    fclose(fr);
+	    return result;
+	}
+	fclose(fr);
+
+	return sRESULT_SUCCESS;
+    }
+
+    
+    sResult sRobotArrangement::from_Stream_capacitated_multirobot(FILE *fr, sUndirectedGraph &environment, int component)
+    {
+	m_robot_Locs.clear();
+	m_vertex_Occups.clear();
+
+	int N_Robots = 0;
+	int N_Vertices = 0;
+
+	int c = fgetc(fr);
+
+	while (c != 'V')
+	{
+	    if (c != '\n')
+	    {
+		while(fgetc(fr) != '\n');
+	    }
+	    c = fgetc(fr);
+	}
+
+	fscanf(fr, " =\n");
+
+	long position = ftell(fr);
+	c = fgetc(fr);
+
+	while (c == '(')
+	{
+	    int vertex_id, cycle_id, robot_id, capacity;
+
+	    switch (component)
+	    {
+	    case 0:
+	    {
+		fscanf(fr, "%d:%d:%d)[%d", &vertex_id, &cycle_id, &capacity, &robot_id);
+		break;
+	    }
+	    case 1:
+	    {
+		int dummy_robot_1_id;
+		fscanf(fr, "%d:%d:%d)[%d:%d", &vertex_id, &cycle_id, &capacity, &dummy_robot_1_id, &robot_id);
+		break;
+	    }
+	    case 2:
+	    {
+		int dummy_robot_1_id, dummy_robot_2_id;
+		fscanf(fr, "%d:%d:%d)[%d:%d:%d", &vertex_id, &cycle_id, &capacity, &dummy_robot_1_id, &dummy_robot_2_id, &robot_id);
+		break;
+	    }
+	    default:
+	    {
+		sASSERT(false);
+		break;
+	    }
+	    }
+
+	    if (robot_id > 0)
+	    {
+		++N_Robots;
+	    }
+	    ++N_Vertices;
+	    if (c != '\n')
+	    {
+		while(fgetc(fr) != '\n');
+	    }
+	    c = fgetc(fr);
+//	    printf("read: %d,%d,%d\n", vertex_id, cycle_id, robot_id);
+	}
+
+	if (fseek(fr, position, SEEK_SET) != 0)
+	{
+	    return sROBOT_ARRANGEMENT_SEEK_ERROR;
+	}
+	c = fgetc(fr);
+
+	m_robot_Locs.resize(N_Robots + 1, (const int)UNDEFINED_LOCATION);
+	m_vertex_Occups.resize(N_Vertices, (const int)VACANT_VERTEX);
+
+	while (c == '(')
+	{
+	    int vertex_id, cycle_id, robot_id, capacity;
+
+	    switch (component)
+	    {
+	    case 0:
+	    {
+		fscanf(fr, "%d:%d:%d)[%d", &vertex_id, &cycle_id, &capacity, &robot_id);
+		break;
+	    }
+	    case 1:
+	    {
+		int dummy_robot_1_id;
+		fscanf(fr, "%d:%d:%d)[%d:%d", &vertex_id, &cycle_id, &capacity, &dummy_robot_1_id, &robot_id);
+		break;
+	    }
+	    case 2:
+	    {
+		int dummy_robot_1_id, dummy_robot_2_id;
+		fscanf(fr, "%d:%d:%d)[%d:%d:%d", &vertex_id, &cycle_id, &capacity, &dummy_robot_1_id, &dummy_robot_2_id, &robot_id);
+		break;
+	    }
+	    default:
+	    {
+		sASSERT(false);
+		break;
+	    }
+	    }
+
+	    if (robot_id > 0)
+	    {
+		m_robot_Locs[robot_id] = vertex_id;
+		m_vertex_Occups[vertex_id] = robot_id;
+	    }
+	    if (c != '\n')
+	    {
+		while(fgetc(fr) != '\n');
+	    }
+	    c = fgetc(fr);
+	    environment.m_Vertices[vertex_id].m_capacity = capacity;
+	}
+
+	return sRESULT_SUCCESS;
+    }    
+
+
+    
+
 /*----------------------------------------------------------------------------*/
 // sRobotGoal
 
@@ -1643,6 +1828,299 @@ namespace sReloc
     }
 
 
+    sResult sRobotGoal::to_File_capacitated_multirobot(const sString &filename, const sUndirectedGraph &environment, const sString &indent) const
+    {
+	FILE *fw;
+
+	if ((fw = fopen(filename.c_str(), "w")) == NULL)
+	{
+	    return sROBOT_GOAL_OPEN_ERROR;
+	}
+	
+	to_Stream_capacitated_multirobot(fw, environment, indent);
+	fclose(fw);
+
+	return sRESULT_SUCCESS;
+    }
+
+
+    void sRobotGoal::to_Stream_capacitated_multirobot(FILE *fw, const sUndirectedGraph &environment, const sString &indent) const
+    {
+	fprintf(fw, "%sV =\n", indent.c_str());
+	
+	int N_Compats = m_goal_Compats.size();
+
+	for (int i = 0; i < N_Compats; ++i)
+	{
+	    const Robots_set &robot_IDs = m_goal_Compats[i];
+	    fprintf(fw, "(%d:-1:%d)[", i, environment.m_Vertices[i].m_capacity);
+	    to_Stream_multirobot(fw, robot_IDs, indent);
+	    fprintf(fw, ":-1:-1]\n");
+	}
+    }
+
+
+    sResult sRobotGoal::from_File_capacitated_multirobot(const sString &filename, sUndirectedGraph &environment, int component)
+    {
+	sResult result;
+	FILE *fr;
+
+	if ((fr = fopen(filename.c_str(), "r")) == NULL)
+	{
+	    return sROBOT_GOAL_OPEN_ERROR;
+	}
+	
+	result = from_Stream_capacitated_multirobot(fr, environment, component);
+	if (sFAILED(result))
+	{
+	    fclose(fr);
+	    return result;
+	}
+	fclose(fr);
+
+	return sRESULT_SUCCESS;
+    }
+
+
+    sResult sRobotGoal::from_Stream_capacitated_multirobot(FILE *fr, sUndirectedGraph &environment, int component)
+    {
+	Robots_set all_robot_IDs;
+
+	m_robot_Goals.clear();
+	m_goal_Compats.clear();
+
+	int N_Robots = 0;
+	int N_Vertices = 0;
+
+	int c = fgetc(fr);
+
+	while (c != 'V')
+	{
+	    if (c != '\n')
+	    {
+		while(fgetc(fr) != '\n');
+	    }
+	    c = fgetc(fr);
+	}
+
+	fscanf(fr, " =\n");
+
+	long position = ftell(fr);
+	c = fgetc(fr);
+
+	while (c == '(')
+	{
+	    int vertex_id, cycle_id, robot_id = 0, capacity = 1;
+
+	    switch (component)
+	    {
+	    case 0:
+	    {
+		fscanf(fr, "%d:%d:%d)[", &vertex_id, &cycle_id, &capacity);
+
+		c = fgetc(fr);
+		ungetc(c, fr);
+
+		if (c == '{')
+		{
+		    Robots_set robot_IDs;
+		    from_Stream_multirobot(fr, robot_IDs);
+
+		    all_robot_IDs.insert(robot_IDs.begin(), robot_IDs.end());
+		}
+		else
+		{
+		    fscanf(fr, "%d", &robot_id);
+		    if (robot_id > 0)
+		    {
+			all_robot_IDs.insert(robot_id);
+		    }
+		}
+		break;
+	    }
+	    case 1:
+	    {
+		int dummy_robot_1_id;
+		fscanf(fr, "%d:%d:%d)[%d:", &vertex_id, &cycle_id, &capacity, &dummy_robot_1_id);
+
+		c = fgetc(fr);
+		ungetc(c, fr);
+
+		if (c == '{')
+		{
+		    Robots_set robot_IDs;
+		    from_Stream_multirobot(fr, robot_IDs);
+
+		    all_robot_IDs.insert(robot_IDs.begin(), robot_IDs.end());
+		}
+		else
+		{
+		    fscanf(fr, "%d", &robot_id);
+		    if (robot_id > 0)
+		    {
+			all_robot_IDs.insert(robot_id);
+		    }
+		}
+		break;
+	    }
+	    case 2:
+	    {
+		int dummy_robot_1_id, dummy_robot_2_id;
+		fscanf(fr, "%d:%d:%d)[%d:%d:", &vertex_id, &cycle_id, &capacity, &dummy_robot_1_id, &dummy_robot_2_id);
+
+		c = fgetc(fr);
+		ungetc(c, fr);
+
+		if (c == '{')
+		{
+		    Robots_set robot_IDs;
+		    from_Stream_multirobot(fr, robot_IDs);
+
+		    all_robot_IDs.insert(robot_IDs.begin(), robot_IDs.end());
+		}
+		else
+		{
+		    fscanf(fr, "%d", &robot_id);
+		    if (robot_id > 0)
+		    {
+			all_robot_IDs.insert(robot_id);
+		    }
+		}
+		break;
+	    }
+	    default:
+	    {
+		sASSERT(false);
+		break;
+	    }
+	    }
+	    ++N_Vertices;
+	    if (c != '\n')
+	    {
+		while(fgetc(fr) != '\n');
+	    }
+	    c = fgetc(fr);
+	}
+	N_Robots = all_robot_IDs.size();
+
+	if (fseek(fr, position, SEEK_SET) != 0)
+	{
+	    return sROBOT_GOAL_SEEK_ERROR;
+	}
+	c = fgetc(fr);
+
+	m_robot_Goals.resize(N_Robots + 1);
+	m_goal_Compats.resize(N_Vertices);
+
+	while (c == '(')
+	{
+	    int vertex_id, cycle_id, robot_id, capacity;
+
+	    switch (component)
+	    {
+	    case 0:
+	    {
+		fscanf(fr, "%d:%d:%d)[", &vertex_id, &cycle_id, &capacity);
+
+		c = fgetc(fr);
+		ungetc(c, fr);
+
+		if (c == '{')
+		{
+		    Robots_set robot_IDs;
+		    from_Stream_multirobot(fr, robot_IDs);
+
+		    if (!robot_IDs.empty())
+		    {
+			assign_Goal(vertex_id, robot_IDs);
+		    }
+		}
+		else
+		{
+		    fscanf(fr, "%d", &robot_id);
+		    if (robot_id > 0)
+		    {
+			assign_Goal(vertex_id, robot_id);
+		    }
+		}
+		break;
+	    }
+	    case 1:
+	    {
+		int dummy_robot_1_id;
+		fscanf(fr, "%d:%d:%d)[%d:", &vertex_id, &cycle_id, &capacity, &dummy_robot_1_id);
+
+		c = fgetc(fr);
+		ungetc(c, fr);
+
+		if (c == '{')
+		{
+		    Robots_set robot_IDs;
+		    from_Stream_multirobot(fr, robot_IDs);
+
+		    if (!robot_IDs.empty())
+		    {
+			assign_Goal(vertex_id, robot_IDs);
+		    }
+		}
+		else
+		{
+		    fscanf(fr, "%d", &robot_id);
+		    if (robot_id > 0)
+		    {
+			assign_Goal(vertex_id, robot_id);
+		    }
+		}
+		break;
+	    }
+	    case 2:
+	    {
+		int dummy_robot_1_id, dummy_robot_2_id;
+		fscanf(fr, "%d:%d:%d)[%d:%d:", &vertex_id, &cycle_id, &capacity, &dummy_robot_1_id, &dummy_robot_2_id);
+
+		c = fgetc(fr);
+		ungetc(c, fr);
+
+		if (c == '{')
+		{
+		    Robots_set robot_IDs;
+		    from_Stream_multirobot(fr, robot_IDs);
+		    if (!robot_IDs.empty())
+		    {
+			assign_Goal(vertex_id, robot_IDs);
+		    }
+		}
+		else
+		{
+		    fscanf(fr, "%d", &robot_id);
+		    if (robot_id > 0)
+		    {
+			assign_Goal(vertex_id, robot_id);
+		    }
+		}
+		break;
+	    }
+	    default:
+	    {
+		sASSERT(false);
+		break;
+	    }
+	    }
+	    environment.m_Vertices[vertex_id].m_capacity = capacity;
+
+	    if (c != '\n')
+	    {
+		while(fgetc(fr) != '\n');
+	    }
+	    c = fgetc(fr);
+	}
+
+	return sRESULT_SUCCESS;
+    }
+
+
+
+    
 /*----------------------------------------------------------------------------*/
 // sMultirobotEncodingContext_CNFsat
 
@@ -4312,6 +4790,12 @@ namespace sReloc
     }
 
 
+    void sMultirobotInstance::to_Screen_capacitated_multirobot(const sString &indent) const
+    {
+	to_Stream_capacitated_multirobot(stdout, indent);
+    }    
+
+
     void sMultirobotInstance::to_Screen_domainPDDL(const sString &indent) const
     {
 	to_Stream_domainPDDL(stdout, indent);
@@ -4358,6 +4842,21 @@ namespace sReloc
 
 	return sRESULT_SUCCESS;
     }
+
+
+    sResult sMultirobotInstance::to_File_capacitated_multirobot(const sString &filename, const sString &indent) const
+    {
+	FILE *fw;
+
+	if ((fw = fopen(filename.c_str(), "w")) == NULL)
+	{
+	    return sMULTIROBOT_OPEN_ERROR;
+	}
+	to_Stream_capacitated_multirobot(fw, indent);
+	fclose(fw);
+
+	return sRESULT_SUCCESS;
+    }    
 
 
     sResult sMultirobotInstance::to_File_domainPDDL(const sString &filename, const sString &indent) const
@@ -4459,6 +4958,7 @@ namespace sReloc
 	}
 	for (int i = 0; i < N_Vertices; ++i)
 	{
+	    
 	    switch (m_goal_type)
 	    {
 	    case GOAL_TYPE_ARRANGEMENT:
@@ -4492,7 +4992,7 @@ namespace sReloc
 		    fprintf(fw, "]");
 		}		
 		break;
-	    }
+	    }	    
 	    default:
 	    {
 		break;
@@ -4514,6 +5014,92 @@ namespace sReloc
 	}
 	m_environment.to_Stream_multirobot(fw, indent);
     }
+
+
+    void sMultirobotInstance::to_Stream_capacitated_multirobot(FILE *fw, const sString &indent) const
+    {
+	fprintf(fw, "%sV =\n", indent.c_str());
+
+	// TODO
+	int N_Vertices;
+	switch (m_goal_type)
+	{
+	case GOAL_TYPE_ARRANGEMENT:
+	{
+	    N_Vertices = m_initial_arrangement.m_vertex_Occups.size();
+	    break;
+	}
+	case GOAL_TYPE_SPECIFICATION:
+	{
+	    N_Vertices = m_goal_specification.m_goal_Compats.size();
+	    break;
+	}
+	default:
+	{
+	    sASSERT(false);
+	    break;
+	}
+	}
+	for (int i = 0; i < N_Vertices; ++i)
+	{
+	    switch (m_goal_type)
+	    {
+	    case GOAL_TYPE_ARRANGEMENT:
+	    {
+		fprintf(fw, "(%d:-1:%d)[%d:%d:%d]", i,
+			m_environment.m_Vertices[i].m_capacity,
+			m_initial_arrangement.m_vertex_Occups[i],
+			m_goal_arrangement.m_vertex_Occups[i],
+			m_goal_arrangement.m_vertex_Occups[i]);
+		break;
+	    }
+	    case GOAL_TYPE_SPECIFICATION:
+	    {
+		if (m_goal_specification.m_goal_Compats[i].empty())
+		{
+		    fprintf(fw, "(%d:-1:%d)[%d:0:0]", i,
+			    m_environment.m_Vertices[i].m_capacity,
+			    m_initial_arrangement.m_vertex_Occups[i]);
+		}
+		else if (m_goal_specification.m_goal_Compats[i].size() == 1)
+		{
+		    fprintf(fw, "(%d:-1:%d)[%d:%d:%d]", i,
+			    m_environment.m_Vertices[i].m_capacity,
+			    m_initial_arrangement.m_vertex_Occups[i],
+			    *m_goal_specification.m_goal_Compats[i].begin(),
+			    *m_goal_specification.m_goal_Compats[i].begin());
+		}		
+		else
+		{
+		    fprintf(fw, "(%d:-1:%d)[%d:", i, m_environment.m_Vertices[i].m_capacity, m_initial_arrangement.m_vertex_Occups[i]);
+		    m_goal_specification.to_Stream_multirobot(fw, m_goal_specification.m_goal_Compats[i]);
+		    fprintf(fw, ":");
+		    m_goal_specification.to_Stream_multirobot(fw, m_goal_specification.m_goal_Compats[i]);
+		    fprintf(fw, "]");
+		}		
+		break;
+	    }
+	    default:
+	    {
+		break;
+	    }
+	    }
+	    if (m_environment.m_Vertices[i].m_Conflicts.empty())
+	    {
+		fprintf(fw, "\n");
+	    }
+	    else
+	    {
+		fprintf(fw, "< ");
+		for (int c = 0; c < m_environment.m_Vertices[i].m_Conflicts.size(); ++c)
+		{
+		    fprintf(fw, "%d ", m_environment.m_Vertices[i].m_Conflicts[c]);
+		}			 
+		fprintf(fw, ">\n");
+	    }
+	}
+	m_environment.to_Stream_capacitated_multirobot(fw, indent);
+    }    
 
 
     void sMultirobotInstance::to_Stream_domainPDDL(FILE *fw, const sString &indent) const

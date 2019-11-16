@@ -1,14 +1,14 @@
 /*============================================================================*/
 /*                                                                            */
 /*                                                                            */
-/*                              reLOC 0.20-kruh                               */
+/*                              reLOC 0.21-robik                              */
 /*                                                                            */
 /*                      (C) Copyright 2019 Pavel Surynek                      */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* insolver_main.cpp / 0.20-kruh_058                                          */
+/* insolver_main.cpp / 0.21-robik_013                                         */
 /*----------------------------------------------------------------------------*/
 //
 // Solution generator - main program.
@@ -104,11 +104,12 @@ namespace sReloc
 	printf("             [--encoding={inverse|advanced|differential|bijection|Hadvanced|Hdifferential|Hbijection|\n");
 	printf("                          bitwise|flow|matching|Hmatching|direct|Hdirect|simplicial|Hsimplicial|\n");
 	printf("                          singular|plural|plural2|heighted|mddnomdd|decomposed|independent|\n");
-	printf("                          mdd|mdd+|mdd++|mmdd|mmdd+|mmdd++|rmdd|rmmdd|lmdd++\n");
+	printf("                          mdd|mdd+|mdd++|mmdd|mmdd+|mmdd++|rmdd|rmmdd|lmdd++|mddf++|mddx++\n");
 	printf("	                  tmdd|tmmdd|temdd|temmdd|pmdd|pmmdd\n");
 	printf("                          idmdd|idmdd+|idmdd++|idmmdd|idmmdd+|idmmdd++|\n");
 	printf("                          admdd|admdd+|admdd++|admmdd|admmdd+|admmdd++|\n");
-	printf("                          mdd*|idmdd*|admdd*|gmdd|ano|gano]\n");	
+	printf("                          mdd*|idmdd*|admdd*|gmdd|ano|gano|\n");
+	printf("                          cmdd\n");		
 	printf("             [--strategy={linear-down|linear-up|binary}]\n");
 	printf("             [--completion={simultaneous|unirobot|whca|complete}]\n");       
 	printf("             [--makespan-limit=<int>]\n");
@@ -148,11 +149,23 @@ namespace sReloc
 	{
 	    printf("Reading graph...\n");
 
-	    result  = environment.from_File_multirobot(command_parameters.m_input_filename);
-	    if (sFAILED(result))
+	    if (command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_PERMUTATION_CMDD)
 	    {
-		printf("Error: Reading graph from file %s failed (code = %d).\n", command_parameters.m_input_filename.c_str(), result);
-		return result;
+		result  = environment.from_File_capacitated_multirobot(command_parameters.m_input_filename);
+		if (sFAILED(result))
+		{
+		    printf("Error: Reading capacitated graph from file %s failed (code = %d).\n", command_parameters.m_input_filename.c_str(), result);
+		    return result;
+		}		
+	    }
+	    else
+	    {
+		result  = environment.from_File_multirobot(command_parameters.m_input_filename);
+		if (sFAILED(result))
+		{
+		    printf("Error: Reading graph from file %s failed (code = %d).\n", command_parameters.m_input_filename.c_str(), result);
+		    return result;
+		}
 	    }
 
 	    printf("Reading graph... FINISHED\n");
@@ -161,12 +174,26 @@ namespace sReloc
 	if (!command_parameters.m_input_filename.empty())
 	{
 	    printf("Reading initial arrangement...\n");
-	    result = initial_arrangement.from_File_multirobot(command_parameters.m_input_filename);
-	    if (sFAILED(result))
+
+	    if (command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_PERMUTATION_CMDD)
 	    {
-		printf("Error: Reading arrangement from file %s failed (code = %d).\n", command_parameters.m_input_filename.c_str(), result);
-		return result;
+		result = initial_arrangement.from_File_capacitated_multirobot(command_parameters.m_input_filename, environment);
+		if (sFAILED(result))
+		{
+		    printf("Error: Reading capacitated arrangement from file %s failed (code = %d).\n", command_parameters.m_input_filename.c_str(), result);
+		    return result;
+		}
 	    }
+	    else
+	    {
+		result = initial_arrangement.from_File_multirobot(command_parameters.m_input_filename);
+		if (sFAILED(result))
+		{
+		    printf("Error: Reading arrangement from file %s failed (code = %d).\n", command_parameters.m_input_filename.c_str(), result);
+		    return result;
+		}
+	    }
+	    
 	    printf("Reading initial arrangement... FINISHED.\n");
 	}
 
@@ -174,18 +201,37 @@ namespace sReloc
 	{
 	    printf("Reading goal arrangement...\n");
 
-	    result = goal_arrangement.from_File_multirobot(command_parameters.m_input_filename, 2);
-	    if (sFAILED(result))
+	    if (command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_PERMUTATION_CMDD)
 	    {
-		printf("Error: Reading arrangement from file %s failed (code = %d).\n", command_parameters.m_input_filename.c_str(), result);
-		return result;
+		result = goal_arrangement.from_File_capacitated_multirobot(command_parameters.m_input_filename, environment, 2);
+		if (sFAILED(result))
+		{
+		    printf("Error: Reading capacitated arrangement from file %s failed (code = %d).\n", command_parameters.m_input_filename.c_str(), result);
+		    return result;
 	    }
 
-	    result = robot_goal.from_File_multirobot(command_parameters.m_input_filename, 2);
-	    if (sFAILED(result))
+		result = robot_goal.from_File_capacitated_multirobot(command_parameters.m_input_filename, environment, 2);
+		if (sFAILED(result))
+		{
+		    printf("Error: Reading capacitated arrangement from file %s failed (code = %d).\n", command_parameters.m_input_filename.c_str(), result);
+		    return result;
+		}		
+	    }
+	    else
 	    {
-		printf("Error: Reading arrangement from file %s failed (code = %d).\n", command_parameters.m_input_filename.c_str(), result);
-		return result;
+		result = goal_arrangement.from_File_multirobot(command_parameters.m_input_filename, 2);
+		if (sFAILED(result))
+		{
+		    printf("Error: Reading arrangement from file %s failed (code = %d).\n", command_parameters.m_input_filename.c_str(), result);
+		    return result;
+	    }
+
+		result = robot_goal.from_File_multirobot(command_parameters.m_input_filename, 2);
+		if (sFAILED(result))
+		{
+		    printf("Error: Reading arrangement from file %s failed (code = %d).\n", command_parameters.m_input_filename.c_str(), result);
+		    return result;
+		}		
 	    }
 	    printf("Reading goal arrangement... FINISHED.\n");
 	}
@@ -445,8 +491,10 @@ namespace sReloc
 		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_PERMUTATION_MDD						
 		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_MDD_plus
 		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_MDD_plus_plus
+		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_MDD_plus_plus_mutex			
 		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_LMDD_plus_plus			
-		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_MDD_star)
+		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_MDD_star
+	 	     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_PERMUTATION_CMDD)		
 	    {	
 		sMultirobotInstance::MDD_vector MDD;
 
@@ -1421,6 +1469,10 @@ namespace sReloc
 	    {
 		command_parameters.m_cnf_encoding = sMultirobotSolutionCompressor::ENCODING_MDD_plus_plus;
 	    }
+	    else if (encoding_str == "mddx++")
+	    {
+		command_parameters.m_cnf_encoding = sMultirobotSolutionCompressor::ENCODING_MDD_plus_plus_mutex;
+	    }	    
 	    else if (encoding_str == "mddf++")
 	    {
 		command_parameters.m_cnf_encoding = sMultirobotSolutionCompressor::ENCODING_MDD_plus_plus_fuel;
@@ -1499,6 +1551,10 @@ namespace sReloc
 	    {
 		command_parameters.m_cnf_encoding = sMultirobotSolutionCompressor::ENCODING_UNDEFINED;
 	    }
+	    else if (encoding_str == "pcmdd")
+	    {
+		command_parameters.m_cnf_encoding = sMultirobotSolutionCompressor::ENCODING_PERMUTATION_CMDD;
+	    }	    	    
 	    else
 	    {
 		return sOPTIMIZER_PROGRAM_UNRECOGNIZED_PARAMETER_ERROR;

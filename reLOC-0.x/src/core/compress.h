@@ -1,14 +1,14 @@
 /*============================================================================*/
 /*                                                                            */
 /*                                                                            */
-/*                              reLOC 0.20-kruh                               */
+/*                              reLOC 0.21-robik                              */
 /*                                                                            */
 /*                      (C) Copyright 2019 Pavel Surynek                      */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* compress.h / 0.20-kruh_058                                                 */
+/* compress.h / 0.21-robik_013                                                */
 /*----------------------------------------------------------------------------*/
 //
 // Compression tools for relocation problem solutions.
@@ -77,14 +77,17 @@ namespace sReloc
 	static const sString CNF_TOKEN_MDD_FILENAME_PREFIX;
 	static const sString CNF_TOKEN_EMPTY_MDD_FILENAME_PREFIX;	
 	static const sString CNF_PERMUTATION_MDD_FILENAME_PREFIX;
+	static const sString CNF_PERMUTATION_CMDD_FILENAME_PREFIX;	
 	static const sString CNF_MMDD_FILENAME_PREFIX;
 	static const sString CNF_RELAXED_MMDD_FILENAME_PREFIX;
 	static const sString CNF_TOKEN_MMDD_FILENAME_PREFIX;
 	static const sString CNF_TOKEN_EMPTY_MMDD_FILENAME_PREFIX;	
-	static const sString CNF_PERMUTATION_MMDD_FILENAME_PREFIX;	
+	static const sString CNF_PERMUTATION_MMDD_FILENAME_PREFIX;
+	static const sString CNF_PERMUTATION_CMMDD_FILENAME_PREFIX;		
 	static const sString CNF_MDD_plus_FILENAME_PREFIX;
 	static const sString CNF_MMDD_plus_FILENAME_PREFIX;
 	static const sString CNF_MDD_plus_plus_FILENAME_PREFIX;
+	static const sString CNF_MDD_plus_plus_mutex_FILENAME_PREFIX;	
 	static const sString CNF_MDD_plus_plus_fuel_FILENAME_PREFIX;	
 	static const sString CNF_LMDD_plus_plus_FILENAME_PREFIX;	
 	static const sString CNF_MDD_star_FILENAME_PREFIX;	
@@ -123,15 +126,18 @@ namespace sReloc
 	static const sString OUTPUT_RELAXED_MDD_FILENAME_PREFIX;
 	static const sString OUTPUT_TOKEN_MDD_FILENAME_PREFIX;
 	static const sString OUTPUT_TOKEN_EMPTY_MDD_FILENAME_PREFIX;	
-	static const sString OUTPUT_PERMUTATION_MDD_FILENAME_PREFIX;			
+	static const sString OUTPUT_PERMUTATION_MDD_FILENAME_PREFIX;
+	static const sString OUTPUT_PERMUTATION_CMDD_FILENAME_PREFIX;				
 	static const sString OUTPUT_MMDD_FILENAME_PREFIX;
 	static const sString OUTPUT_RELAXED_MMDD_FILENAME_PREFIX;
 	static const sString OUTPUT_TOKEN_MMDD_FILENAME_PREFIX;
 	static const sString OUTPUT_TOKEN_EMPTY_MMDD_FILENAME_PREFIX;	
-	static const sString OUTPUT_PERMUTATION_MMDD_FILENAME_PREFIX;	
+	static const sString OUTPUT_PERMUTATION_MMDD_FILENAME_PREFIX;
+	static const sString OUTPUT_PERMUTATION_CMMDD_FILENAME_PREFIX;		
 	static const sString OUTPUT_MDD_plus_FILENAME_PREFIX;
 	static const sString OUTPUT_MMDD_plus_FILENAME_PREFIX;
 	static const sString OUTPUT_MDD_plus_plus_FILENAME_PREFIX;
+	static const sString OUTPUT_MDD_plus_plus_mutex_FILENAME_PREFIX;	
 	static const sString OUTPUT_MDD_plus_plus_fuel_FILENAME_PREFIX;	
 	static const sString OUTPUT_LMDD_plus_plus_FILENAME_PREFIX;	
 	static const sString OUTPUT_MDD_star_FILENAME_PREFIX;	
@@ -185,6 +191,7 @@ namespace sReloc
 	    ENCODING_MDD_plus,
 	    ENCODING_MMDD_plus,
 	    ENCODING_MDD_plus_plus,
+	    ENCODING_MDD_plus_plus_mutex,	    
 	    ENCODING_MDD_plus_plus_fuel,	    
 	    ENCODING_LMDD_plus_plus,	    
 	    ENCODING_MDD_star,	    
@@ -209,8 +216,9 @@ namespace sReloc
 	    ENCODING_AD_MDD_star,
 	    ENCODING_AD_MMDD,
 	    ENCODING_AD_MMDD_plus,
-	    ENCODING_AD_MMDD_plus_plus	    
-	    
+	    ENCODING_AD_MMDD_plus_plus,
+	    ENCODING_PERMUTATION_CMDD,
+	    ENCODING_PERMUTATION_CMMDD	    
 	};
 
 	typedef std::vector<sRobotArrangement> Arrangements_vector;
@@ -1822,7 +1830,15 @@ namespace sReloc
 						       int                                             computed_cost,
 						       const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
 						       sMultirobotSolution                            &computed_solution,
-						       int                                             thread_id = THREAD_ID_UNDEFINED);		
+						       int                                             thread_id = THREAD_ID_UNDEFINED);
+
+	sResult extract_ComputedCapacitatedPermutationMddSolution(const sRobotArrangement                        &start_arrangement,
+								  const sUndirectedGraph                         &environment,
+								  const sMultirobotInstance::MDD_vector          &MDD,
+								  int                                             computed_cost,
+								  const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
+								  sMultirobotSolution                            &computed_solution,
+								  int                                             thread_id = THREAD_ID_UNDEFINED);			
 
 	sResult intract_ComputedRelaxedMddSolution(Glucose::Solver                                *solver,
 						   const sRobotArrangement                        &start_arrangement,
@@ -1854,7 +1870,15 @@ namespace sReloc
 						       const sMultirobotInstance::MDD_vector          &MDD,
 						       int                                             computed_cost,
 						       const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
-						       sMultirobotSolution                            &computed_solution);		
+						       sMultirobotSolution                            &computed_solution);
+
+	sResult intract_ComputedCapacitatedPermutationMddSolution(Glucose::Solver                                *solver,
+								  const sRobotArrangement                        &start_arrangement,
+								  const sUndirectedGraph                         &environment,
+								  const sMultirobotInstance::MDD_vector          &MDD,
+								  int                                             computed_cost,
+								  const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
+								  sMultirobotSolution                            &computed_solution);			
 
 	sResult extract_ComputedMmddSolution(const sRobotArrangement                        &start_arrangement,
 					     const sUndirectedGraph                         &environment,
@@ -1902,7 +1926,15 @@ namespace sReloc
 							int                                             computed_makespan,
 							const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
 							sMultirobotSolution                            &computed_solution,
-							int                                             thread_id = THREAD_ID_UNDEFINED);		
+							int                                             thread_id = THREAD_ID_UNDEFINED);
+
+	sResult extract_ComputedCapacitatedPermutationMmddSolution(const sRobotArrangement                        &start_arrangement,
+								   const sUndirectedGraph                         &environment,
+								   const sMultirobotInstance::MDD_vector          &MDD,
+								   int                                             computed_makespan,
+								   const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
+								   sMultirobotSolution                            &computed_solution,
+								   int                                             thread_id = THREAD_ID_UNDEFINED);			
 
 	sResult intract_ComputedRelaxedMmddSolution(Glucose::Solver                                *solver,
 						    const sRobotArrangement                        &start_arrangement,
@@ -1934,7 +1966,15 @@ namespace sReloc
 							const sMultirobotInstance::MDD_vector          &MDD,
 							int                                             computed_makespan,
 							const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
-							sMultirobotSolution                            &computed_solution);		
+							sMultirobotSolution                            &computed_solution);
+
+	sResult intract_ComputedCapacitatedPermutationMmddSolution(Glucose::Solver                                *solver,
+								   const sRobotArrangement                        &start_arrangement,
+								   const sUndirectedGraph                         &environment,
+								   const sMultirobotInstance::MDD_vector          &MDD,
+								   int                                             computed_makespan,
+								   const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
+								   sMultirobotSolution                            &computed_solution);			
 
 	sResult extract_ComputedMddPlusSolution(const sRobotArrangement                        &start_arrangement,
 						const sUndirectedGraph                         &environment,
@@ -1960,6 +2000,14 @@ namespace sReloc
 						    sMultirobotSolution                            &computed_solution,
 						    int                                             thread_id = THREAD_ID_UNDEFINED);
 
+	sResult extract_ComputedMddPlusPlusMutexSolution(const sRobotArrangement                        &start_arrangement,
+							 const sUndirectedGraph                         &environment,
+							 const sMultirobotInstance::MDD_vector          &MDD,
+							 int                                             computed_cost,
+							 const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
+							 sMultirobotSolution                            &computed_solution,
+							 int                                             thread_id = THREAD_ID_UNDEFINED);	
+
 	sResult extract_ComputedMddPlusPlusFuelSolution(const sRobotArrangement                        &start_arrangement,
 							const sUndirectedGraph                         &environment,
 							const sMultirobotInstance::MDD_vector          &MDD,
@@ -1976,6 +2024,14 @@ namespace sReloc
 						    int                                             computed_cost,
 						    const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
 						    sMultirobotSolution                            &computed_solution);
+
+	sResult intract_ComputedMddPlusPlusMutexSolution(Glucose::Solver                                *solver,
+							 const sRobotArrangement                        &start_arrangement,
+							 const sUndirectedGraph                         &environment,
+							 const sMultirobotInstance::MDD_vector          &MDD,
+							 int                                             computed_cost,
+							 const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
+							 sMultirobotSolution                            &computed_solution);	
 
 	sResult intract_ComputedMddPlusPlusFuelSolution(Glucose::Solver                                *solver,
 							const sRobotArrangement                        &start_arrangement,

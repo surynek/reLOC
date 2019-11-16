@@ -1,14 +1,14 @@
 /*============================================================================*/
 /*                                                                            */
 /*                                                                            */
-/*                              reLOC 0.20-kruh                               */
+/*                              reLOC 0.21-robik                              */
 /*                                                                            */
 /*                      (C) Copyright 2019 Pavel Surynek                      */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* cnf.cpp / 0.20-kruh_058                                                    */
+/* cnf.cpp / 0.21-robik_013                                                   */
 /*----------------------------------------------------------------------------*/
 //
 // Dimacs CNF formula production tools.
@@ -7534,6 +7534,57 @@ namespace sReloc
 	#endif
     }
 
+
+    int sBitClauseGenerator::count_Mutex(int                           &sUNUSED(aux_Variable_cnt),
+					 int                           &total_Literal_cnt,
+					 const sSpecifiedBitIdentifier &sUNUSED(spec_identifier_A),
+					 const sSpecifiedBitIdentifier &sUNUSED(spec_identifier_B)) const
+    {
+	total_Literal_cnt += 2;
+
+	return 1;
+    }
+
+	
+    int sBitClauseGenerator::generate_Mutex(FILE                          *fw,
+					    const sSpecifiedBitIdentifier &spec_identifier_A,
+					    const sSpecifiedBitIdentifier &spec_identifier_B,
+					    bool                           string,
+					    int                            sUNUSED(weight))
+    {
+	if (string)
+	{
+	    fprintf(fw, "-%s -%s 0\n", spec_identifier_A.calc_String().c_str(), spec_identifier_B.calc_String().c_str());
+	}
+	else
+	{
+	    fprintf(fw, "-%d -%d 0\n", spec_identifier_A.calc_CNF(), spec_identifier_B.calc_CNF());
+	}
+
+        #ifdef sSTATISTICS
+	{
+	    ++s_GlobalPhaseStatistics.get_CurrentPhase().m_produced_cnf_Clauses;
+	}
+	#endif
+
+	return 1;
+    }
+
+
+    void sBitClauseGenerator::cast_Mutex(Glucose::Solver               *solver,
+					 const sSpecifiedBitIdentifier &spec_identifier_A,
+					 const sSpecifiedBitIdentifier &spec_identifier_B,
+					 int                            sUNUSED(weight))
+    {
+	cast_Clause(solver, -spec_identifier_A.calc_CNF(), -spec_identifier_B.calc_CNF());
+
+        #ifdef sSTATISTICS
+	{
+	    ++s_GlobalPhaseStatistics.get_CurrentPhase().m_produced_cnf_Clauses;
+	}
+	#endif
+    }
+    
 
     int sBitClauseGenerator::count_MultiTriangleMutex(int                            &sUNUSED(aux_Variable_cnt),
 						      int                            &total_Literal_cnt,

@@ -1,14 +1,14 @@
 /*============================================================================*/
 /*                                                                            */
 /*                                                                            */
-/*                              reLOC 0.20-kruh                               */
+/*                              reLOC 0.21-robik                              */
 /*                                                                            */
 /*                      (C) Copyright 2019 Pavel Surynek                      */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* cnf.h / 0.20-kruh_058                                                      */
+/* cnf.h / 0.21-robik_013                                                     */
 /*----------------------------------------------------------------------------*/
 //
 // Dimacs CNF formula production tools.
@@ -1471,7 +1471,21 @@ namespace sReloc
 
 	virtual int count_BitUnset(int &aux_Variable_cnt, int &total_Literal_cnt, const sSpecifiedBitIdentifier &spec_identifier) const;
 	virtual int generate_BitUnset(FILE *fw, const sSpecifiedBitIdentifier &spec_identifier, bool string = false, int weight = 0);
-	virtual void cast_BitUnset(Glucose::Solver *solver, const sSpecifiedBitIdentifier &spec_identifier, int weight = 0);	
+	virtual void cast_BitUnset(Glucose::Solver *solver, const sSpecifiedBitIdentifier &spec_identifier, int weight = 0);
+
+	virtual int count_Mutex(int                           &aux_Variable_cnt,
+				int                           &total_Literal_cnt,
+				const sSpecifiedBitIdentifier &spec_identifier_A,
+				const sSpecifiedBitIdentifier &spec_identifier_B) const;
+	virtual int generate_Mutex(FILE                          *fw,
+				   const sSpecifiedBitIdentifier &spec_identifier_A,
+				   const sSpecifiedBitIdentifier &spec_identifier_B,
+				   bool                           string = false,
+				   int                            weight = 0);
+	virtual void cast_Mutex(Glucose::Solver               *solver,
+				const sSpecifiedBitIdentifier &spec_identifier_A,
+				const sSpecifiedBitIdentifier &spec_identifier_B,
+				int                            weight = 0);	
 
 	virtual int count_TriangleMutex(int                           &aux_Variable_cnt,
 					int                           &total_Literal_cnt,

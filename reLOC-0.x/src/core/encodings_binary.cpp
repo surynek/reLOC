@@ -1,14 +1,14 @@
 /*============================================================================*/
 /*                                                                            */
 /*                                                                            */
-/*                              reLOC 0.20-kruh                               */
+/*                              reLOC 0.21-robik                              */
 /*                                                                            */
 /*                      (C) Copyright 2019 Pavel Surynek                      */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* encodings_binary.cpp / 0.20-kruh_058                                       */
+/* encodings_binary.cpp / 0.21-robik_013                                      */
 /*----------------------------------------------------------------------------*/
 //
 // Multi-robot path-finding encodings based on

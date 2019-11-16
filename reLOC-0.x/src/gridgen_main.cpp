@@ -1,14 +1,14 @@
 /*============================================================================*/
 /*                                                                            */
 /*                                                                            */
-/*                              reLOC 0.20-kruh                               */
+/*                              reLOC 0.21-robik                              */
 /*                                                                            */
 /*                      (C) Copyright 2019 Pavel Surynek                      */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* gridgen_main.cpp / 0.20-kruh_058                                           */
+/* gridgen_main.cpp / 0.21-robik_013                                          */
 /*----------------------------------------------------------------------------*/
 //
 // Grid Instance Generator - main program.
@@ -60,6 +60,7 @@ namespace sReloc
       , m_obstacle_probability(0.1)
       , m_N_obstacles(-1)
       , m_cnf_level(6)
+      , m_capacity(1)
       , m_directed(false)
   {
       // nothing
@@ -95,8 +96,9 @@ namespace sReloc
 	printf("               --N-obstacles=<int>\n");
 	printf("               --cnf-file=<string>\n");
 	printf("               --cnf-level=<int>\n");
-	printf("              [--range=<int>\n");	
-	printf("              [--seed=<int>\n");
+	printf("              [--capacity=<int>]\n");	
+	printf("              [--range=<int>]\n");	
+	printf("              [--seed=<int>]\n");
 	printf("              [--pddl-domain-file=<string>]\n");
 	printf("              [--pddl-problem-file=<string>]\n");
 	printf("              [--bgu-file=<string>]\n");
@@ -124,7 +126,8 @@ namespace sReloc
 	printf("          --N-robots=5\n");
 	printf("          --N-goals=1\n");
 	printf("          --N-fixed=0\n");
-	printf("          --range=0\n");	
+	printf("          --range=0\n");
+	printf("          --capacity=1\n");	
 	printf("          --seed=0\n");
 	printf("          --obstacle-probability=0.1\n");
 	printf("          --cnf-level=6\n");
@@ -297,6 +300,10 @@ namespace sReloc
 	    {
 		instance.m_environment.explicate_Conflicts(parameters.m_range);
 	    }
+	    if (parameters.m_capacity > 1)
+	    {
+		instance.m_environment.set_Capacities(parameters.m_capacity);
+	    }	    
 	}
 	
 	if (!parameters.m_cnf_filename.empty())
@@ -347,7 +354,14 @@ namespace sReloc
 	}
 	if (!parameters.m_multirobot_filename.empty())
 	{
-	    result = instance.to_File_multirobot(parameters.m_multirobot_filename);
+	    if (parameters.m_capacity > 1)
+	    {
+		result = instance.to_File_capacitated_multirobot(parameters.m_multirobot_filename);
+	    }
+	    else
+	    {
+		result = instance.to_File_multirobot(parameters.m_multirobot_filename);
+	    }
 
 	    if (sFAILED(result))
 	    {
@@ -400,7 +414,11 @@ namespace sReloc
 	else if (parameter.find("--range=") == 0)
 	{
 	    command_parameters.m_range = sInt_32_from_String(parameter.substr(8, parameter.size()));
-	}	
+	}
+	else if (parameter.find("--capacity=") == 0)
+	{
+	    command_parameters.m_capacity = sInt_32_from_String(parameter.substr(11, parameter.size()));
+	}		
 	else if (parameter.find("--seed=") == 0)
 	{
 	    command_parameters.m_seed = sInt_32_from_String(parameter.substr(7, parameter.size()));

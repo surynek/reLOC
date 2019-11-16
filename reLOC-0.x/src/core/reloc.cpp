@@ -1,14 +1,14 @@
 /*============================================================================*/
 /*                                                                            */
 /*                                                                            */
-/*                              reLOC 0.20-kruh                               */
+/*                              reLOC 0.21-robik                              */
 /*                                                                            */
 /*                      (C) Copyright 2019 Pavel Surynek                      */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* reloc.cpp / 0.20-kruh_058                                                  */
+/* reloc.cpp / 0.21-robik_013                                                 */
 /*----------------------------------------------------------------------------*/
 //
 // Relocation problem solving package - original development source.
@@ -54,6 +54,7 @@ namespace sReloc
 	, m_visited(false)
 	, m_distance(-1)
 	, m_prev_id(-1)
+	, m_capacity(0)
     {
 	// nothing
     }
@@ -63,7 +64,8 @@ namespace sReloc
 	: m_id(id)
 	, m_visited(false)
 	, m_distance(-1)
-	, m_prev_id(-1)	  
+	, m_prev_id(-1)
+	, m_capacity(0)	  
     {
 	// nothing
     }
@@ -74,6 +76,7 @@ namespace sReloc
 	, m_visited(vertex.m_visited)
 	, m_distance(vertex.m_distance)
 	, m_prev_id(vertex.m_prev_id)
+	, m_capacity(vertex.m_capacity)
 	, m_Conflicts(vertex.m_Conflicts)
     {	
 	sASSERT(m_Neighbors.empty() && vertex.m_Neighbors.empty());
@@ -87,6 +90,7 @@ namespace sReloc
 	m_visited = vertex.m_visited;
 	m_distance = vertex.m_distance;
 	m_prev_id = vertex.m_prev_id;
+	m_capacity = vertex.m_capacity;	
 
 	m_Conflicts = vertex.m_Conflicts;
 	
@@ -141,7 +145,7 @@ namespace sReloc
 
     void sVertex::to_Stream(FILE *fw, const sString &indent) const
     {
-	fprintf(fw, "%sVertex: (id = %d, distance = %d, prev_id = %d)", indent.c_str(), m_id, m_distance, m_prev_id);
+	fprintf(fw, "%sVertex: (id = %d, distance = %d, prev_id = %d, capacity = %d)", indent.c_str(), m_id, m_distance, m_prev_id, m_capacity);
 	
 	if (!m_Neighbors.empty())
 	{
@@ -971,6 +975,7 @@ namespace sReloc
 	add_Vertices(undirected_graph.m_Vertices.size());
 	for (int i = 0; i < undirected_graph.m_Vertices.size(); ++i)
 	{
+	    m_Vertices[i].m_capacity = undirected_graph.m_Vertices[i].m_capacity;	    
 	    m_Vertices[i].m_Conflicts = undirected_graph.m_Vertices[i].m_Conflicts;
 	}
 
@@ -1021,6 +1026,7 @@ namespace sReloc
 	add_Vertices(undirected_graph.m_Vertices.size());
 	for (int i = 0; i < undirected_graph.m_Vertices.size(); ++i)
 	{
+	    m_Vertices[i].m_capacity = undirected_graph.m_Vertices[i].m_capacity;	    
 	    m_Vertices[i].m_Conflicts = undirected_graph.m_Vertices[i].m_Conflicts;
 	}
 
@@ -1083,6 +1089,7 @@ namespace sReloc
 	add_Vertices(undirected_graph.m_Vertices.size());
 	for (int i = 0; i < undirected_graph.m_Vertices.size(); ++i)
 	{
+	    m_Vertices[i].m_capacity = undirected_graph.m_Vertices[i].m_capacity;	    
 	    m_Vertices[i].m_Conflicts = undirected_graph.m_Vertices[i].m_Conflicts;
 	}	
 
@@ -1421,6 +1428,17 @@ namespace sReloc
 	return &m_Vertices[id];
     }
 
+
+    void sUndirectedGraph::set_Capacities(int capacity)
+    {
+	for (int v_id = 0; v_id < m_Vertices.size(); ++v_id)
+	{
+	    m_Vertices[v_id].m_capacity = capacity;
+	}	
+    }
+
+    
+/*----------------------------------------------------------------------------*/
 
     bool sUndirectedGraph::is_Grid(void) const
     {
@@ -2677,6 +2695,148 @@ namespace sReloc
 	    fprintf(fw, "%s{%d,%d} (-1)\n", indent.c_str(), edge->m_arc_uv.m_source->m_id, edge->m_arc_uv.m_target->m_id);
 	}
     }
+
+
+    sResult sUndirectedGraph::from_File_capacitated_multirobot(const sString &filename)
+    {
+	sResult result;
+	FILE *fr;
+
+	if ((fr = fopen(filename.c_str(), "r")) == NULL)
+	{
+	    return sUNDIRECTED_GRAPH_OPEN_ERROR;
+	}
+	
+	result = from_Stream_capacitated_multirobot(fr);
+	if (sFAILED(result))
+	{
+	    fclose(fr);
+	    return result;
+	}
+
+	fclose(fr);
+
+	return sRESULT_SUCCESS;
+    }
+
+
+    sResult sUndirectedGraph::from_Stream_capacitated_multirobot(FILE *fr)
+    {
+	m_Vertices.clear();
+	m_Edges.clear();
+
+	int c = fgetc(fr);
+
+	while (c != 'V')
+	{
+	    if (c != '\n')
+	    {
+		while(fgetc(fr) != '\n');
+	    }
+	    c = fgetc(fr);
+	}
+
+	fscanf(fr, " =\n");
+	c = fgetc(fr);
+
+	while (c == '(')
+	{
+	    add_Vertex();
+	    if (c != '\n' && c != '<')
+	    {
+		while((c = fgetc(fr)) != '\n' && c != '<');
+		if (c == '<')
+		{
+		    int x_id;
+
+		    while (c != '>')
+		    {
+			fscanf(fr, "%d", &x_id);
+			m_Vertices.back().m_Conflicts.push_back(x_id);
+			
+			while((c = fgetc(fr)) == ' ');
+			ungetc(c, fr);
+		    }
+		    if (c == '>')
+		    {
+			fgetc(fr);
+		    }
+		    fscanf(fr, "\n");
+		}
+	    }
+	    c = fgetc(fr);
+	}
+
+	fscanf(fr, " =\n");
+	c = fgetc(fr);
+
+	while (c == (int)'{')
+	{
+	    int u_id, v_id;
+	    fscanf(fr, "%d,%d", &u_id, &v_id);
+
+	    if (m_directed)
+	    {
+		add_Arrow(u_id, v_id);
+	    }
+	    else
+	    {
+		add_Edge(u_id, v_id);
+	    }
+	    if (c != '\n' && c != '<')
+	    {
+		while((c = fgetc(fr)) != '\n' && c != '<');
+		if (c == '<')
+		{
+		    int x_id, y_id;
+
+		    while (c != '>')
+		    {
+			fscanf(fr, "{%d,%d}", &x_id, &y_id);
+			m_Edges.back().m_Conflicts.push_back(sEdge::Conflict(x_id, y_id));
+			
+			while((c = fgetc(fr)) == ' ');
+			ungetc(c, fr);
+		    }
+		    if (c == '>')
+		    {
+			fgetc(fr);
+		    }
+		    fscanf(fr, "\n");
+		}		
+	    }
+	    c = fgetc(fr);
+	}
+
+	return sRESULT_SUCCESS;
+    }
+
+
+    sResult sUndirectedGraph::to_File_capacitated_multirobot(const sString &filename, const sString &indent) const
+    {
+	FILE *fw;
+
+	if ((fw = fopen(filename.c_str(), "w")) == NULL)
+	{
+	    return sUNDIRECTED_GRAPH_OPEN_ERROR;
+	}
+	
+	to_Stream_capacitated_multirobot(fw, indent);
+	fclose(fw);
+
+	return sRESULT_SUCCESS;
+    }
+
+
+    void sUndirectedGraph::to_Stream_capacitated_multirobot(FILE *fw, const sString &indent) const
+    {
+	fprintf(fw, "%sE =\n", indent.c_str());
+
+	for (Edges_list::const_iterator edge = m_Edges.begin(); edge != m_Edges.end(); ++edge)
+	{
+	    fprintf(fw, "%s{%d,%d} (-1)\n", indent.c_str(), edge->m_arc_uv.m_source->m_id, edge->m_arc_uv.m_target->m_id);
+	}
+    }    
 
 
     sResult sUndirectedGraph::from_File_map(const sString &filename)

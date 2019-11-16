@@ -1,14 +1,14 @@
 /*============================================================================*/
 /*                                                                            */
 /*                                                                            */
-/*                              reLOC 0.20-kruh                               */
+/*                              reLOC 0.21-robik                              */
 /*                                                                            */
 /*                      (C) Copyright 2019 Pavel Surynek                      */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* reloc.h / 0.20-kruh_058                                                    */
+/* reloc.h / 0.21-robik_013                                                   */
 /*----------------------------------------------------------------------------*/
 //
 // Relocation problem solving package - original development header.
@@ -90,6 +90,8 @@ namespace sReloc
 	bool m_visited;
 	int m_distance;
 	int m_prev_id;
+
+	int m_capacity;
 
 	VertexIDs_vector m_Conflicts;
     };
@@ -240,6 +242,7 @@ namespace sReloc
 
 	void add_Aisle(int u_id, int v_id, int min_aisle_length, int max_aisle_length, Edges_vector &Edges);
 	void explicate_Conflicts(int range);
+	/*----------------------------------------------------------------------------*/
 
 	void add_Vertex(void);
 	void add_Vertices(int Vertex_cnt = 1);
@@ -247,6 +250,8 @@ namespace sReloc
 	int get_VertexCount(void) const;
 	sVertex* get_Vertex(int id);
 	const sVertex* get_Vertex(int id) const;
+
+	void set_Capacities(int capacity);
 
 	bool is_Grid(void) const;
 	int get_GridHeight(void) const;
@@ -323,6 +328,12 @@ namespace sReloc
 
 	virtual sResult from_File_multirobot(const sString &filename);
 	virtual sResult from_Stream_multirobot(FILE *fr);
+
+	virtual sResult to_File_capacitated_multirobot(const sString &filename, const sString &indent = "") const;
+	virtual void to_Stream_capacitated_multirobot(FILE *fw, const sString &indent = "") const;
+
+	virtual sResult from_File_capacitated_multirobot(const sString &filename);
+	virtual sResult from_Stream_capacitated_multirobot(FILE *fr);	
 
 	virtual sResult from_File_map(const sString &filename);
 	virtual sResult from_Stream_map(FILE *fr);

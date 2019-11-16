@@ -1,14 +1,14 @@
 /*============================================================================*/
 /*                                                                            */
 /*                                                                            */
-/*                              reLOC 0.20-kruh                               */
+/*                              reLOC 0.21-robik                              */
 /*                                                                            */
 /*                      (C) Copyright 2019 Pavel Surynek                      */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* version.h / 0.20-kruh_058                                                  */
+/* version.h / 0.21-robik_013                                                 */
 /*----------------------------------------------------------------------------*/
 //
 // Version file for reLOC
@@ -26,8 +26,8 @@ using namespace sReloc;
 namespace sReloc
 {
 
-#define sVERSION "0.20-kruh"
-#define sPRODUCT "reLOC 0.20-kruh"
+#define sVERSION "0.21-robik"
+#define sPRODUCT "reLOC 0.21-robik"
 #define sAUTHOR "Pavel Surynek"
 #define sAUTHOR_LONG "Pavel Surynek <pavel@surynek.com>"
 #define sCOPYRIGHT "(C) Copyright 2019 Pavel Surynek"
