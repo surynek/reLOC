@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* compress.h / 0.21-robik_013                                                */
+/* compress.h / 0.21-robik_020                                                */
 /*----------------------------------------------------------------------------*/
 //
 // Compression tools for relocation problem solutions.
@@ -68,6 +68,8 @@ namespace sReloc
 	static const sString CNF_PLURAL2_FILENAME_PREFIX;
 	static const sString CNF_HEIGHTED_FILENAME_PREFIX;
 	static const sString CNF_MDD_FILENAME_PREFIX;
+	static const sString CNF_MDD_UMTEX_FILENAME_PREFIX;
+	static const sString CNF_MDD_MUTEX_FILENAME_PREFIX;		
 	static const sString CNF_GMDD_FILENAME_PREFIX;
 	static const sString CNF_GEMDD_FILENAME_PREFIX;
 	static const sString CNF_ANO_FILENAME_PREFIX;
@@ -118,6 +120,8 @@ namespace sReloc
 	static const sString OUTPUT_PLURAL2_FILENAME_PREFIX;
 	static const sString OUTPUT_HEIGHTED_FILENAME_PREFIX;
 	static const sString OUTPUT_MDD_FILENAME_PREFIX;
+	static const sString OUTPUT_MDD_UMTEX_FILENAME_PREFIX;
+	static const sString OUTPUT_MDD_MUTEX_FILENAME_PREFIX;		
 	static const sString OUTPUT_GMDD_FILENAME_PREFIX;
 	static const sString OUTPUT_GEMDD_FILENAME_PREFIX;
 	static const sString OUTPUT_ANO_FILENAME_PREFIX;
@@ -174,6 +178,8 @@ namespace sReloc
 	    ENCODING_PLURAL2,
 	    ENCODING_HEIGHTED,
 	    ENCODING_MDD,
+	    ENCODING_MDD_UMTEX,
+	    ENCODING_MDD_MUTEX,
 	    ENCODING_GMDD,
 	    ENCODING_GEMDD,
 	    ENCODING_ANO,
@@ -1719,6 +1725,38 @@ namespace sReloc
 					    int                                             computed_cost,
 					    const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
 					    sMultirobotSolution                            &computed_solution);
+
+	sResult extract_ComputedMddUmtexSolution(const sRobotArrangement                        &start_arrangement,
+						 const sUndirectedGraph                         &environment,
+						 const sMultirobotInstance::MDD_vector          &MDD,
+						 int                                             computed_cost,
+						 const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
+						 sMultirobotSolution                            &computed_solution,
+						 int                                             thread_id = THREAD_ID_UNDEFINED);
+
+	sResult intract_ComputedMddUmtexSolution(Glucose::Solver                                *solver,
+						 const sRobotArrangement                        &start_arrangement,
+						 const sUndirectedGraph                         &environment,
+						 const sMultirobotInstance::MDD_vector          &MDD,
+						 int                                             computed_cost,
+						 const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
+						 sMultirobotSolution                            &computed_solution);
+
+	sResult extract_ComputedMddMutexSolution(const sRobotArrangement                        &start_arrangement,
+						 const sUndirectedGraph                         &environment,
+						 const sMultirobotInstance::MDD_vector          &MDD,
+						 int                                             computed_cost,
+						 const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
+						 sMultirobotSolution                            &computed_solution,
+						 int                                             thread_id = THREAD_ID_UNDEFINED);
+
+	sResult intract_ComputedMddMutexSolution(Glucose::Solver                                *solver,
+						 const sRobotArrangement                        &start_arrangement,
+						 const sUndirectedGraph                         &environment,
+						 const sMultirobotInstance::MDD_vector          &MDD,
+						 int                                             computed_cost,
+						 const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
+						 sMultirobotSolution                            &computed_solution);		
 
 	sResult extract_ComputedGMddSolution(const sRobotArrangement                        &start_arrangement,
 					     const sUndirectedGraph                         &environment,

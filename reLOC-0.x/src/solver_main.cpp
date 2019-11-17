@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* solver_main.cpp / 0.21-robik_013                                           */
+/* solver_main.cpp / 0.21-robik_020                                           */
 /*----------------------------------------------------------------------------*/
 //
 // Solution generator - main program.
@@ -105,7 +105,7 @@ namespace sReloc
 	printf("             [--encoding={inverse|advanced|differential|bijection|Hadvanced|Hdifferential|Hbijection|\n");
 	printf("                          bitwise|flow|matching|Hmatching|direct|Hdirect|simplicial|Hsimplicial|\n");
 	printf("                          singular|plural|plural2|heighted|mddnomdd|decomposed|independent|\n");
-	printf("                          mdd|mdd+|mdd++|mmdd|mmdd+|mmdd++|rmdd|rmmdd|lmdd++|mddf++|mddx++\n");
+	printf("                          mdd|mdd+|mdd++|mmdd|mmdd+|mmdd++|rmdd|rmmdd|lmdd++|mddf++|mddx++|mddu|mddx\n");
 	printf("	                  tmdd|tmmdd|tmdd|temmdd|pmdd|pmmdd\n");	
 	printf("                          idmdd|idmdd+|idmdd++|idmmdd|idmmdd+|idmmdd++|\n");
 	printf("                          admdd|admdd+|admdd++|admmdd|admmdd+|admmdd++|\n");
@@ -475,7 +475,9 @@ namespace sReloc
 		printf("Computed makespan:%d\n", optimal_makespan);
 	    }
 	    else if (   command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_MDD
-		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_GMDD
+		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_MDD_UMTEX
+		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_MDD_MUTEX
+		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_GMDD			
 		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_WATER_MDD
 		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_RELAXED_MDD
 		     || command_parameters.m_cnf_encoding == sMultirobotSolutionCompressor::ENCODING_TOKEN_MDD
@@ -1370,6 +1372,14 @@ namespace sReloc
 	    {
 		command_parameters.m_cnf_encoding = sMultirobotSolutionCompressor::ENCODING_MDD;
 	    }
+	    else if (encoding_str == "mddu")
+	    {
+		command_parameters.m_cnf_encoding = sMultirobotSolutionCompressor::ENCODING_MDD_UMTEX;
+	    }
+	    else if (encoding_str == "mddx")
+	    {
+		command_parameters.m_cnf_encoding = sMultirobotSolutionCompressor::ENCODING_MDD_MUTEX;
+	    }	    
 	    else if (encoding_str == "gmdd")
 	    {
 		command_parameters.m_cnf_encoding = sMultirobotSolutionCompressor::ENCODING_GMDD;

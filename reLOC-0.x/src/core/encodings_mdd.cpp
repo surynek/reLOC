@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* encodings_mdd.cpp / 0.21-robik_013                                         */
+/* encodings_mdd.cpp / 0.21-robik_020                                         */
 /*----------------------------------------------------------------------------*/
 //
 // Multi-robot path-finding encodings based on
@@ -53,6 +53,18 @@ namespace sReloc
     {
 	to_Stream_MddCNFsat(stdout, encoding_context, indent, verbose);
     }
+
+
+    void sMultirobotInstance::to_Screen_MddUmtexCNFsat(sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    {
+	to_Stream_MddUmtexCNFsat(stdout, encoding_context, indent, verbose);
+    }
+
+
+    void sMultirobotInstance::to_Screen_MddMutexCNFsat(sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    {
+	to_Stream_MddMutexCNFsat(stdout, encoding_context, indent, verbose);
+    }    
 
 
     void sMultirobotInstance::to_Screen_GMddCNFsat(sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
@@ -243,6 +255,34 @@ namespace sReloc
 
 	return sRESULT_SUCCESS;
     }
+
+
+    sResult sMultirobotInstance::to_File_MddUmtexCNFsat(const sString &filename, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    {
+	FILE *fw;
+	if ((fw = fopen(filename.c_str(), "w")) == NULL)
+	{
+	    return sMULTIROBOT_CNF_OPEN_ERROR;
+	}
+	to_Stream_MddUmtexCNFsat(fw, encoding_context, indent, verbose);
+	fclose(fw);
+
+	return sRESULT_SUCCESS;
+    }
+
+
+    sResult sMultirobotInstance::to_File_MddMutexCNFsat(const sString &filename, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    {
+	FILE *fw;
+	if ((fw = fopen(filename.c_str(), "w")) == NULL)
+	{
+	    return sMULTIROBOT_CNF_OPEN_ERROR;
+	}
+	to_Stream_MddMutexCNFsat(fw, encoding_context, indent, verbose);
+	fclose(fw);
+
+	return sRESULT_SUCCESS;
+    }    
 
 
     sResult sMultirobotInstance::to_File_GMddCNFsat(const sString &filename, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
@@ -757,6 +797,46 @@ namespace sReloc
     }
 
 
+    void sMultirobotInstance::to_Stream_MddUmtexCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    {
+	int extra_cost;
+
+	//	s_GlobalPhaseStatistics.enter_Phase("MDD build");
+	int mdd_depth = construct_MDD(encoding_context.m_max_total_cost, m_the_MDD, extra_cost, m_the_extra_MDD);
+	//s_GlobalPhaseStatistics.leave_Phase();
+
+	if (encoding_context.m_extra_cost >= 0)
+	{
+	    to_Stream_MddUmtexCNFsat(fw, encoding_context, encoding_context.m_extra_cost, mdd_depth, m_the_MDD, m_the_extra_MDD, indent, verbose);
+	}
+	else
+	{
+	    encoding_context.m_extra_cost = extra_cost;
+	    to_Stream_MddUmtexCNFsat(fw, encoding_context, extra_cost, mdd_depth, m_the_MDD, m_the_extra_MDD, indent, verbose);
+	}
+    }
+
+
+    void sMultirobotInstance::to_Stream_MddMutexCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    {
+	int extra_cost;
+
+	//	s_GlobalPhaseStatistics.enter_Phase("MDD build");
+	int mdd_depth = construct_MDD(encoding_context.m_max_total_cost, m_the_MDD, extra_cost, m_the_extra_MDD);
+	//s_GlobalPhaseStatistics.leave_Phase();
+
+	if (encoding_context.m_extra_cost >= 0)
+	{
+	    to_Stream_MddMutexCNFsat(fw, encoding_context, encoding_context.m_extra_cost, mdd_depth, m_the_MDD, m_the_extra_MDD, indent, verbose);
+	}
+	else
+	{
+	    encoding_context.m_extra_cost = extra_cost;
+	    to_Stream_MddMutexCNFsat(fw, encoding_context, extra_cost, mdd_depth, m_the_MDD, m_the_extra_MDD, indent, verbose);
+	}
+    }    
+
+
     void sMultirobotInstance::to_Stream_GMddCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
 	int extra_cost;
@@ -819,6 +899,46 @@ namespace sReloc
 	    to_Memory_MddCNFsat(solver, encoding_context, extra_cost, mdd_depth, m_the_MDD, m_the_extra_MDD, indent, verbose);
 	}
     }
+
+
+    void sMultirobotInstance::to_Memory_MddUmtexCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    {
+	int extra_cost;
+
+	//	s_GlobalPhaseStatistics.enter_Phase("MDD build");
+	int mdd_depth = construct_MDD(encoding_context.m_max_total_cost, m_the_MDD, extra_cost, m_the_extra_MDD);
+	//s_GlobalPhaseStatistics.leave_Phase();
+
+	if (encoding_context.m_extra_cost >= 0)
+	{
+	    to_Memory_MddUmtexCNFsat(solver, encoding_context, encoding_context.m_extra_cost, mdd_depth, m_the_MDD, m_the_extra_MDD, indent, verbose);
+	}
+	else
+	{
+	    encoding_context.m_extra_cost = extra_cost;
+	    to_Memory_MddUmtexCNFsat(solver, encoding_context, extra_cost, mdd_depth, m_the_MDD, m_the_extra_MDD, indent, verbose);
+	}
+    }
+
+
+    void sMultirobotInstance::to_Memory_MddMutexCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    {
+	int extra_cost;
+
+	//	s_GlobalPhaseStatistics.enter_Phase("MDD build");
+	int mdd_depth = construct_MDD(encoding_context.m_max_total_cost, m_the_MDD, extra_cost, m_the_extra_MDD);
+	//s_GlobalPhaseStatistics.leave_Phase();
+
+	if (encoding_context.m_extra_cost >= 0)
+	{
+	    to_Memory_MddMutexCNFsat(solver, encoding_context, encoding_context.m_extra_cost, mdd_depth, m_the_MDD, m_the_extra_MDD, indent, verbose);
+	}
+	else
+	{
+	    encoding_context.m_extra_cost = extra_cost;
+	    to_Memory_MddMutexCNFsat(solver, encoding_context, extra_cost, mdd_depth, m_the_MDD, m_the_extra_MDD, indent, verbose);
+	}
+    }    
 
 
     void sMultirobotInstance::to_Memory_GMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
@@ -2148,6 +2268,1937 @@ namespace sReloc
 	}
 	}
     }
+
+
+    struct Mutex
+    {
+	Mutex() { /* nothing */ }
+	Mutex(int robot_id, int vertex_id, int mdd_idx, int mdd_other_idx)
+	    : m_robot_id(robot_id)
+	    , m_vertex_id(vertex_id)
+	    , m_mdd_idx(mdd_idx)
+	    , m_mdd_other_idx(mdd_other_idx)
+	{ /* nothing */ }
+
+	bool operator<(const Mutex &mutex) const
+	{
+	    return (m_robot_id < mutex.m_robot_id || (m_robot_id == mutex.m_robot_id && m_vertex_id < mutex.m_vertex_id));
+	}
+
+	int m_robot_id;
+	int m_vertex_id;
+	int m_mdd_idx;
+	int m_mdd_other_idx;
+    };
+
+    struct MTX
+    {
+	MTX() { /* nothing */ }
+	MTX(int robot_id, int vertex_id)
+	    : m_robot_id(robot_id)
+	    , m_vertex_id(vertex_id)
+	{ /* nothing */ }
+	
+	int m_robot_id;
+	int m_vertex_id;
+    };
+
+    typedef std::pair<MTX, MTX> MTX_pair;
+
+    struct ScheduledMTX
+    {
+	ScheduledMTX() { /* nothing */ }
+	ScheduledMTX(int layer, MTX_pair mtx)
+	    : m_layer(layer)
+	    , m_mtx(mtx)
+	{ /* nothing */ }
+	
+	int m_layer;
+	MTX_pair m_mtx;
+    };
+
+    typedef std::list<ScheduledMTX> ScheduledMTXs_list;
+
+    typedef std::vector<Mutex> Mutexes_vector;
+    typedef std::set<Mutex, std::less<Mutex> > Mutexes_set;    
+    typedef std::unordered_map<int, Mutexes_set> VertexMutexes_umap;
+    
+    typedef std::vector<VertexMutexes_umap> LayerMutexes_vector;
+    typedef std::vector<LayerMutexes_vector> RobotMutexes_vector;
+    
+    typedef RobotMutexes_vector MDDMutexes_vector;
+    
+
+    void sMultirobotInstance::to_Stream_MddUmtexCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    {
+	encoding_context.switchTo_AdvancedGeneratingMode();	
+
+	int Clause_cnt = 0;
+	int aux_Variable_cnt = 0;
+	int total_Literal_cnt = 0;
+
+	int N_Vertices = m_environment.get_VertexCount();
+	int N_Robots = m_initial_arrangement.get_RobotCount();
+	int N_Layers = mdd_depth;
+
+	encoding_context.m_vertex_occupancy_by_water_.resize(N_Robots + 1);
+	encoding_context.m_vertex_water_cardinality_.resize(N_Robots + 1);
+	encoding_context.m_edge_occupancy_by_water__.resize(N_Robots + 1);
+
+	InverseMDD_vector inverse_MDD;
+	construct_InverseMDD(N_Vertices, MDD, inverse_MDD);
+
+	MDDMutexes_vector Mutexes;
+	Mutexes.resize(N_Robots + 1);
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    encoding_context.m_vertex_occupancy_by_water_[robot_id].resize(N_Layers + 1);
+	    encoding_context.m_vertex_water_cardinality_[robot_id].resize(N_Layers + 1);
+
+	    Mutexes[robot_id].resize(N_Layers + 1);
+	    
+	    for (int layer = 0; layer <= N_Layers; ++layer)
+	    {
+		sIndexableBitIdentifier vertex_occupancy_by_water_(&encoding_context.m_variable_store,
+								   "vertex_occupancy_by_water-" + sInt_32_to_String(robot_id) + "_" + sInt_32_to_String(layer),
+								   sIntegerScope(0, MDD[robot_id][layer].size() - 1));
+		encoding_context.m_vertex_occupancy_by_water_[robot_id][layer] = vertex_occupancy_by_water_;
+		encoding_context.register_TranslateIdentifier(encoding_context.m_vertex_occupancy_by_water_[robot_id][layer]);
+
+		if (!extra_MDD[robot_id][layer].empty())
+		{
+		    sASSERT(extra_MDD[robot_id][layer].size() == 1);
+
+		    sIndexableBitIdentifier vertex_water_cardinality_(&encoding_context.m_variable_store,
+								      "vertex_water_cardinality-" + sInt_32_to_String(robot_id) + "_" + sInt_32_to_String(layer),
+								      sIntegerScope(0, 0));
+		    encoding_context.m_vertex_water_cardinality_[robot_id][layer] = vertex_water_cardinality_;
+		    encoding_context.register_TranslateIdentifier(encoding_context.m_vertex_water_cardinality_[robot_id][layer]);
+
+		    for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
+		    {
+			if (extra_MDD[robot_id][layer][0] != MDD[robot_id][layer][u])
+			{
+			    Clause_cnt += encoding_context.m_bit_generator->count_Implication(aux_Variable_cnt,
+											      total_Literal_cnt,
+											      sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer], sIntegerIndex(u)),
+											      sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][layer], sIntegerIndex(0)));
+			}
+		    }
+		    sBitClauseGenerator::SpecifiedBitIdentifiers_vector prev_cardinality_Identifiers;
+
+		    for (int prev_layer = 0; prev_layer < layer; ++prev_layer)
+		    {
+			if (!extra_MDD[robot_id][prev_layer].empty())
+			{
+			    prev_cardinality_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][prev_layer], sIntegerIndex(0)));
+			}
+		    }
+		    if (!prev_cardinality_Identifiers.empty())
+		    {
+			Clause_cnt += encoding_context.m_bit_generator->count_MultiConjunctiveImplication(aux_Variable_cnt,
+													  total_Literal_cnt,
+													  sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][layer], sIntegerIndex(0)),
+													  prev_cardinality_Identifiers);
+		    }
+		}
+	    }
+	}
+
+	sBitClauseGenerator::SpecifiedBitIdentifiers_vector cardinality_Identifiers;
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    for (int layer = 0; layer <= N_Layers; ++layer)
+	    {
+		if (!extra_MDD[robot_id][layer].empty())
+		{
+		    cardinality_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][layer], sIntegerIndex(0)));
+		}
+	    }
+	}       
+	if (!cardinality_Identifiers.empty())
+	{
+	    Clause_cnt += encoding_context.m_bit_generator->count_Cardinality(aux_Variable_cnt,total_Literal_cnt, cardinality_Identifiers, extra_cost);
+	}
+
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    encoding_context.m_edge_occupancy_by_water__[robot_id].resize(N_Layers);
+
+	    for (int layer = 0; layer < N_Layers; ++layer)
+	    {
+		encoding_context.m_edge_occupancy_by_water__[robot_id][layer].resize(MDD[robot_id][layer].size());
+
+		for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
+		{
+		    int N_neighbors = 0;
+
+		    for (int v = 0; v < MDD[robot_id][layer + 1].size(); ++v)
+		    {
+			if (m_environment.is_Adjacent(MDD[robot_id][layer][u], MDD[robot_id][layer + 1][v]) || MDD[robot_id][layer][u] == MDD[robot_id][layer + 1][v])
+			{
+			    ++N_neighbors;
+			}
+		    }
+		    sIndexableBitIdentifier edge_occupancy_by_water__(&encoding_context.m_variable_store,
+								      "edge_occupancy_by_water-" + sInt_32_to_String(robot_id) + "_" + sInt_32_to_String(layer) + "_" + sInt_32_to_String(MDD[robot_id][layer][u]),
+								      sIntegerScope(0, N_neighbors - 1));
+		    encoding_context.m_edge_occupancy_by_water__[robot_id][layer][u] = edge_occupancy_by_water__;
+		    encoding_context.register_TranslateIdentifier(encoding_context.m_edge_occupancy_by_water__[robot_id][layer][u]);
+
+		}
+	    }
+	}
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    for (int layer = 0; layer < N_Layers; ++layer)
+	    {
+		sBitClauseGenerator::SpecifiedBitIdentifiers_vector mutex_vertex_Identifiers;
+
+		for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
+		{
+		    sBitClauseGenerator::SpecifiedBitIdentifiers_vector mutex_target_Identifiers;
+
+		    int neighbor_index = 0;
+		    for (int v = 0; v < MDD[robot_id][layer + 1].size(); ++v)
+		    {
+			if (m_environment.is_Adjacent(MDD[robot_id][layer][u], MDD[robot_id][layer + 1][v]) || MDD[robot_id][layer][u] == MDD[robot_id][layer + 1][v])
+			{
+			    mutex_target_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_edge_occupancy_by_water__[robot_id][layer][u], sIntegerIndex(neighbor_index)));
+
+			    Clause_cnt += encoding_context.m_bit_generator->count_Implication(aux_Variable_cnt,
+											      total_Literal_cnt,
+											      sSpecifiedBitIdentifier(&encoding_context.m_edge_occupancy_by_water__[robot_id][layer][u],
+														      sIntegerIndex(neighbor_index)),
+											      sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer + 1],
+														      sIntegerIndex(v)));
+			    neighbor_index++;
+			}
+		    }
+		    mutex_vertex_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer], sIntegerIndex(u)));	
+	    
+		    Clause_cnt += encoding_context.m_bit_generator->count_MultiImplication(aux_Variable_cnt,
+											   total_Literal_cnt,
+											   sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer],
+														   sIntegerIndex(u)),
+											   mutex_target_Identifiers);
+
+		    Clause_cnt += encoding_context.m_bit_generator->count_AllMutexConstraint(aux_Variable_cnt,
+											     total_Literal_cnt,
+											     mutex_target_Identifiers);   
+		}
+		Clause_cnt += encoding_context.m_bit_generator->count_AllMutexConstraint(aux_Variable_cnt,
+											 total_Literal_cnt,
+											 mutex_vertex_Identifiers);
+	    }
+	}
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    sBitClauseGenerator::SpecifiedBitIdentifiers_vector mutex_vertex_Identifiers;
+		    
+	    for (int u = 0; u < MDD[robot_id][N_Layers].size(); ++u)
+	    {
+		mutex_vertex_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][N_Layers], sIntegerIndex(u)));
+	    }
+	    Clause_cnt += encoding_context.m_bit_generator->count_AllMutexConstraint(aux_Variable_cnt,
+										     total_Literal_cnt,
+										     mutex_vertex_Identifiers);
+	}
+
+	for (int vertex_id = 0; vertex_id < N_Vertices; ++vertex_id)
+	{
+	    for (int layer = 0; layer <= N_Layers; ++layer)
+	    {
+		sBitClauseGenerator::SpecifiedBitIdentifiers_vector mutex_occupancy_Identifiers;
+
+		for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+		{
+		    for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
+		    {
+			if (MDD[robot_id][layer][u] == vertex_id)
+			{
+			    mutex_occupancy_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer], sIntegerIndex(u)));
+			}
+		    }
+		}
+		if (mutex_occupancy_Identifiers.size() > 1)
+		{
+		    Clause_cnt += encoding_context.m_bit_generator->count_AllMutexConstraint(aux_Variable_cnt,
+											     total_Literal_cnt,
+											     mutex_occupancy_Identifiers);
+		}
+	    }
+	}
+
+
+	ScheduledMTXs_list scheduled_Mutexes;
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{	   
+	    for (int layer = 0; layer < N_Layers; ++layer)
+	    {
+		for (int other_robot_id = 1; other_robot_id <= N_Robots; ++other_robot_id)
+		{
+		    if (other_robot_id < robot_id)
+		    {
+			for (int uu = 0; uu < MDD[robot_id][layer].size(); ++uu)
+			{
+			    int uu_mdd_idx = inverse_MDD[other_robot_id][layer][MDD[robot_id][layer][uu]];
+			    
+			    if (uu_mdd_idx >= 0)
+			    {
+				scheduled_Mutexes.push_back(ScheduledMTX(layer, MTX_pair(MTX(robot_id, MDD[robot_id][layer][uu]), MTX(other_robot_id, MDD[other_robot_id][layer][uu_mdd_idx]))));
+			    }
+			}
+		    }
+		}
+	    }
+	}
+
+	std::vector<VertexIDs_vector> vertex_neighbor_IDs;
+	vertex_neighbor_IDs.resize(N_Vertices);
+
+	for (int vertex_id = 0; vertex_id < N_Vertices; ++vertex_id)
+	{
+	    sVertex::Neighbors_list &vertex_Neighbors = m_environment.m_Vertices[vertex_id].m_Neighbors;
+	    for (sVertex::Neighbors_list::const_iterator vertex_neighbor = vertex_Neighbors.begin(); vertex_neighbor != vertex_Neighbors.end(); ++vertex_neighbor)
+	    {
+		vertex_neighbor_IDs[vertex_id].push_back((*vertex_neighbor)->m_target->m_id);
+	    }
+	    vertex_neighbor_IDs[vertex_id].push_back(vertex_id);	    
+	}
+
+	while (!scheduled_Mutexes.empty())
+	{
+//	    printf("Size: %ld\n", scheduled_Mutexes.size()); 
+	    const ScheduledMTX &scheduled_MTX = scheduled_Mutexes.front();	    
+	    
+	    int vertex_u_id = scheduled_MTX.m_mtx.first.m_vertex_id;
+	    int vertex_w_id = scheduled_MTX.m_mtx.second.m_vertex_id;
+
+	    int robot_id = scheduled_MTX.m_mtx.first.m_robot_id;
+	    int other_robot_id = scheduled_MTX.m_mtx.second.m_robot_id;
+
+	    int layer = scheduled_MTX.m_layer;
+	    
+	    if (layer < N_Layers)
+	    {
+		/*
+		sVertex::Neighbors_list &u_Neighbors = m_environment.m_Vertices[vertex_u_id].m_Neighbors;
+		VertexIDs_vector u_neighbor_IDs;
+		for (sVertex::Neighbors_list::const_iterator u_neighbor = u_Neighbors.begin(); u_neighbor != u_Neighbors.end(); ++u_neighbor)
+		{
+		    u_neighbor_IDs.push_back((*u_neighbor)->m_target->m_id);
+		}
+		u_neighbor_IDs.push_back(vertex_u_id);
+		
+		sVertex::Neighbors_list &w_Neighbors = m_environment.m_Vertices[vertex_w_id].m_Neighbors;
+		VertexIDs_vector w_neighbor_IDs;
+		for (sVertex::Neighbors_list::const_iterator w_neighbor = w_Neighbors.begin(); w_neighbor != w_Neighbors.end(); ++w_neighbor)
+		{
+		    w_neighbor_IDs.push_back((*w_neighbor)->m_target->m_id);
+		}
+		w_neighbor_IDs.push_back(vertex_w_id);
+		*/
+		
+		for (VertexIDs_vector::const_iterator v_neighbor = vertex_neighbor_IDs[vertex_u_id].begin(); v_neighbor != vertex_neighbor_IDs[vertex_u_id].end(); ++v_neighbor)
+		{
+		    sInt_32 v_mdd_idx = inverse_MDD[robot_id][layer + 1][(*v_neighbor)];
+						    
+		    if (v_mdd_idx >= 0)
+		    {
+			for (VertexIDs_vector::const_iterator z_neighbor = vertex_neighbor_IDs[vertex_w_id].begin(); z_neighbor != vertex_neighbor_IDs[vertex_w_id].end(); ++z_neighbor)
+			{
+			    sInt_32 z_mdd_idx = inverse_MDD[other_robot_id][layer + 1][(*z_neighbor)];
+			    
+			    if (z_mdd_idx >= 0)
+			    {			    			    
+				if (*v_neighbor < *z_neighbor)
+				{
+				    int vertex_v_id = *v_neighbor;
+				    int vertex_z_id = *z_neighbor;
+
+				    bool all_mutex = true;
+
+				    /*
+				    sVertex::Neighbors_list &v_Neighbors = m_environment.m_Vertices[vertex_v_id].m_Neighbors;
+				    VertexIDs_vector v_neighbor_IDs;
+				    for (sVertex::Neighbors_list::const_iterator v_neighbor = v_Neighbors.begin(); v_neighbor != v_Neighbors.end(); ++v_neighbor)
+				    {
+					v_neighbor_IDs.push_back((*v_neighbor)->m_target->m_id);
+				    }
+				    v_neighbor_IDs.push_back(vertex_v_id);
+				    */
+				    
+				    for (VertexIDs_vector::const_iterator v_neighbor = vertex_neighbor_IDs[vertex_v_id].begin(); v_neighbor != vertex_neighbor_IDs[vertex_v_id].end(); ++v_neighbor)
+				    {
+					sInt_32 u_mdd_idx = inverse_MDD[robot_id][layer][(*v_neighbor)];
+					
+					if (u_mdd_idx >= 0)
+					{
+					    bool u_all_mutex = true;
+
+					    /*
+					    sVertex::Neighbors_list &z_Neighbors = m_environment.m_Vertices[vertex_z_id].m_Neighbors;
+					    VertexIDs_vector z_neighbor_IDs;
+					    for (sVertex::Neighbors_list::const_iterator z_neighbor = z_Neighbors.begin(); z_neighbor != z_Neighbors.end(); ++z_neighbor)
+					    {
+						z_neighbor_IDs.push_back((*z_neighbor)->m_target->m_id);
+					    }
+					    z_neighbor_IDs.push_back(vertex_z_id);
+					    */
+					    
+					    for (VertexIDs_vector::const_iterator z_neighbor = vertex_neighbor_IDs[vertex_z_id].begin(); z_neighbor != vertex_neighbor_IDs[vertex_z_id].end(); ++z_neighbor)
+					    {
+						sInt_32 w_mdd_idx = inverse_MDD[other_robot_id][layer][(*z_neighbor)];
+						
+						if (w_mdd_idx >= 0)
+						{
+						    bool mutex_found = false;						
+						    
+						    if (MDD[robot_id][layer][u_mdd_idx] == MDD[other_robot_id][layer][w_mdd_idx])
+						    {
+							mutex_found = true;
+						    }
+						    else
+						    {
+							VertexMutexes_umap::const_iterator mutexes_u = Mutexes[robot_id][layer].find(MDD[robot_id][layer][u_mdd_idx]);
+							
+							if (mutexes_u != Mutexes[robot_id][layer].end())
+							{
+							    for (Mutexes_set::const_iterator mutex_u = mutexes_u->second.begin(); mutex_u != mutexes_u->second.end(); ++mutex_u)
+							    {
+								if (mutex_u->m_robot_id == other_robot_id && mutex_u->m_vertex_id == MDD[other_robot_id][layer][w_mdd_idx])
+								{
+								    mutex_found = true;
+								    break;
+								}
+							    }
+							}
+						    }
+						    if (!mutex_found)
+						    {
+							u_all_mutex = false;
+							break;
+						    }
+						}
+					    }
+					    if (!u_all_mutex)
+					    {
+						all_mutex = false;
+						break;
+					    }
+					}
+				    }				    
+				    if (all_mutex)
+				    {
+					bool next_first_mutex = Mutexes[robot_id][layer + 1][vertex_v_id].insert(Mutex(other_robot_id, vertex_z_id, z_mdd_idx, v_mdd_idx)).second;
+					bool next_second_mutex = Mutexes[other_robot_id][layer + 1][vertex_z_id].insert(Mutex(robot_id, vertex_v_id, v_mdd_idx, z_mdd_idx)).second;
+
+					if (next_first_mutex || next_second_mutex)
+					{
+					    scheduled_Mutexes.push_back(ScheduledMTX(layer + 1, MTX_pair(MTX(robot_id, vertex_v_id), MTX(other_robot_id, vertex_z_id))));
+					}
+				    }
+				}	    
+			    }
+			}
+		    }
+		}
+	    }
+	    if (layer > 0)
+	    {		
+		for (VertexIDs_vector::const_iterator v_neighbor = vertex_neighbor_IDs[vertex_u_id].begin(); v_neighbor != vertex_neighbor_IDs[vertex_u_id].end(); ++v_neighbor)
+		{
+		    sInt_32 v_mdd_idx = inverse_MDD[robot_id][layer - 1][(*v_neighbor)];
+						    
+		    if (v_mdd_idx >= 0)
+		    {
+			for (VertexIDs_vector::const_iterator z_neighbor = vertex_neighbor_IDs[vertex_w_id].begin(); z_neighbor != vertex_neighbor_IDs[vertex_w_id].end(); ++z_neighbor)
+			{
+			    sInt_32 z_mdd_idx = inverse_MDD[other_robot_id][layer - 1][(*z_neighbor)];
+			    
+			    if (z_mdd_idx >= 0)
+			    {			    			    
+				if (*v_neighbor < *z_neighbor)
+				{
+				    int vertex_v_id = *v_neighbor;
+				    int vertex_z_id = *z_neighbor;
+
+				    bool all_mutex = true;
+				    
+				    for (VertexIDs_vector::const_iterator v_neighbor = vertex_neighbor_IDs[vertex_v_id].begin(); v_neighbor != vertex_neighbor_IDs[vertex_v_id].end(); ++v_neighbor)
+				    {
+					sInt_32 u_mdd_idx = inverse_MDD[robot_id][layer][(*v_neighbor)];
+					
+					if (u_mdd_idx >= 0)
+					{
+					    bool u_all_mutex = true;
+					    
+					    for (VertexIDs_vector::const_iterator z_neighbor = vertex_neighbor_IDs[vertex_z_id].begin(); z_neighbor != vertex_neighbor_IDs[vertex_z_id].end(); ++z_neighbor)
+					    {
+						sInt_32 w_mdd_idx = inverse_MDD[other_robot_id][layer][(*z_neighbor)];
+						
+						if (w_mdd_idx >= 0)
+						{
+						    bool mutex_found = false;						
+						    
+						    if (MDD[robot_id][layer][u_mdd_idx] == MDD[other_robot_id][layer][w_mdd_idx])
+						    {
+							mutex_found = true;
+						    }
+						    else
+						    {
+							VertexMutexes_umap::const_iterator mutexes_u = Mutexes[robot_id][layer].find(MDD[robot_id][layer][u_mdd_idx]);
+							
+							if (mutexes_u != Mutexes[robot_id][layer].end())
+							{
+							    for (Mutexes_set::const_iterator mutex_u = mutexes_u->second.begin(); mutex_u != mutexes_u->second.end(); ++mutex_u)
+							    {
+								if (mutex_u->m_robot_id == other_robot_id && mutex_u->m_vertex_id == MDD[other_robot_id][layer][w_mdd_idx])
+								{
+								    mutex_found = true;
+								    break;
+								}
+							    }
+							}
+						    }
+						    if (!mutex_found)
+						    {
+							u_all_mutex = false;
+							break;
+						    }
+						}
+					    }
+					    if (!u_all_mutex)
+					    {
+						all_mutex = false;
+						break;
+					    }
+					}
+				    }				    
+				    if (all_mutex)
+				    {
+					bool next_first_mutex = Mutexes[robot_id][layer - 1][vertex_v_id].insert(Mutex(other_robot_id, vertex_z_id, z_mdd_idx, v_mdd_idx)).second;
+					bool next_second_mutex = Mutexes[other_robot_id][layer - 1][vertex_z_id].insert(Mutex(robot_id, vertex_v_id, v_mdd_idx, z_mdd_idx)).second;
+
+					if (next_first_mutex || next_second_mutex)
+					{
+					    scheduled_Mutexes.push_back(ScheduledMTX(layer - 1, MTX_pair(MTX(robot_id, vertex_v_id), MTX(other_robot_id, vertex_z_id))));
+					}
+				    }
+				}	    
+			    }
+		        }	
+		    }
+		}
+	    }
+	    scheduled_Mutexes.pop_front();
+	}
+	int N_mutexes = 0;
+	
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{	    
+	    for (int layer = 0; layer <= N_Layers; ++layer)
+	    {
+		for (VertexMutexes_umap::const_iterator mutexes_u = Mutexes[robot_id][layer].begin(); mutexes_u != Mutexes[robot_id][layer].end(); ++mutexes_u)
+		{
+		    int vertex_u_id = mutexes_u->first;
+
+		    for (Mutexes_set::const_iterator mutex_u = mutexes_u->second.begin(); mutex_u != mutexes_u->second.end(); ++mutex_u)
+		    {			
+			int vertex_v_id = mutex_u->m_vertex_id;
+			int vertex_v_idx = mutex_u->m_mdd_idx;
+			int vertex_u_idx = mutex_u->m_mdd_other_idx;			
+			int other_robot_id = mutex_u->m_robot_id;
+			
+			if (vertex_u_id < vertex_v_id)
+			{
+			    Clause_cnt += encoding_context.m_bit_generator->count_Mutex(aux_Variable_cnt,
+												    total_Literal_cnt,
+												    sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer],
+															    sIntegerIndex(vertex_u_idx)),
+												    sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[other_robot_id][layer],
+															    sIntegerIndex(vertex_v_idx)));
+//			    printf(" 	 Mutex: at level %d - [%d, %d (%d)] x [%d, %d (%d)]\n", layer, robot_id, vertex_u_id, vertex_u_idx, other_robot_id, vertex_v_id, vertex_v_idx);
+			    ++N_mutexes;
+			}
+		    }
+		}
+	    }
+	}
+	printf("Mutexes found in total: %d\n", N_mutexes);			
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    for (int layer = 0; layer < N_Layers; ++layer)
+	    {
+		for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
+		{
+		    int neighbor_index = 0;
+		    for (int v = 0; v < MDD[robot_id][layer + 1].size(); ++v)
+		    {
+			if (m_environment.is_Adjacent(MDD[robot_id][layer][u], MDD[robot_id][layer + 1][v]) || MDD[robot_id][layer][u] == MDD[robot_id][layer + 1][v])
+			{
+			    sBitClauseGenerator::SpecifiedBitIdentifiers_vector biangular_Identifiers;
+			    if (MDD[robot_id][layer][u] != MDD[robot_id][layer + 1][v])
+			    {
+				for (sVertex::VertexIDs_vector::const_iterator conflict = m_environment.m_Vertices[MDD[robot_id][layer + 1][v]].m_Conflicts.begin();
+				     conflict != m_environment.m_Vertices[MDD[robot_id][layer + 1][v]].m_Conflicts.end(); ++conflict)
+				{
+				    for (int k = 0; k < m_robustness; ++k)
+				    {
+					if (layer - k >= 0)
+					{
+					    for (int other_robot_id = 1; other_robot_id <= N_Robots; ++other_robot_id)
+					    {
+						if (other_robot_id != robot_id)
+						{
+						    for (int vv = 0; vv < MDD[other_robot_id][layer - k].size(); ++vv)
+						    {
+							if (*conflict == MDD[other_robot_id][layer - k][vv])
+							{
+							    biangular_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[other_robot_id][layer - k],
+														    sIntegerIndex(vv)));
+							}
+						    }
+						}
+					    }
+					}
+				    }
+				}
+				for (int k = 0; k < m_robustness; ++k)
+				{
+				    if (layer - k >= 0)
+				    {
+					for (int other_robot_id = 1; other_robot_id <= N_Robots; ++other_robot_id)
+					{
+					    if (other_robot_id != robot_id)
+					    {
+						for (int vv = 0; vv < MDD[other_robot_id][layer - k].size(); ++vv)
+						{
+						    if (MDD[robot_id][layer + 1][v] == MDD[other_robot_id][layer - k][vv])
+						    {
+							biangular_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[other_robot_id][layer - k],
+														sIntegerIndex(vv)));
+						    }
+						}
+					    }
+					}
+				    }
+				}
+				if (!biangular_Identifiers.empty())
+				{
+				    Clause_cnt += encoding_context.m_bit_generator->count_MultiBiangleMutex(aux_Variable_cnt,
+													    total_Literal_cnt,
+													    sSpecifiedBitIdentifier(&encoding_context.m_edge_occupancy_by_water__[robot_id][layer][u],
+																    sIntegerIndex(neighbor_index)),
+													    biangular_Identifiers);
+				}
+			    }
+			    ++neighbor_index;
+			}
+		    }
+		}
+	    }
+	}
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    for (int u = 0; u < MDD[robot_id][0].size(); ++u)
+	    {
+		if (MDD[robot_id][0][u] == m_initial_arrangement.get_RobotLocation(robot_id))
+		{
+		    Clause_cnt += encoding_context.m_bit_generator->count_BitSet(aux_Variable_cnt,
+										 total_Literal_cnt,
+										 sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][0],
+													 sIntegerIndex(u)));
+		}
+	    }
+	}
+	switch (m_goal_type)
+	{
+	case GOAL_TYPE_ARRANGEMENT:
+	{
+	    for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	    {
+		for (int u = 0; u < MDD[robot_id][N_Layers].size(); ++u)
+		{
+		    if (MDD[robot_id][N_Layers][u] == m_goal_arrangement.get_RobotLocation(robot_id))
+		    {
+			Clause_cnt += encoding_context.m_bit_generator->count_BitSet(aux_Variable_cnt,
+										     total_Literal_cnt,
+										     sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][N_Layers],
+													     sIntegerIndex(u)));
+		    }
+		}
+	    }
+	    break;
+	}
+	case GOAL_TYPE_SPECIFICATION:
+	{
+	    for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	    {
+		for (int u = 0; u < MDD[robot_id][N_Layers].size(); ++u)
+		{
+		    sASSERT(m_goal_specification.get_RobotGoal(robot_id).size() == 1);
+
+		    if (MDD[robot_id][N_Layers][u] == *m_goal_specification.get_RobotGoal(robot_id).begin())
+		    {
+			Clause_cnt += encoding_context.m_bit_generator->count_BitSet(aux_Variable_cnt,
+										     total_Literal_cnt,
+										     sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][N_Layers],
+													     sIntegerIndex(u)));
+		    }
+		}
+	    }
+	    break;
+	}
+	default:
+	{
+	    sASSERT(false);
+	    break;
+	}
+	}
+
+	int N_cnf_Variables = encoding_context.m_variable_store.get_Last_CNFVariable() + aux_Variable_cnt - 1;
+
+#ifdef sDEBUG
+	fprintf(fw, "c %s : multirobot MDD SAT encoding\n", sPRODUCT);
+	fprintf(fw, "c %s\n", sCOPYRIGHT);
+	fprintf(fw, "c number of layers = %d\n", N_Layers);
+	fprintf(fw, "c number of visible variables = %d\n", N_cnf_Variables - aux_Variable_cnt);
+	fprintf(fw, "c number of hidden variables = %d\n", aux_Variable_cnt);
+	fprintf(fw, "c number of literals = %d\n", total_Literal_cnt);
+	fprintf(fw, "c number of clauses = %d\n", Clause_cnt);
+	fprintf(fw, "c number of propositional variables = %d\n", N_cnf_Variables);
+	fprintf(fw, "c number of clauses / number of variables = %.3f\n", (double)Clause_cnt / N_cnf_Variables);
+	fprintf(fw, "c number of literals / number of clauses = %.3f\n", (double)total_Literal_cnt /  Clause_cnt);
+	to_Stream(fw, "c ");
+#endif
+	fprintf(fw, "p cnf %d %d\n", N_cnf_Variables, Clause_cnt);
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    for (int layer = 0; layer <= N_Layers; ++layer)
+	    {
+		if (!extra_MDD[robot_id][layer].empty())
+		{
+		    sASSERT(extra_MDD[robot_id][layer].size() == 1);
+
+		    for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
+		    {
+			if (extra_MDD[robot_id][layer][0] != MDD[robot_id][layer][u])
+			{
+			    Clause_cnt += encoding_context.m_bit_generator->generate_Implication(fw,
+												 sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer], sIntegerIndex(u)),
+												 sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][layer], sIntegerIndex(0)));
+			}
+		    }
+		    sBitClauseGenerator::SpecifiedBitIdentifiers_vector prev_cardinality_Identifiers;
+
+		    for (int prev_layer = 0; prev_layer < layer; ++prev_layer)
+		    {
+			if (!extra_MDD[robot_id][prev_layer].empty())
+			{
+			    prev_cardinality_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][prev_layer], sIntegerIndex(0)));
+			}
+		    }
+		    if (!prev_cardinality_Identifiers.empty())
+		    {
+			Clause_cnt += encoding_context.m_bit_generator->generate_MultiConjunctiveImplication(fw,
+													     sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][layer], sIntegerIndex(0)),
+													     prev_cardinality_Identifiers);
+		    }
+		}
+	    }
+	}
+	if (!cardinality_Identifiers.empty())
+	{
+	    Clause_cnt += encoding_context.m_bit_generator->generate_Cardinality(fw, cardinality_Identifiers, extra_cost);
+	}
+
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    for (int layer = 0; layer < N_Layers; ++layer)
+	    {
+		sBitClauseGenerator::SpecifiedBitIdentifiers_vector mutex_vertex_Identifiers;
+		    
+		for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
+		{
+		    sBitClauseGenerator::SpecifiedBitIdentifiers_vector mutex_target_Identifiers;
+
+		    int neighbor_index = 0;
+		    for (int v = 0; v < MDD[robot_id][layer + 1].size(); ++v)
+		    {
+			if (m_environment.is_Adjacent(MDD[robot_id][layer][u], MDD[robot_id][layer + 1][v]) || MDD[robot_id][layer][u] == MDD[robot_id][layer + 1][v])
+			{
+			    mutex_target_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_edge_occupancy_by_water__[robot_id][layer][u], sIntegerIndex(neighbor_index)));
+
+			    Clause_cnt += encoding_context.m_bit_generator->generate_Implication(fw,
+												 sSpecifiedBitIdentifier(&encoding_context.m_edge_occupancy_by_water__[robot_id][layer][u],
+															 sIntegerIndex(neighbor_index)),
+												 sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer + 1],
+															 sIntegerIndex(v)));
+			    neighbor_index++;
+			}
+		    }
+		    mutex_vertex_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer], sIntegerIndex(u)));	
+	    
+		    Clause_cnt += encoding_context.m_bit_generator->generate_MultiImplication(fw,
+											      sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer],
+														      sIntegerIndex(u)),
+											      mutex_target_Identifiers);
+
+		    Clause_cnt += encoding_context.m_bit_generator->generate_AllMutexConstraint(fw,
+												mutex_target_Identifiers);   
+		}
+		Clause_cnt += encoding_context.m_bit_generator->generate_AllMutexConstraint(fw,
+											    mutex_vertex_Identifiers);
+	    }
+	}
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    sBitClauseGenerator::SpecifiedBitIdentifiers_vector mutex_vertex_Identifiers;
+		    
+	    for (int u = 0; u < MDD[robot_id][N_Layers].size(); ++u)
+	    {
+		mutex_vertex_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][N_Layers], sIntegerIndex(u)));
+	    }
+	    Clause_cnt += encoding_context.m_bit_generator->generate_AllMutexConstraint(fw,
+											mutex_vertex_Identifiers);
+	}
+
+	for (int vertex_id = 0; vertex_id < N_Vertices; ++vertex_id)
+	{
+	    for (int layer = 0; layer <= N_Layers; ++layer)
+	    {
+		sBitClauseGenerator::SpecifiedBitIdentifiers_vector mutex_occupancy_Identifiers;
+
+		for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+		{
+		    for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
+		    {
+			if (MDD[robot_id][layer][u] == vertex_id)
+			{
+			    mutex_occupancy_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer], sIntegerIndex(u)));
+			}
+		    }
+		}
+		if (mutex_occupancy_Identifiers.size() > 1)
+		{
+		    Clause_cnt += encoding_context.m_bit_generator->generate_AllMutexConstraint(fw,
+												mutex_occupancy_Identifiers);
+		}
+	    }
+	}
+
+	N_mutexes = 0;
+	
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{	    
+	    for (int layer = 0; layer <= N_Layers; ++layer)
+	    {
+		for (VertexMutexes_umap::const_iterator mutexes_u = Mutexes[robot_id][layer].begin(); mutexes_u != Mutexes[robot_id][layer].end(); ++mutexes_u)
+		{
+		    int vertex_u_id = mutexes_u->first;
+
+		    for (Mutexes_set::const_iterator mutex_u = mutexes_u->second.begin(); mutex_u != mutexes_u->second.end(); ++mutex_u)
+		    {			
+			int vertex_v_id = mutex_u->m_vertex_id;
+			/*
+			int vertex_v_idx = mutex_u->m_mdd_idx;
+			int vertex_u_idx = mutex_u->m_mdd_other_idx;			
+			int other_robot_id = mutex_u->m_robot_id;
+			*/
+			
+			if (vertex_u_id < vertex_v_id)
+			{
+			    /*
+			    Clause_cnt += encoding_context.m_bit_generator->generate_Mutex(fw,			    
+											   sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer],
+														   sIntegerIndex(vertex_u_idx)),
+											   sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[other_robot_id][layer],
+														   sIntegerIndex(vertex_v_idx)));
+			    */
+//			    printf(" 	 Mutex: at level %d - [%d, %d (%d)] x [%d, %d (%d)]\n", layer, robot_id, vertex_u_id, vertex_u_idx, other_robot_id, vertex_v_id, vertex_v_idx);
+			    ++N_mutexes;
+			}
+		    }
+		}
+	    }
+	}
+	//printf("Mutexes found in total: %d\n", N_mutexes);		
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    for (int layer = 0; layer < N_Layers; ++layer)
+	    {
+		for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
+		{
+		    int neighbor_index = 0;
+		    for (int v = 0; v < MDD[robot_id][layer + 1].size(); ++v)
+		    {
+			if (m_environment.is_Adjacent(MDD[robot_id][layer][u], MDD[robot_id][layer + 1][v]) || MDD[robot_id][layer][u] == MDD[robot_id][layer + 1][v])
+			{
+			    sBitClauseGenerator::SpecifiedBitIdentifiers_vector biangular_Identifiers;
+			    
+			    if (MDD[robot_id][layer][u] != MDD[robot_id][layer + 1][v])
+			    {
+				for (sVertex::VertexIDs_vector::const_iterator conflict = m_environment.m_Vertices[MDD[robot_id][layer + 1][v]].m_Conflicts.begin();
+				     conflict != m_environment.m_Vertices[MDD[robot_id][layer + 1][v]].m_Conflicts.end(); ++conflict)
+				{
+				    for (int k = 0; k < m_robustness; ++k)
+				    {
+					if (layer - k >= 0)
+					{
+					    for (int other_robot_id = 1; other_robot_id <= N_Robots; ++other_robot_id)
+					    {
+						if (other_robot_id != robot_id)
+						{
+						    for (int vv = 0; vv < MDD[other_robot_id][layer - k].size(); ++vv)
+						    {
+							if (*conflict == MDD[other_robot_id][layer - k][vv])
+							{
+							    biangular_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[other_robot_id][layer - k],
+														    sIntegerIndex(vv)));
+							}
+						    }
+						}
+					    }
+					}
+				    }				    
+				}				
+				for (int k = 0; k < m_robustness; ++k)
+				{
+				    if (layer - k >= 0)
+				    {
+					for (int other_robot_id = 1; other_robot_id <= N_Robots; ++other_robot_id)
+					{
+					    if (other_robot_id != robot_id)
+					    {
+						for (int vv = 0; vv < MDD[other_robot_id][layer - k].size(); ++vv)
+						{
+						    if (MDD[robot_id][layer + 1][v] == MDD[other_robot_id][layer - k][vv])
+						    {
+							biangular_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[other_robot_id][layer - k],
+														sIntegerIndex(vv)));
+						    }
+						}
+					    }
+					}
+				    }
+				}
+				if (!biangular_Identifiers.empty())
+				{
+				    encoding_context.m_bit_generator->generate_MultiBiangleMutex(fw,
+												 sSpecifiedBitIdentifier(&encoding_context.m_edge_occupancy_by_water__[robot_id][layer][u],
+															 sIntegerIndex(neighbor_index)),
+												 biangular_Identifiers);
+				}
+			    }
+			    ++neighbor_index;
+			}
+		    }
+		}
+	    }
+	}
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    for (int u = 0; u < MDD[robot_id][0].size(); ++u)
+	    {
+		if (MDD[robot_id][0][u] == m_initial_arrangement.get_RobotLocation(robot_id))
+		{
+		    Clause_cnt += encoding_context.m_bit_generator->generate_BitSet(fw,
+										    sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][0],
+													    sIntegerIndex(u)));
+		}
+	    }
+	}
+	switch (m_goal_type)
+	{
+	case GOAL_TYPE_ARRANGEMENT:
+	{
+	    for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	    {
+		for (int u = 0; u < MDD[robot_id][N_Layers].size(); ++u)
+		{
+		    if (MDD[robot_id][N_Layers][u] == m_goal_arrangement.get_RobotLocation(robot_id))
+		    {
+			Clause_cnt += encoding_context.m_bit_generator->generate_BitSet(fw,
+											sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][N_Layers],
+														sIntegerIndex(u)));
+		    }
+		}
+	    }
+	    break;
+	}
+	case GOAL_TYPE_SPECIFICATION:
+	{
+	    for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	    {
+		for (int u = 0; u < MDD[robot_id][N_Layers].size(); ++u)
+		{
+		    sASSERT(m_goal_specification.get_RobotGoal(robot_id).size() == 1);
+
+		    if (MDD[robot_id][N_Layers][u] == *m_goal_specification.get_RobotGoal(robot_id).begin())
+		    {
+			Clause_cnt += encoding_context.m_bit_generator->generate_BitSet(fw,
+											sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][N_Layers],
+														sIntegerIndex(u)));
+		    }
+		}
+	    }
+	    break;
+	}
+	default:
+	{
+	    sASSERT(false);
+	    break;
+	}
+	}
+    }
+
+
+    void sMultirobotInstance::to_Stream_MddMutexCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    {
+	encoding_context.switchTo_AdvancedGeneratingMode();	
+
+	int Clause_cnt = 0;
+	int aux_Variable_cnt = 0;
+	int total_Literal_cnt = 0;
+
+	int N_Vertices = m_environment.get_VertexCount();
+	int N_Robots = m_initial_arrangement.get_RobotCount();
+	int N_Layers = mdd_depth;
+
+	encoding_context.m_vertex_occupancy_by_water_.resize(N_Robots + 1);
+	encoding_context.m_vertex_water_cardinality_.resize(N_Robots + 1);
+	encoding_context.m_edge_occupancy_by_water__.resize(N_Robots + 1);
+
+	MDDMutexes_vector Mutexes;
+	Mutexes.resize(N_Robots + 1);		
+
+	InverseMDD_vector inverse_MDD;
+	construct_InverseMDD(N_Vertices, MDD, inverse_MDD);		
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    encoding_context.m_vertex_occupancy_by_water_[robot_id].resize(N_Layers + 1);
+	    encoding_context.m_vertex_water_cardinality_[robot_id].resize(N_Layers + 1);
+
+	    Mutexes[robot_id].resize(N_Layers + 1);
+	    
+	    for (int layer = 0; layer <= N_Layers; ++layer)
+	    {
+		sIndexableBitIdentifier vertex_occupancy_by_water_(&encoding_context.m_variable_store,
+								   "vertex_occupancy_by_water-" + sInt_32_to_String(robot_id) + "_" + sInt_32_to_String(layer),
+								   sIntegerScope(0, MDD[robot_id][layer].size() - 1));
+		encoding_context.m_vertex_occupancy_by_water_[robot_id][layer] = vertex_occupancy_by_water_;
+		encoding_context.register_TranslateIdentifier(encoding_context.m_vertex_occupancy_by_water_[robot_id][layer]);
+
+		if (!extra_MDD[robot_id][layer].empty())
+		{
+		    sASSERT(extra_MDD[robot_id][layer].size() == 1);
+
+		    sIndexableBitIdentifier vertex_water_cardinality_(&encoding_context.m_variable_store,
+								      "vertex_water_cardinality-" + sInt_32_to_String(robot_id) + "_" + sInt_32_to_String(layer),
+								      sIntegerScope(0, 0));
+		    encoding_context.m_vertex_water_cardinality_[robot_id][layer] = vertex_water_cardinality_;
+		    encoding_context.register_TranslateIdentifier(encoding_context.m_vertex_water_cardinality_[robot_id][layer]);
+
+		    for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
+		    {
+			if (extra_MDD[robot_id][layer][0] != MDD[robot_id][layer][u])
+			{
+			    Clause_cnt += encoding_context.m_bit_generator->count_Implication(aux_Variable_cnt,
+											      total_Literal_cnt,
+											      sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer], sIntegerIndex(u)),
+											      sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][layer], sIntegerIndex(0)));
+			}
+		    }
+		    sBitClauseGenerator::SpecifiedBitIdentifiers_vector prev_cardinality_Identifiers;
+
+		    for (int prev_layer = 0; prev_layer < layer; ++prev_layer)
+		    {
+			if (!extra_MDD[robot_id][prev_layer].empty())
+			{
+			    prev_cardinality_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][prev_layer], sIntegerIndex(0)));
+			}
+		    }
+		    if (!prev_cardinality_Identifiers.empty())
+		    {
+			Clause_cnt += encoding_context.m_bit_generator->count_MultiConjunctiveImplication(aux_Variable_cnt,
+													  total_Literal_cnt,
+													  sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][layer], sIntegerIndex(0)),
+													  prev_cardinality_Identifiers);
+		    }
+		}
+	    }
+	}
+
+	sBitClauseGenerator::SpecifiedBitIdentifiers_vector cardinality_Identifiers;
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    for (int layer = 0; layer <= N_Layers; ++layer)
+	    {
+		if (!extra_MDD[robot_id][layer].empty())
+		{
+		    cardinality_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][layer], sIntegerIndex(0)));
+		}
+	    }
+	}       
+	if (!cardinality_Identifiers.empty())
+	{
+	    Clause_cnt += encoding_context.m_bit_generator->count_Cardinality(aux_Variable_cnt,total_Literal_cnt, cardinality_Identifiers, extra_cost);
+	}
+
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    encoding_context.m_edge_occupancy_by_water__[robot_id].resize(N_Layers);
+
+	    for (int layer = 0; layer < N_Layers; ++layer)
+	    {
+		encoding_context.m_edge_occupancy_by_water__[robot_id][layer].resize(MDD[robot_id][layer].size());
+
+		for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
+		{
+		    int N_neighbors = 0;
+
+		    for (int v = 0; v < MDD[robot_id][layer + 1].size(); ++v)
+		    {
+			if (m_environment.is_Adjacent(MDD[robot_id][layer][u], MDD[robot_id][layer + 1][v]) || MDD[robot_id][layer][u] == MDD[robot_id][layer + 1][v])
+			{
+			    ++N_neighbors;
+			}
+		    }
+		    sIndexableBitIdentifier edge_occupancy_by_water__(&encoding_context.m_variable_store,
+								      "edge_occupancy_by_water-" + sInt_32_to_String(robot_id) + "_" + sInt_32_to_String(layer) + "_" + sInt_32_to_String(MDD[robot_id][layer][u]),
+								      sIntegerScope(0, N_neighbors - 1));
+		    encoding_context.m_edge_occupancy_by_water__[robot_id][layer][u] = edge_occupancy_by_water__;
+		    encoding_context.register_TranslateIdentifier(encoding_context.m_edge_occupancy_by_water__[robot_id][layer][u]);
+
+		}
+	    }
+	}
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    for (int layer = 0; layer < N_Layers; ++layer)
+	    {
+		sBitClauseGenerator::SpecifiedBitIdentifiers_vector mutex_vertex_Identifiers;
+
+		for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
+		{
+		    sBitClauseGenerator::SpecifiedBitIdentifiers_vector mutex_target_Identifiers;
+
+		    int neighbor_index = 0;
+		    for (int v = 0; v < MDD[robot_id][layer + 1].size(); ++v)
+		    {
+			if (m_environment.is_Adjacent(MDD[robot_id][layer][u], MDD[robot_id][layer + 1][v]) || MDD[robot_id][layer][u] == MDD[robot_id][layer + 1][v])
+			{
+			    mutex_target_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_edge_occupancy_by_water__[robot_id][layer][u], sIntegerIndex(neighbor_index)));
+
+			    Clause_cnt += encoding_context.m_bit_generator->count_Implication(aux_Variable_cnt,
+											      total_Literal_cnt,
+											      sSpecifiedBitIdentifier(&encoding_context.m_edge_occupancy_by_water__[robot_id][layer][u],
+														      sIntegerIndex(neighbor_index)),
+											      sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer + 1],
+														      sIntegerIndex(v)));
+			    neighbor_index++;
+			}
+		    }
+		    mutex_vertex_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer], sIntegerIndex(u)));	
+	    
+		    Clause_cnt += encoding_context.m_bit_generator->count_MultiImplication(aux_Variable_cnt,
+											   total_Literal_cnt,
+											   sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer],
+														   sIntegerIndex(u)),
+											   mutex_target_Identifiers);
+
+		    Clause_cnt += encoding_context.m_bit_generator->count_AllMutexConstraint(aux_Variable_cnt,
+											     total_Literal_cnt,
+											     mutex_target_Identifiers);   
+		}
+		Clause_cnt += encoding_context.m_bit_generator->count_AllMutexConstraint(aux_Variable_cnt,
+											 total_Literal_cnt,
+											 mutex_vertex_Identifiers);
+	    }
+	}
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    sBitClauseGenerator::SpecifiedBitIdentifiers_vector mutex_vertex_Identifiers;
+		    
+	    for (int u = 0; u < MDD[robot_id][N_Layers].size(); ++u)
+	    {
+		mutex_vertex_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][N_Layers], sIntegerIndex(u)));
+	    }
+	    Clause_cnt += encoding_context.m_bit_generator->count_AllMutexConstraint(aux_Variable_cnt,
+										     total_Literal_cnt,
+										     mutex_vertex_Identifiers);
+	}
+
+	for (int vertex_id = 0; vertex_id < N_Vertices; ++vertex_id)
+	{
+	    for (int layer = 0; layer <= N_Layers; ++layer)
+	    {
+		sBitClauseGenerator::SpecifiedBitIdentifiers_vector mutex_occupancy_Identifiers;
+
+		for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+		{
+		    for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
+		    {
+			if (MDD[robot_id][layer][u] == vertex_id)
+			{
+			    mutex_occupancy_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer], sIntegerIndex(u)));
+			}
+		    }
+		}
+		if (mutex_occupancy_Identifiers.size() > 1)
+		{
+		    Clause_cnt += encoding_context.m_bit_generator->count_AllMutexConstraint(aux_Variable_cnt,
+											     total_Literal_cnt,
+											     mutex_occupancy_Identifiers);
+		}
+	    }
+	}
+
+
+	ScheduledMTXs_list scheduled_Mutexes;
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{	   
+	    for (int layer = 0; layer < N_Layers; ++layer)
+	    {
+		for (int other_robot_id = 1; other_robot_id <= N_Robots; ++other_robot_id)
+		{
+		    if (other_robot_id < robot_id)
+		    {
+			for (int uu = 0; uu < MDD[robot_id][layer].size(); ++uu)
+			{
+			    int uu_mdd_idx = inverse_MDD[other_robot_id][layer][MDD[robot_id][layer][uu]];
+			    
+			    if (uu_mdd_idx >= 0)
+			    {
+				scheduled_Mutexes.push_back(ScheduledMTX(layer, MTX_pair(MTX(robot_id, MDD[robot_id][layer][uu]), MTX(other_robot_id, MDD[other_robot_id][layer][uu_mdd_idx]))));
+			    }
+			}
+		    }
+		}
+	    }
+	}
+
+	std::vector<VertexIDs_vector> vertex_neighbor_IDs;
+	vertex_neighbor_IDs.resize(N_Vertices);
+
+	for (int vertex_id = 0; vertex_id < N_Vertices; ++vertex_id)
+	{
+	    sVertex::Neighbors_list &vertex_Neighbors = m_environment.m_Vertices[vertex_id].m_Neighbors;
+	    for (sVertex::Neighbors_list::const_iterator vertex_neighbor = vertex_Neighbors.begin(); vertex_neighbor != vertex_Neighbors.end(); ++vertex_neighbor)
+	    {
+		vertex_neighbor_IDs[vertex_id].push_back((*vertex_neighbor)->m_target->m_id);
+	    }
+	    vertex_neighbor_IDs[vertex_id].push_back(vertex_id);	    
+	}
+
+	while (!scheduled_Mutexes.empty())
+	{
+//	    printf("Size: %ld\n", scheduled_Mutexes.size()); 
+	    const ScheduledMTX &scheduled_MTX = scheduled_Mutexes.front();	    
+	    
+	    int vertex_u_id = scheduled_MTX.m_mtx.first.m_vertex_id;
+	    int vertex_w_id = scheduled_MTX.m_mtx.second.m_vertex_id;
+
+	    int robot_id = scheduled_MTX.m_mtx.first.m_robot_id;
+	    int other_robot_id = scheduled_MTX.m_mtx.second.m_robot_id;
+
+	    int layer = scheduled_MTX.m_layer;
+	    
+	    if (layer < N_Layers)
+	    {
+		/*
+		sVertex::Neighbors_list &u_Neighbors = m_environment.m_Vertices[vertex_u_id].m_Neighbors;
+		VertexIDs_vector u_neighbor_IDs;
+		for (sVertex::Neighbors_list::const_iterator u_neighbor = u_Neighbors.begin(); u_neighbor != u_Neighbors.end(); ++u_neighbor)
+		{
+		    u_neighbor_IDs.push_back((*u_neighbor)->m_target->m_id);
+		}
+		u_neighbor_IDs.push_back(vertex_u_id);
+		
+		sVertex::Neighbors_list &w_Neighbors = m_environment.m_Vertices[vertex_w_id].m_Neighbors;
+		VertexIDs_vector w_neighbor_IDs;
+		for (sVertex::Neighbors_list::const_iterator w_neighbor = w_Neighbors.begin(); w_neighbor != w_Neighbors.end(); ++w_neighbor)
+		{
+		    w_neighbor_IDs.push_back((*w_neighbor)->m_target->m_id);
+		}
+		w_neighbor_IDs.push_back(vertex_w_id);
+		*/
+		
+		for (VertexIDs_vector::const_iterator v_neighbor = vertex_neighbor_IDs[vertex_u_id].begin(); v_neighbor != vertex_neighbor_IDs[vertex_u_id].end(); ++v_neighbor)
+		{
+		    sInt_32 v_mdd_idx = inverse_MDD[robot_id][layer + 1][(*v_neighbor)];
+						    
+		    if (v_mdd_idx >= 0)
+		    {
+			for (VertexIDs_vector::const_iterator z_neighbor = vertex_neighbor_IDs[vertex_w_id].begin(); z_neighbor != vertex_neighbor_IDs[vertex_w_id].end(); ++z_neighbor)
+			{
+			    sInt_32 z_mdd_idx = inverse_MDD[other_robot_id][layer + 1][(*z_neighbor)];
+			    
+			    if (z_mdd_idx >= 0)
+			    {			    			    
+				if (*v_neighbor < *z_neighbor)
+				{
+				    int vertex_v_id = *v_neighbor;
+				    int vertex_z_id = *z_neighbor;
+
+				    bool all_mutex = true;
+
+				    /*
+				    sVertex::Neighbors_list &v_Neighbors = m_environment.m_Vertices[vertex_v_id].m_Neighbors;
+				    VertexIDs_vector v_neighbor_IDs;
+				    for (sVertex::Neighbors_list::const_iterator v_neighbor = v_Neighbors.begin(); v_neighbor != v_Neighbors.end(); ++v_neighbor)
+				    {
+					v_neighbor_IDs.push_back((*v_neighbor)->m_target->m_id);
+				    }
+				    v_neighbor_IDs.push_back(vertex_v_id);
+				    */
+				    
+				    for (VertexIDs_vector::const_iterator v_neighbor = vertex_neighbor_IDs[vertex_v_id].begin(); v_neighbor != vertex_neighbor_IDs[vertex_v_id].end(); ++v_neighbor)
+				    {
+					sInt_32 u_mdd_idx = inverse_MDD[robot_id][layer][(*v_neighbor)];
+					
+					if (u_mdd_idx >= 0)
+					{
+					    bool u_all_mutex = true;
+
+					    /*
+					    sVertex::Neighbors_list &z_Neighbors = m_environment.m_Vertices[vertex_z_id].m_Neighbors;
+					    VertexIDs_vector z_neighbor_IDs;
+					    for (sVertex::Neighbors_list::const_iterator z_neighbor = z_Neighbors.begin(); z_neighbor != z_Neighbors.end(); ++z_neighbor)
+					    {
+						z_neighbor_IDs.push_back((*z_neighbor)->m_target->m_id);
+					    }
+					    z_neighbor_IDs.push_back(vertex_z_id);
+					    */
+					    
+					    for (VertexIDs_vector::const_iterator z_neighbor = vertex_neighbor_IDs[vertex_z_id].begin(); z_neighbor != vertex_neighbor_IDs[vertex_z_id].end(); ++z_neighbor)
+					    {
+						sInt_32 w_mdd_idx = inverse_MDD[other_robot_id][layer][(*z_neighbor)];
+						
+						if (w_mdd_idx >= 0)
+						{
+						    bool mutex_found = false;						
+						    
+						    if (MDD[robot_id][layer][u_mdd_idx] == MDD[other_robot_id][layer][w_mdd_idx])
+						    {
+							mutex_found = true;
+						    }
+						    else
+						    {
+							VertexMutexes_umap::const_iterator mutexes_u = Mutexes[robot_id][layer].find(MDD[robot_id][layer][u_mdd_idx]);
+							
+							if (mutexes_u != Mutexes[robot_id][layer].end())
+							{
+							    for (Mutexes_set::const_iterator mutex_u = mutexes_u->second.begin(); mutex_u != mutexes_u->second.end(); ++mutex_u)
+							    {
+								if (mutex_u->m_robot_id == other_robot_id && mutex_u->m_vertex_id == MDD[other_robot_id][layer][w_mdd_idx])
+								{
+								    mutex_found = true;
+								    break;
+								}
+							    }
+							}
+						    }
+						    if (!mutex_found)
+						    {
+							u_all_mutex = false;
+							break;
+						    }
+						}
+					    }
+					    if (!u_all_mutex)
+					    {
+						all_mutex = false;
+						break;
+					    }
+					}
+				    }				    
+				    if (all_mutex)
+				    {
+					bool next_first_mutex = Mutexes[robot_id][layer + 1][vertex_v_id].insert(Mutex(other_robot_id, vertex_z_id, z_mdd_idx, v_mdd_idx)).second;
+					bool next_second_mutex = Mutexes[other_robot_id][layer + 1][vertex_z_id].insert(Mutex(robot_id, vertex_v_id, v_mdd_idx, z_mdd_idx)).second;
+
+					if (next_first_mutex || next_second_mutex)
+					{
+					    scheduled_Mutexes.push_back(ScheduledMTX(layer + 1, MTX_pair(MTX(robot_id, vertex_v_id), MTX(other_robot_id, vertex_z_id))));
+					}
+				    }
+				}	    
+			    }
+			}
+		    }
+		}
+	    }
+	    if (layer > 0)
+	    {		
+		for (VertexIDs_vector::const_iterator v_neighbor = vertex_neighbor_IDs[vertex_u_id].begin(); v_neighbor != vertex_neighbor_IDs[vertex_u_id].end(); ++v_neighbor)
+		{
+		    sInt_32 v_mdd_idx = inverse_MDD[robot_id][layer - 1][(*v_neighbor)];
+						    
+		    if (v_mdd_idx >= 0)
+		    {
+			for (VertexIDs_vector::const_iterator z_neighbor = vertex_neighbor_IDs[vertex_w_id].begin(); z_neighbor != vertex_neighbor_IDs[vertex_w_id].end(); ++z_neighbor)
+			{
+			    sInt_32 z_mdd_idx = inverse_MDD[other_robot_id][layer - 1][(*z_neighbor)];
+			    
+			    if (z_mdd_idx >= 0)
+			    {			    			    
+				if (*v_neighbor < *z_neighbor)
+				{
+				    int vertex_v_id = *v_neighbor;
+				    int vertex_z_id = *z_neighbor;
+
+				    bool all_mutex = true;
+				    
+				    for (VertexIDs_vector::const_iterator v_neighbor = vertex_neighbor_IDs[vertex_v_id].begin(); v_neighbor != vertex_neighbor_IDs[vertex_v_id].end(); ++v_neighbor)
+				    {
+					sInt_32 u_mdd_idx = inverse_MDD[robot_id][layer][(*v_neighbor)];
+					
+					if (u_mdd_idx >= 0)
+					{
+					    bool u_all_mutex = true;
+					    
+					    for (VertexIDs_vector::const_iterator z_neighbor = vertex_neighbor_IDs[vertex_z_id].begin(); z_neighbor != vertex_neighbor_IDs[vertex_z_id].end(); ++z_neighbor)
+					    {
+						sInt_32 w_mdd_idx = inverse_MDD[other_robot_id][layer][(*z_neighbor)];
+						
+						if (w_mdd_idx >= 0)
+						{
+						    bool mutex_found = false;						
+						    
+						    if (MDD[robot_id][layer][u_mdd_idx] == MDD[other_robot_id][layer][w_mdd_idx])
+						    {
+							mutex_found = true;
+						    }
+						    else
+						    {
+							VertexMutexes_umap::const_iterator mutexes_u = Mutexes[robot_id][layer].find(MDD[robot_id][layer][u_mdd_idx]);
+							
+							if (mutexes_u != Mutexes[robot_id][layer].end())
+							{
+							    for (Mutexes_set::const_iterator mutex_u = mutexes_u->second.begin(); mutex_u != mutexes_u->second.end(); ++mutex_u)
+							    {
+								if (mutex_u->m_robot_id == other_robot_id && mutex_u->m_vertex_id == MDD[other_robot_id][layer][w_mdd_idx])
+								{
+								    mutex_found = true;
+								    break;
+								}
+							    }
+							}
+						    }
+						    if (!mutex_found)
+						    {
+							u_all_mutex = false;
+							break;
+						    }
+						}
+					    }
+					    if (!u_all_mutex)
+					    {
+						all_mutex = false;
+						break;
+					    }
+					}
+				    }				    
+				    if (all_mutex)
+				    {
+					bool next_first_mutex = Mutexes[robot_id][layer - 1][vertex_v_id].insert(Mutex(other_robot_id, vertex_z_id, z_mdd_idx, v_mdd_idx)).second;
+					bool next_second_mutex = Mutexes[other_robot_id][layer - 1][vertex_z_id].insert(Mutex(robot_id, vertex_v_id, v_mdd_idx, z_mdd_idx)).second;
+
+					if (next_first_mutex || next_second_mutex)
+					{
+					    scheduled_Mutexes.push_back(ScheduledMTX(layer - 1, MTX_pair(MTX(robot_id, vertex_v_id), MTX(other_robot_id, vertex_z_id))));
+					}
+				    }
+				}	    
+			    }
+		        }	
+		    }
+		}
+	    }
+	    scheduled_Mutexes.pop_front();
+	}
+	int N_mutexes = 0;
+	
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{	    
+	    for (int layer = 0; layer <= N_Layers; ++layer)
+	    {
+		for (VertexMutexes_umap::const_iterator mutexes_u = Mutexes[robot_id][layer].begin(); mutexes_u != Mutexes[robot_id][layer].end(); ++mutexes_u)
+		{
+		    int vertex_u_id = mutexes_u->first;
+
+		    for (Mutexes_set::const_iterator mutex_u = mutexes_u->second.begin(); mutex_u != mutexes_u->second.end(); ++mutex_u)
+		    {			
+			int vertex_v_id = mutex_u->m_vertex_id;
+			int vertex_v_idx = mutex_u->m_mdd_idx;
+			int vertex_u_idx = mutex_u->m_mdd_other_idx;			
+			int other_robot_id = mutex_u->m_robot_id;
+			
+			if (vertex_u_id < vertex_v_id)
+			{
+			    Clause_cnt += encoding_context.m_bit_generator->count_Mutex(aux_Variable_cnt,
+												    total_Literal_cnt,
+												    sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer],
+															    sIntegerIndex(vertex_u_idx)),
+												    sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[other_robot_id][layer],
+															    sIntegerIndex(vertex_v_idx)));
+//			    printf(" 	 Mutex: at level %d - [%d, %d (%d)] x [%d, %d (%d)]\n", layer, robot_id, vertex_u_id, vertex_u_idx, other_robot_id, vertex_v_id, vertex_v_idx);
+			    ++N_mutexes;
+			}
+		    }
+		}
+	    }
+	}
+	printf("Mutexes found in total: %d\n", N_mutexes);			
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    for (int layer = 0; layer < N_Layers; ++layer)
+	    {
+		for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
+		{
+		    int neighbor_index = 0;
+		    for (int v = 0; v < MDD[robot_id][layer + 1].size(); ++v)
+		    {
+			if (m_environment.is_Adjacent(MDD[robot_id][layer][u], MDD[robot_id][layer + 1][v]) || MDD[robot_id][layer][u] == MDD[robot_id][layer + 1][v])
+			{
+			    sBitClauseGenerator::SpecifiedBitIdentifiers_vector biangular_Identifiers;
+			    if (MDD[robot_id][layer][u] != MDD[robot_id][layer + 1][v])
+			    {
+				for (sVertex::VertexIDs_vector::const_iterator conflict = m_environment.m_Vertices[MDD[robot_id][layer + 1][v]].m_Conflicts.begin();
+				     conflict != m_environment.m_Vertices[MDD[robot_id][layer + 1][v]].m_Conflicts.end(); ++conflict)
+				{
+				    for (int k = 0; k < m_robustness; ++k)
+				    {
+					if (layer - k >= 0)
+					{
+					    for (int other_robot_id = 1; other_robot_id <= N_Robots; ++other_robot_id)
+					    {
+						if (other_robot_id != robot_id)
+						{
+						    for (int vv = 0; vv < MDD[other_robot_id][layer - k].size(); ++vv)
+						    {
+							if (*conflict == MDD[other_robot_id][layer - k][vv])
+							{
+							    biangular_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[other_robot_id][layer - k],
+														    sIntegerIndex(vv)));
+							}
+						    }
+						}
+					    }
+					}
+				    }
+				}
+				for (int k = 0; k < m_robustness; ++k)
+				{
+				    if (layer - k >= 0)
+				    {
+					for (int other_robot_id = 1; other_robot_id <= N_Robots; ++other_robot_id)
+					{
+					    if (other_robot_id != robot_id)
+					    {
+						for (int vv = 0; vv < MDD[other_robot_id][layer - k].size(); ++vv)
+						{
+						    if (MDD[robot_id][layer + 1][v] == MDD[other_robot_id][layer - k][vv])
+						    {
+							biangular_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[other_robot_id][layer - k],
+														sIntegerIndex(vv)));
+						    }
+						}
+					    }
+					}
+				    }
+				}
+				if (!biangular_Identifiers.empty())
+				{
+				    Clause_cnt += encoding_context.m_bit_generator->count_MultiBiangleMutex(aux_Variable_cnt,
+													    total_Literal_cnt,
+													    sSpecifiedBitIdentifier(&encoding_context.m_edge_occupancy_by_water__[robot_id][layer][u],
+																    sIntegerIndex(neighbor_index)),
+													    biangular_Identifiers);
+				}
+			    }
+			    ++neighbor_index;
+			}
+		    }
+		}
+	    }
+	}
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    for (int u = 0; u < MDD[robot_id][0].size(); ++u)
+	    {
+		if (MDD[robot_id][0][u] == m_initial_arrangement.get_RobotLocation(robot_id))
+		{
+		    Clause_cnt += encoding_context.m_bit_generator->count_BitSet(aux_Variable_cnt,
+										 total_Literal_cnt,
+										 sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][0],
+													 sIntegerIndex(u)));
+		}
+	    }
+	}
+	switch (m_goal_type)
+	{
+	case GOAL_TYPE_ARRANGEMENT:
+	{
+	    for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	    {
+		for (int u = 0; u < MDD[robot_id][N_Layers].size(); ++u)
+		{
+		    if (MDD[robot_id][N_Layers][u] == m_goal_arrangement.get_RobotLocation(robot_id))
+		    {
+			Clause_cnt += encoding_context.m_bit_generator->count_BitSet(aux_Variable_cnt,
+										     total_Literal_cnt,
+										     sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][N_Layers],
+													     sIntegerIndex(u)));
+		    }
+		}
+	    }
+	    break;
+	}
+	case GOAL_TYPE_SPECIFICATION:
+	{
+	    for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	    {
+		for (int u = 0; u < MDD[robot_id][N_Layers].size(); ++u)
+		{
+		    sASSERT(m_goal_specification.get_RobotGoal(robot_id).size() == 1);
+
+		    if (MDD[robot_id][N_Layers][u] == *m_goal_specification.get_RobotGoal(robot_id).begin())
+		    {
+			Clause_cnt += encoding_context.m_bit_generator->count_BitSet(aux_Variable_cnt,
+										     total_Literal_cnt,
+										     sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][N_Layers],
+													     sIntegerIndex(u)));
+		    }
+		}
+	    }
+	    break;
+	}
+	default:
+	{
+	    sASSERT(false);
+	    break;
+	}
+	}
+
+	int N_cnf_Variables = encoding_context.m_variable_store.get_Last_CNFVariable() + aux_Variable_cnt - 1;
+
+#ifdef sDEBUG
+	fprintf(fw, "c %s : multirobot MDD SAT encoding\n", sPRODUCT);
+	fprintf(fw, "c %s\n", sCOPYRIGHT);
+	fprintf(fw, "c number of layers = %d\n", N_Layers);
+	fprintf(fw, "c number of visible variables = %d\n", N_cnf_Variables - aux_Variable_cnt);
+	fprintf(fw, "c number of hidden variables = %d\n", aux_Variable_cnt);
+	fprintf(fw, "c number of literals = %d\n", total_Literal_cnt);
+	fprintf(fw, "c number of clauses = %d\n", Clause_cnt);
+	fprintf(fw, "c number of propositional variables = %d\n", N_cnf_Variables);
+	fprintf(fw, "c number of clauses / number of variables = %.3f\n", (double)Clause_cnt / N_cnf_Variables);
+	fprintf(fw, "c number of literals / number of clauses = %.3f\n", (double)total_Literal_cnt /  Clause_cnt);
+	to_Stream(fw, "c ");
+#endif
+	fprintf(fw, "p cnf %d %d\n", N_cnf_Variables, Clause_cnt);
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    for (int layer = 0; layer <= N_Layers; ++layer)
+	    {
+		if (!extra_MDD[robot_id][layer].empty())
+		{
+		    sASSERT(extra_MDD[robot_id][layer].size() == 1);
+
+		    for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
+		    {
+			if (extra_MDD[robot_id][layer][0] != MDD[robot_id][layer][u])
+			{
+			    Clause_cnt += encoding_context.m_bit_generator->generate_Implication(fw,
+												 sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer], sIntegerIndex(u)),
+												 sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][layer], sIntegerIndex(0)));
+			}
+		    }
+		    sBitClauseGenerator::SpecifiedBitIdentifiers_vector prev_cardinality_Identifiers;
+
+		    for (int prev_layer = 0; prev_layer < layer; ++prev_layer)
+		    {
+			if (!extra_MDD[robot_id][prev_layer].empty())
+			{
+			    prev_cardinality_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][prev_layer], sIntegerIndex(0)));
+			}
+		    }
+		    if (!prev_cardinality_Identifiers.empty())
+		    {
+			Clause_cnt += encoding_context.m_bit_generator->generate_MultiConjunctiveImplication(fw,
+													     sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][layer], sIntegerIndex(0)),
+													     prev_cardinality_Identifiers);
+		    }
+		}
+	    }
+	}
+	if (!cardinality_Identifiers.empty())
+	{
+	    Clause_cnt += encoding_context.m_bit_generator->generate_Cardinality(fw, cardinality_Identifiers, extra_cost);
+	}
+
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    for (int layer = 0; layer < N_Layers; ++layer)
+	    {
+		sBitClauseGenerator::SpecifiedBitIdentifiers_vector mutex_vertex_Identifiers;
+		    
+		for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
+		{
+		    sBitClauseGenerator::SpecifiedBitIdentifiers_vector mutex_target_Identifiers;
+
+		    int neighbor_index = 0;
+		    for (int v = 0; v < MDD[robot_id][layer + 1].size(); ++v)
+		    {
+			if (m_environment.is_Adjacent(MDD[robot_id][layer][u], MDD[robot_id][layer + 1][v]) || MDD[robot_id][layer][u] == MDD[robot_id][layer + 1][v])
+			{
+			    mutex_target_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_edge_occupancy_by_water__[robot_id][layer][u], sIntegerIndex(neighbor_index)));
+
+			    Clause_cnt += encoding_context.m_bit_generator->generate_Implication(fw,
+												 sSpecifiedBitIdentifier(&encoding_context.m_edge_occupancy_by_water__[robot_id][layer][u],
+															 sIntegerIndex(neighbor_index)),
+												 sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer + 1],
+															 sIntegerIndex(v)));
+			    neighbor_index++;
+			}
+		    }
+		    mutex_vertex_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer], sIntegerIndex(u)));	
+	    
+		    Clause_cnt += encoding_context.m_bit_generator->generate_MultiImplication(fw,
+											      sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer],
+														      sIntegerIndex(u)),
+											      mutex_target_Identifiers);
+
+		    Clause_cnt += encoding_context.m_bit_generator->generate_AllMutexConstraint(fw,
+												mutex_target_Identifiers);   
+		}
+		Clause_cnt += encoding_context.m_bit_generator->generate_AllMutexConstraint(fw,
+											    mutex_vertex_Identifiers);
+	    }
+	}
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    sBitClauseGenerator::SpecifiedBitIdentifiers_vector mutex_vertex_Identifiers;
+		    
+	    for (int u = 0; u < MDD[robot_id][N_Layers].size(); ++u)
+	    {
+		mutex_vertex_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][N_Layers], sIntegerIndex(u)));
+	    }
+	    Clause_cnt += encoding_context.m_bit_generator->generate_AllMutexConstraint(fw,
+											mutex_vertex_Identifiers);
+	}
+
+	for (int vertex_id = 0; vertex_id < N_Vertices; ++vertex_id)
+	{
+	    for (int layer = 0; layer <= N_Layers; ++layer)
+	    {
+		sBitClauseGenerator::SpecifiedBitIdentifiers_vector mutex_occupancy_Identifiers;
+
+		for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+		{
+		    for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
+		    {
+			if (MDD[robot_id][layer][u] == vertex_id)
+			{
+			    mutex_occupancy_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer], sIntegerIndex(u)));
+			}
+		    }
+		}
+		if (mutex_occupancy_Identifiers.size() > 1)
+		{
+		    Clause_cnt += encoding_context.m_bit_generator->generate_AllMutexConstraint(fw,
+												mutex_occupancy_Identifiers);
+		}
+	    }
+	}
+
+	N_mutexes = 0;
+	
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{	    
+	    for (int layer = 0; layer <= N_Layers; ++layer)
+	    {
+		for (VertexMutexes_umap::const_iterator mutexes_u = Mutexes[robot_id][layer].begin(); mutexes_u != Mutexes[robot_id][layer].end(); ++mutexes_u)
+		{
+		    int vertex_u_id = mutexes_u->first;
+
+		    for (Mutexes_set::const_iterator mutex_u = mutexes_u->second.begin(); mutex_u != mutexes_u->second.end(); ++mutex_u)
+		    {			
+			int vertex_v_id = mutex_u->m_vertex_id;
+			int vertex_v_idx = mutex_u->m_mdd_idx;
+			int vertex_u_idx = mutex_u->m_mdd_other_idx;			
+			int other_robot_id = mutex_u->m_robot_id;
+			
+			if (vertex_u_id < vertex_v_id)
+			{
+			    Clause_cnt += encoding_context.m_bit_generator->generate_Mutex(fw,			    
+											   sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer],
+														   sIntegerIndex(vertex_u_idx)),
+											   sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[other_robot_id][layer],
+														   sIntegerIndex(vertex_v_idx)));
+//			    printf(" 	 Mutex: at level %d - [%d, %d (%d)] x [%d, %d (%d)]\n", layer, robot_id, vertex_u_id, vertex_u_idx, other_robot_id, vertex_v_id, vertex_v_idx);
+			    ++N_mutexes;
+			}
+		    }
+		}
+	    }
+	}
+	//printf("Mutexes found in total: %d\n", N_mutexes);		
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    for (int layer = 0; layer < N_Layers; ++layer)
+	    {
+		for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
+		{
+		    int neighbor_index = 0;
+		    for (int v = 0; v < MDD[robot_id][layer + 1].size(); ++v)
+		    {
+			if (m_environment.is_Adjacent(MDD[robot_id][layer][u], MDD[robot_id][layer + 1][v]) || MDD[robot_id][layer][u] == MDD[robot_id][layer + 1][v])
+			{
+			    sBitClauseGenerator::SpecifiedBitIdentifiers_vector biangular_Identifiers;
+			    
+			    if (MDD[robot_id][layer][u] != MDD[robot_id][layer + 1][v])
+			    {
+				for (sVertex::VertexIDs_vector::const_iterator conflict = m_environment.m_Vertices[MDD[robot_id][layer + 1][v]].m_Conflicts.begin();
+				     conflict != m_environment.m_Vertices[MDD[robot_id][layer + 1][v]].m_Conflicts.end(); ++conflict)
+				{
+				    for (int k = 0; k < m_robustness; ++k)
+				    {
+					if (layer - k >= 0)
+					{
+					    for (int other_robot_id = 1; other_robot_id <= N_Robots; ++other_robot_id)
+					    {
+						if (other_robot_id != robot_id)
+						{
+						    for (int vv = 0; vv < MDD[other_robot_id][layer - k].size(); ++vv)
+						    {
+							if (*conflict == MDD[other_robot_id][layer - k][vv])
+							{
+							    biangular_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[other_robot_id][layer - k],
+														    sIntegerIndex(vv)));
+							}
+						    }
+						}
+					    }
+					}
+				    }				    
+				}				
+				for (int k = 0; k < m_robustness; ++k)
+				{
+				    if (layer - k >= 0)
+				    {
+					for (int other_robot_id = 1; other_robot_id <= N_Robots; ++other_robot_id)
+					{
+					    if (other_robot_id != robot_id)
+					    {
+						for (int vv = 0; vv < MDD[other_robot_id][layer - k].size(); ++vv)
+						{
+						    if (MDD[robot_id][layer + 1][v] == MDD[other_robot_id][layer - k][vv])
+						    {
+							biangular_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[other_robot_id][layer - k],
+														sIntegerIndex(vv)));
+						    }
+						}
+					    }
+					}
+				    }
+				}
+				if (!biangular_Identifiers.empty())
+				{
+				    encoding_context.m_bit_generator->generate_MultiBiangleMutex(fw,
+												 sSpecifiedBitIdentifier(&encoding_context.m_edge_occupancy_by_water__[robot_id][layer][u],
+															 sIntegerIndex(neighbor_index)),
+												 biangular_Identifiers);
+				}
+			    }
+			    ++neighbor_index;
+			}
+		    }
+		}
+	    }
+	}
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    for (int u = 0; u < MDD[robot_id][0].size(); ++u)
+	    {
+		if (MDD[robot_id][0][u] == m_initial_arrangement.get_RobotLocation(robot_id))
+		{
+		    Clause_cnt += encoding_context.m_bit_generator->generate_BitSet(fw,
+										    sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][0],
+													    sIntegerIndex(u)));
+		}
+	    }
+	}
+	switch (m_goal_type)
+	{
+	case GOAL_TYPE_ARRANGEMENT:
+	{
+	    for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	    {
+		for (int u = 0; u < MDD[robot_id][N_Layers].size(); ++u)
+		{
+		    if (MDD[robot_id][N_Layers][u] == m_goal_arrangement.get_RobotLocation(robot_id))
+		    {
+			Clause_cnt += encoding_context.m_bit_generator->generate_BitSet(fw,
+											sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][N_Layers],
+														sIntegerIndex(u)));
+		    }
+		}
+	    }
+	    break;
+	}
+	case GOAL_TYPE_SPECIFICATION:
+	{
+	    for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	    {
+		for (int u = 0; u < MDD[robot_id][N_Layers].size(); ++u)
+		{
+		    sASSERT(m_goal_specification.get_RobotGoal(robot_id).size() == 1);
+
+		    if (MDD[robot_id][N_Layers][u] == *m_goal_specification.get_RobotGoal(robot_id).begin())
+		    {
+			Clause_cnt += encoding_context.m_bit_generator->generate_BitSet(fw,
+											sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][N_Layers],
+														sIntegerIndex(u)));
+		    }
+		}
+	    }
+	    break;
+	}
+	default:
+	{
+	    sASSERT(false);
+	    break;
+	}
+	}
+    }    
 
 
     void sMultirobotInstance::to_Stream_GMddCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
@@ -3983,6 +6034,1332 @@ namespace sReloc
 	}
     }
 
+
+    void sMultirobotInstance::to_Memory_MddUmtexCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    {
+	encoding_context.switchTo_AdvancedGeneratingMode();
+
+	int N_Vertices = m_environment.get_VertexCount();
+	int N_Robots = m_initial_arrangement.get_RobotCount();
+	int N_Layers = mdd_depth;
+
+	encoding_context.m_vertex_occupancy_by_water_.resize(N_Robots + 1);
+	encoding_context.m_vertex_water_cardinality_.resize(N_Robots + 1);
+	encoding_context.m_edge_occupancy_by_water__.resize(N_Robots + 1);
+
+	MDDMutexes_vector Mutexes;
+	Mutexes.resize(N_Robots + 1);
+
+	InverseMDD_vector inverse_MDD;
+	construct_InverseMDD(N_Vertices, MDD, inverse_MDD);			
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    encoding_context.m_vertex_occupancy_by_water_[robot_id].resize(N_Layers + 1);
+	    encoding_context.m_vertex_water_cardinality_[robot_id].resize(N_Layers + 1);
+
+	    Mutexes[robot_id].resize(N_Layers + 1);
+	    
+	    for (int layer = 0; layer <= N_Layers; ++layer)
+	    {
+		sIndexableBitIdentifier vertex_occupancy_by_water_(&encoding_context.m_variable_store,
+								   "vertex_occupancy_by_water-" + sInt_32_to_String(robot_id) + "_" + sInt_32_to_String(layer),
+								   sIntegerScope(0, MDD[robot_id][layer].size() - 1));
+		encoding_context.m_vertex_occupancy_by_water_[robot_id][layer] = vertex_occupancy_by_water_;
+		encoding_context.register_TranslateIdentifier(encoding_context.m_vertex_occupancy_by_water_[robot_id][layer]);
+
+		if (!extra_MDD[robot_id][layer].empty())
+		{
+		    sASSERT(extra_MDD[robot_id][layer].size() == 1);
+
+		    sIndexableBitIdentifier vertex_water_cardinality_(&encoding_context.m_variable_store,
+								      "vertex_water_cardinality-" + sInt_32_to_String(robot_id) + "_" + sInt_32_to_String(layer),
+								      sIntegerScope(0, 0));
+		    encoding_context.m_vertex_water_cardinality_[robot_id][layer] = vertex_water_cardinality_;
+		    encoding_context.register_TranslateIdentifier(encoding_context.m_vertex_water_cardinality_[robot_id][layer]);
+
+		    for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
+		    {
+			if (extra_MDD[robot_id][layer][0] != MDD[robot_id][layer][u])
+			{
+			    encoding_context.m_bit_generator->cast_Implication(solver,
+									       sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer], sIntegerIndex(u)),
+									       sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][layer], sIntegerIndex(0)));
+			}
+		    }
+		    sBitClauseGenerator::SpecifiedBitIdentifiers_vector prev_cardinality_Identifiers;
+
+		    for (int prev_layer = 0; prev_layer < layer; ++prev_layer)
+		    {
+			if (!extra_MDD[robot_id][prev_layer].empty())
+			{
+			    prev_cardinality_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][prev_layer], sIntegerIndex(0)));
+			}
+		    }
+		    if (!prev_cardinality_Identifiers.empty())
+		    {
+			encoding_context.m_bit_generator->cast_MultiConjunctiveImplication(solver,
+											   sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][layer], sIntegerIndex(0)),
+											   prev_cardinality_Identifiers);
+		    }
+		}
+	    }
+	}
+
+	sBitClauseGenerator::SpecifiedBitIdentifiers_vector cardinality_Identifiers;
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    for (int layer = 0; layer <= N_Layers; ++layer)
+	    {
+		if (!extra_MDD[robot_id][layer].empty())
+		{
+		    cardinality_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][layer], sIntegerIndex(0)));
+		}
+	    }
+	}       
+	if (!cardinality_Identifiers.empty())
+	{
+	    encoding_context.m_bit_generator->cast_Cardinality(solver, cardinality_Identifiers, extra_cost);
+	}
+
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    encoding_context.m_edge_occupancy_by_water__[robot_id].resize(N_Layers);
+
+	    for (int layer = 0; layer < N_Layers; ++layer)
+	    {
+		encoding_context.m_edge_occupancy_by_water__[robot_id][layer].resize(MDD[robot_id][layer].size());
+
+		for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
+		{
+		    int N_neighbors = 0;
+
+		    for (int v = 0; v < MDD[robot_id][layer + 1].size(); ++v)
+		    {
+			if (m_environment.is_Adjacent(MDD[robot_id][layer][u], MDD[robot_id][layer + 1][v]) || MDD[robot_id][layer][u] == MDD[robot_id][layer + 1][v])
+			{
+			    ++N_neighbors;
+			}
+		    }
+		    sIndexableBitIdentifier edge_occupancy_by_water__(&encoding_context.m_variable_store,
+								      "edge_occupancy_by_water-" + sInt_32_to_String(robot_id) + "_" + sInt_32_to_String(layer) + "_" + sInt_32_to_String(MDD[robot_id][layer][u]),
+								      sIntegerScope(0, N_neighbors - 1));
+		    encoding_context.m_edge_occupancy_by_water__[robot_id][layer][u] = edge_occupancy_by_water__;
+		    encoding_context.register_TranslateIdentifier(encoding_context.m_edge_occupancy_by_water__[robot_id][layer][u]);
+
+		}
+	    }
+	}
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    for (int layer = 0; layer < N_Layers; ++layer)
+	    {
+		sBitClauseGenerator::SpecifiedBitIdentifiers_vector mutex_vertex_Identifiers;
+
+		for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
+		{
+		    sBitClauseGenerator::SpecifiedBitIdentifiers_vector mutex_target_Identifiers;
+
+		    int neighbor_index = 0;
+		    for (int v = 0; v < MDD[robot_id][layer + 1].size(); ++v)
+		    {
+			if (m_environment.is_Adjacent(MDD[robot_id][layer][u], MDD[robot_id][layer + 1][v]) || MDD[robot_id][layer][u] == MDD[robot_id][layer + 1][v])
+			{
+			    mutex_target_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_edge_occupancy_by_water__[robot_id][layer][u], sIntegerIndex(neighbor_index)));
+
+			    encoding_context.m_bit_generator->cast_Implication(solver,
+									       sSpecifiedBitIdentifier(&encoding_context.m_edge_occupancy_by_water__[robot_id][layer][u],
+												       sIntegerIndex(neighbor_index)),
+									       sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer + 1],
+												       sIntegerIndex(v)));
+			    neighbor_index++;
+			}
+		    }
+		    mutex_vertex_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer], sIntegerIndex(u)));	
+	    
+		    encoding_context.m_bit_generator->cast_MultiImplication(solver,
+									    sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer],
+												    sIntegerIndex(u)),
+									    mutex_target_Identifiers);
+
+		    encoding_context.m_bit_generator->cast_AllMutexConstraint(solver,
+									      mutex_target_Identifiers);   
+		}
+		encoding_context.m_bit_generator->cast_AllMutexConstraint(solver,
+									  mutex_vertex_Identifiers);
+	    }
+	}
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    sBitClauseGenerator::SpecifiedBitIdentifiers_vector mutex_vertex_Identifiers;
+		    
+	    for (int u = 0; u < MDD[robot_id][N_Layers].size(); ++u)
+	    {
+		mutex_vertex_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][N_Layers], sIntegerIndex(u)));
+	    }
+	    encoding_context.m_bit_generator->cast_AllMutexConstraint(solver,
+								      mutex_vertex_Identifiers);
+	}
+
+	for (int vertex_id = 0; vertex_id < N_Vertices; ++vertex_id)
+	{
+	    for (int layer = 0; layer <= N_Layers; ++layer)
+	    {
+		sBitClauseGenerator::SpecifiedBitIdentifiers_vector mutex_occupancy_Identifiers;
+
+		for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+		{
+		    for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
+		    {
+			if (MDD[robot_id][layer][u] == vertex_id)
+			{
+			    mutex_occupancy_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer], sIntegerIndex(u)));
+			}
+		    }
+		}
+		if (mutex_occupancy_Identifiers.size() > 1)
+		{
+		    encoding_context.m_bit_generator->cast_AllMutexConstraint(solver,
+									      mutex_occupancy_Identifiers);
+		}
+	    }
+	}
+
+
+	ScheduledMTXs_list scheduled_Mutexes;
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{	   
+	    for (int layer = 0; layer < N_Layers; ++layer)
+	    {
+		for (int other_robot_id = 1; other_robot_id <= N_Robots; ++other_robot_id)
+		{
+		    if (other_robot_id < robot_id)
+		    {
+			for (int uu = 0; uu < MDD[robot_id][layer].size(); ++uu)
+			{
+			    int uu_mdd_idx = inverse_MDD[other_robot_id][layer][MDD[robot_id][layer][uu]];
+			    
+			    if (uu_mdd_idx >= 0)
+			    {
+				scheduled_Mutexes.push_back(ScheduledMTX(layer, MTX_pair(MTX(robot_id, MDD[robot_id][layer][uu]), MTX(other_robot_id, MDD[other_robot_id][layer][uu_mdd_idx]))));
+			    }
+			}
+		    }
+		}
+	    }
+	}
+
+	std::vector<VertexIDs_vector> vertex_neighbor_IDs;
+	vertex_neighbor_IDs.resize(N_Vertices);
+
+	for (int vertex_id = 0; vertex_id < N_Vertices; ++vertex_id)
+	{
+	    sVertex::Neighbors_list &vertex_Neighbors = m_environment.m_Vertices[vertex_id].m_Neighbors;
+	    for (sVertex::Neighbors_list::const_iterator vertex_neighbor = vertex_Neighbors.begin(); vertex_neighbor != vertex_Neighbors.end(); ++vertex_neighbor)
+	    {
+		vertex_neighbor_IDs[vertex_id].push_back((*vertex_neighbor)->m_target->m_id);
+	    }
+	    vertex_neighbor_IDs[vertex_id].push_back(vertex_id);	    
+	}
+
+	while (!scheduled_Mutexes.empty())
+	{
+	    const ScheduledMTX &scheduled_MTX = scheduled_Mutexes.front();	    
+	    
+	    int vertex_u_id = scheduled_MTX.m_mtx.first.m_vertex_id;
+	    int vertex_w_id = scheduled_MTX.m_mtx.second.m_vertex_id;
+
+	    int robot_id = scheduled_MTX.m_mtx.first.m_robot_id;
+	    int other_robot_id = scheduled_MTX.m_mtx.second.m_robot_id;
+
+	    int layer = scheduled_MTX.m_layer;
+	    
+	    if (layer < N_Layers)
+	    {
+		/*
+		sVertex::Neighbors_list &u_Neighbors = m_environment.m_Vertices[vertex_u_id].m_Neighbors;
+		VertexIDs_vector u_neighbor_IDs;
+		for (sVertex::Neighbors_list::const_iterator u_neighbor = u_Neighbors.begin(); u_neighbor != u_Neighbors.end(); ++u_neighbor)
+		{
+		    u_neighbor_IDs.push_back((*u_neighbor)->m_target->m_id);
+		}
+		u_neighbor_IDs.push_back(vertex_u_id);
+		
+		sVertex::Neighbors_list &w_Neighbors = m_environment.m_Vertices[vertex_w_id].m_Neighbors;
+		VertexIDs_vector w_neighbor_IDs;
+		for (sVertex::Neighbors_list::const_iterator w_neighbor = w_Neighbors.begin(); w_neighbor != w_Neighbors.end(); ++w_neighbor)
+		{
+		    w_neighbor_IDs.push_back((*w_neighbor)->m_target->m_id);
+		}
+		w_neighbor_IDs.push_back(vertex_w_id);
+		*/
+		
+		for (VertexIDs_vector::const_iterator v_neighbor = vertex_neighbor_IDs[vertex_u_id].begin(); v_neighbor != vertex_neighbor_IDs[vertex_u_id].end(); ++v_neighbor)
+		{
+		    sInt_32 v_mdd_idx = inverse_MDD[robot_id][layer + 1][(*v_neighbor)];
+						    
+		    if (v_mdd_idx >= 0)
+		    {
+			for (VertexIDs_vector::const_iterator z_neighbor = vertex_neighbor_IDs[vertex_w_id].begin(); z_neighbor != vertex_neighbor_IDs[vertex_w_id].end(); ++z_neighbor)
+			{
+			    sInt_32 z_mdd_idx = inverse_MDD[other_robot_id][layer + 1][(*z_neighbor)];
+			    
+			    if (z_mdd_idx >= 0)
+			    {			    			    
+				if (*v_neighbor < *z_neighbor)
+				{
+				    int vertex_v_id = *v_neighbor;
+				    int vertex_z_id = *z_neighbor;
+
+				    bool all_mutex = true;
+
+				    /*
+				    sVertex::Neighbors_list &v_Neighbors = m_environment.m_Vertices[vertex_v_id].m_Neighbors;
+				    VertexIDs_vector v_neighbor_IDs;
+				    for (sVertex::Neighbors_list::const_iterator v_neighbor = v_Neighbors.begin(); v_neighbor != v_Neighbors.end(); ++v_neighbor)
+				    {
+					v_neighbor_IDs.push_back((*v_neighbor)->m_target->m_id);
+				    }
+				    v_neighbor_IDs.push_back(vertex_v_id);
+				    */
+				    
+				    for (VertexIDs_vector::const_iterator v_neighbor = vertex_neighbor_IDs[vertex_v_id].begin(); v_neighbor != vertex_neighbor_IDs[vertex_v_id].end(); ++v_neighbor)
+				    {
+					sInt_32 u_mdd_idx = inverse_MDD[robot_id][layer][(*v_neighbor)];
+					
+					if (u_mdd_idx >= 0)
+					{
+					    bool u_all_mutex = true;
+
+					    /*
+					    sVertex::Neighbors_list &z_Neighbors = m_environment.m_Vertices[vertex_z_id].m_Neighbors;
+					    VertexIDs_vector z_neighbor_IDs;
+					    for (sVertex::Neighbors_list::const_iterator z_neighbor = z_Neighbors.begin(); z_neighbor != z_Neighbors.end(); ++z_neighbor)
+					    {
+						z_neighbor_IDs.push_back((*z_neighbor)->m_target->m_id);
+					    }
+					    z_neighbor_IDs.push_back(vertex_z_id);
+					    */
+					    
+					    for (VertexIDs_vector::const_iterator z_neighbor = vertex_neighbor_IDs[vertex_z_id].begin(); z_neighbor != vertex_neighbor_IDs[vertex_z_id].end(); ++z_neighbor)
+					    {
+						sInt_32 w_mdd_idx = inverse_MDD[other_robot_id][layer][(*z_neighbor)];
+						
+						if (w_mdd_idx >= 0)
+						{
+						    bool mutex_found = false;						
+						    
+						    if (MDD[robot_id][layer][u_mdd_idx] == MDD[other_robot_id][layer][w_mdd_idx])
+						    {
+							mutex_found = true;
+						    }
+						    else
+						    {
+							VertexMutexes_umap::const_iterator mutexes_u = Mutexes[robot_id][layer].find(MDD[robot_id][layer][u_mdd_idx]);
+							
+							if (mutexes_u != Mutexes[robot_id][layer].end())
+							{
+							    for (Mutexes_set::const_iterator mutex_u = mutexes_u->second.begin(); mutex_u != mutexes_u->second.end(); ++mutex_u)
+							    {
+								if (mutex_u->m_robot_id == other_robot_id && mutex_u->m_vertex_id == MDD[other_robot_id][layer][w_mdd_idx])
+								{
+								    mutex_found = true;
+								    break;
+								}
+							    }
+							}
+						    }
+						    if (!mutex_found)
+						    {
+							u_all_mutex = false;
+							break;
+						    }
+						}
+					    }
+					    if (!u_all_mutex)
+					    {
+						all_mutex = false;
+						break;
+					    }
+					}
+				    }				    
+				    if (all_mutex)
+				    {
+					bool next_first_mutex = Mutexes[robot_id][layer + 1][vertex_v_id].insert(Mutex(other_robot_id, vertex_z_id, z_mdd_idx, v_mdd_idx)).second;
+					bool next_second_mutex = Mutexes[other_robot_id][layer + 1][vertex_z_id].insert(Mutex(robot_id, vertex_v_id, v_mdd_idx, z_mdd_idx)).second;
+
+					if (next_first_mutex || next_second_mutex)
+					{
+					    scheduled_Mutexes.push_back(ScheduledMTX(layer + 1, MTX_pair(MTX(robot_id, vertex_v_id), MTX(other_robot_id, vertex_z_id))));
+					}
+				    }
+				}	    
+			    }
+			}
+		    }
+		}
+	    }
+	    
+	    if (layer > 0)
+	    {
+		/*
+		sVertex::Neighbors_list &u_Neighbors = m_environment.m_Vertices[vertex_u_id].m_Neighbors;
+		VertexIDs_vector u_neighbor_IDs;
+		for (sVertex::Neighbors_list::const_iterator u_neighbor = u_Neighbors.begin(); u_neighbor != u_Neighbors.end(); ++u_neighbor)
+		{
+		    u_neighbor_IDs.push_back((*u_neighbor)->m_target->m_id);
+		}
+		u_neighbor_IDs.push_back(vertex_u_id);
+		
+		sVertex::Neighbors_list &w_Neighbors = m_environment.m_Vertices[vertex_w_id].m_Neighbors;
+		VertexIDs_vector w_neighbor_IDs;
+		for (sVertex::Neighbors_list::const_iterator w_neighbor = w_Neighbors.begin(); w_neighbor != w_Neighbors.end(); ++w_neighbor)
+		{
+		    w_neighbor_IDs.push_back((*w_neighbor)->m_target->m_id);
+		}
+		w_neighbor_IDs.push_back(vertex_w_id);
+		*/
+		
+		for (VertexIDs_vector::const_iterator v_neighbor = vertex_neighbor_IDs[vertex_u_id].begin(); v_neighbor != vertex_neighbor_IDs[vertex_u_id].end(); ++v_neighbor)
+		{
+		    sInt_32 v_mdd_idx = inverse_MDD[robot_id][layer - 1][(*v_neighbor)];
+						    
+		    if (v_mdd_idx >= 0)
+		    {
+			for (VertexIDs_vector::const_iterator z_neighbor = vertex_neighbor_IDs[vertex_w_id].begin(); z_neighbor != vertex_neighbor_IDs[vertex_w_id].end(); ++z_neighbor)
+			{
+			    sInt_32 z_mdd_idx = inverse_MDD[other_robot_id][layer - 1][(*z_neighbor)];
+			    
+			    if (z_mdd_idx >= 0)
+			    {			    			    
+				if (*v_neighbor < *z_neighbor)
+				{
+				    int vertex_v_id = *v_neighbor;
+				    int vertex_z_id = *z_neighbor;
+
+				    bool all_mutex = true;
+
+				    /*
+				    sVertex::Neighbors_list &v_Neighbors = m_environment.m_Vertices[vertex_v_id].m_Neighbors;
+				    VertexIDs_vector v_neighbor_IDs;
+				    for (sVertex::Neighbors_list::const_iterator v_neighbor = v_Neighbors.begin(); v_neighbor != v_Neighbors.end(); ++v_neighbor)
+				    {
+					v_neighbor_IDs.push_back((*v_neighbor)->m_target->m_id);
+				    }
+				    v_neighbor_IDs.push_back(vertex_v_id);
+				    */
+				    
+				    for (VertexIDs_vector::const_iterator v_neighbor = vertex_neighbor_IDs[vertex_v_id].begin(); v_neighbor != vertex_neighbor_IDs[vertex_v_id].end(); ++v_neighbor)
+				    {
+					sInt_32 u_mdd_idx = inverse_MDD[robot_id][layer][(*v_neighbor)];
+					
+					if (u_mdd_idx >= 0)
+					{
+					    bool u_all_mutex = true;
+
+					    /*
+					    sVertex::Neighbors_list &z_Neighbors = m_environment.m_Vertices[vertex_z_id].m_Neighbors;
+					    VertexIDs_vector z_neighbor_IDs;
+					    for (sVertex::Neighbors_list::const_iterator z_neighbor = z_Neighbors.begin(); z_neighbor != z_Neighbors.end(); ++z_neighbor)
+					    {
+						z_neighbor_IDs.push_back((*z_neighbor)->m_target->m_id);
+					    }
+					    z_neighbor_IDs.push_back(vertex_z_id);
+					    */
+					    
+					    for (VertexIDs_vector::const_iterator z_neighbor = vertex_neighbor_IDs[vertex_z_id].begin(); z_neighbor != vertex_neighbor_IDs[vertex_z_id].end(); ++z_neighbor)
+					    {
+						sInt_32 w_mdd_idx = inverse_MDD[other_robot_id][layer][(*z_neighbor)];
+						
+						if (w_mdd_idx >= 0)
+						{
+						    bool mutex_found = false;						
+						    
+						    if (MDD[robot_id][layer][u_mdd_idx] == MDD[other_robot_id][layer][w_mdd_idx])
+						    {
+							mutex_found = true;
+						    }
+						    else
+						    {
+							VertexMutexes_umap::const_iterator mutexes_u = Mutexes[robot_id][layer].find(MDD[robot_id][layer][u_mdd_idx]);
+							
+							if (mutexes_u != Mutexes[robot_id][layer].end())
+							{
+							    for (Mutexes_set::const_iterator mutex_u = mutexes_u->second.begin(); mutex_u != mutexes_u->second.end(); ++mutex_u)
+							    {
+								if (mutex_u->m_robot_id == other_robot_id && mutex_u->m_vertex_id == MDD[other_robot_id][layer][w_mdd_idx])
+								{
+								    mutex_found = true;
+								    break;
+								}
+							    }
+							}
+						    }
+						    if (!mutex_found)
+						    {
+							u_all_mutex = false;
+							break;
+						    }
+						}
+					    }
+					    if (!u_all_mutex)
+					    {
+						all_mutex = false;
+						break;
+					    }
+					}
+				    }				    
+				    if (all_mutex)
+				    {
+					bool next_first_mutex = Mutexes[robot_id][layer - 1][vertex_v_id].insert(Mutex(other_robot_id, vertex_z_id, z_mdd_idx, v_mdd_idx)).second;
+					bool next_second_mutex = Mutexes[other_robot_id][layer - 1][vertex_z_id].insert(Mutex(robot_id, vertex_v_id, v_mdd_idx, z_mdd_idx)).second;
+
+					if (next_first_mutex || next_second_mutex)
+					{
+					    scheduled_Mutexes.push_back(ScheduledMTX(layer - 1, MTX_pair(MTX(robot_id, vertex_v_id), MTX(other_robot_id, vertex_z_id))));
+					}
+				    }
+				}	    
+			    }
+			}
+		    }		    
+		}
+	    }
+	    scheduled_Mutexes.pop_front();
+	}
+//	printf("Now pre-summarizing ...\n");
+	int N_mutexes = 0;
+	
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{	    
+	    for (int layer = 0; layer <= N_Layers; ++layer)
+	    {
+		for (VertexMutexes_umap::const_iterator mutexes_u = Mutexes[robot_id][layer].begin(); mutexes_u != Mutexes[robot_id][layer].end(); ++mutexes_u)
+		{
+		    int vertex_u_id = mutexes_u->first;
+
+		    for (Mutexes_set::const_iterator mutex_u = mutexes_u->second.begin(); mutex_u != mutexes_u->second.end(); ++mutex_u)
+		    {			
+			int vertex_v_id = mutex_u->m_vertex_id;
+			/*
+			int vertex_v_idx = mutex_u->m_mdd_idx;
+			int vertex_u_idx = mutex_u->m_mdd_other_idx;			
+			int other_robot_id = mutex_u->m_robot_id;
+			*/
+			
+			if (vertex_u_id < vertex_v_id)
+			{
+			    /*
+			    encoding_context.m_bit_generator->cast_Mutex(solver,
+									 sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer],
+												 sIntegerIndex(vertex_u_idx)),
+									 sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[other_robot_id][layer],
+												 sIntegerIndex(vertex_v_idx)));
+			    */
+//			    printf(" 	 Mutex: at level %d - [%d, %d (%d)] x [%d, %d (%d)]\n", layer, robot_id, vertex_u_id, vertex_u_idx, other_robot_id, vertex_v_id, vertex_v_idx);
+			    ++N_mutexes;
+			}
+		    }
+		}
+	    }
+	}		
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    for (int layer = 0; layer < N_Layers; ++layer)
+	    {
+		for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
+		{		    
+		    int neighbor_index = 0;
+		    for (int v = 0; v < MDD[robot_id][layer + 1].size(); ++v)
+		    {
+			if (m_environment.is_Adjacent(MDD[robot_id][layer][u], MDD[robot_id][layer + 1][v]) || MDD[robot_id][layer][u] == MDD[robot_id][layer + 1][v])
+			{
+			    sBitClauseGenerator::SpecifiedBitIdentifiers_vector biangular_Identifiers;
+		    
+			    if (MDD[robot_id][layer][u] != MDD[robot_id][layer + 1][v])
+			    {
+				for (sVertex::VertexIDs_vector::const_iterator conflict = m_environment.m_Vertices[MDD[robot_id][layer + 1][v]].m_Conflicts.begin();
+				     conflict != m_environment.m_Vertices[MDD[robot_id][layer + 1][v]].m_Conflicts.end(); ++conflict)
+				{
+				    for (int k = 0; k < m_robustness; ++k)
+				    {
+					if (layer - k >= 0)
+					{
+					    for (int other_robot_id = 1; other_robot_id <= N_Robots; ++other_robot_id)
+					    {
+						if (other_robot_id != robot_id)
+						{
+						    for (int vv = 0; vv < MDD[other_robot_id][layer - k].size(); ++vv)
+						    {
+							if (*conflict == MDD[other_robot_id][layer - k][vv])
+							{
+							    biangular_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[other_robot_id][layer - k],
+														    sIntegerIndex(vv)));
+							}
+						    }
+						}
+					    }
+					}
+				    }				    
+				}
+
+				for (int k = 0; k < m_robustness; ++k)
+				{
+				    if (layer - k >= 0)
+				    {
+					for (int other_robot_id = 1; other_robot_id <= N_Robots; ++other_robot_id)
+					{
+					    if (other_robot_id != robot_id)
+					    {
+						for (int vv = 0; vv < MDD[other_robot_id][layer - k].size(); ++vv)
+						{
+						    if (MDD[robot_id][layer + 1][v] == MDD[other_robot_id][layer - k][vv])
+						    {
+							biangular_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[other_robot_id][layer - k],
+														sIntegerIndex(vv)));
+						    }
+						}
+					    }
+					}
+				    }
+				}
+				if (!biangular_Identifiers.empty())
+				{
+				    encoding_context.m_bit_generator->cast_MultiBiangleMutex(solver,
+											     sSpecifiedBitIdentifier(&encoding_context.m_edge_occupancy_by_water__[robot_id][layer][u],
+														     sIntegerIndex(neighbor_index)),
+											     biangular_Identifiers);
+				}
+			    }
+			    ++neighbor_index;
+			}
+		    }
+		}
+	    }
+	}
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    for (int u = 0; u < MDD[robot_id][0].size(); ++u)
+	    {
+		if (MDD[robot_id][0][u] == m_initial_arrangement.get_RobotLocation(robot_id))
+		{
+		    encoding_context.m_bit_generator->cast_BitSet(solver,
+								  sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][0],
+											  sIntegerIndex(u)));
+		}
+	    }
+	}
+	switch (m_goal_type)
+	{
+	case GOAL_TYPE_ARRANGEMENT:
+	{
+	    for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	    {
+		for (int u = 0; u < MDD[robot_id][N_Layers].size(); ++u)
+		{
+		    if (MDD[robot_id][N_Layers][u] == m_goal_arrangement.get_RobotLocation(robot_id))
+		    {
+			encoding_context.m_bit_generator->cast_BitSet(solver,
+								      sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][N_Layers],
+											      sIntegerIndex(u)));
+		    }
+		}
+	    }
+	    break;
+	}
+	case GOAL_TYPE_SPECIFICATION:
+	{
+	    for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	    {
+		for (int u = 0; u < MDD[robot_id][N_Layers].size(); ++u)
+		{
+		    sASSERT(m_goal_specification.get_RobotGoal(robot_id).size() == 1);
+
+		    if (MDD[robot_id][N_Layers][u] == *m_goal_specification.get_RobotGoal(robot_id).begin())
+		    {
+			encoding_context.m_bit_generator->cast_BitSet(solver,
+								      sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][N_Layers],
+											      sIntegerIndex(u)));
+		    }
+		}
+	    }
+	    break;
+	}
+	default:
+	{
+	    sASSERT(false);
+	    break;
+	}
+	}
+    }    
+
+
+    void sMultirobotInstance::to_Memory_MddMutexCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    {
+	encoding_context.switchTo_AdvancedGeneratingMode();
+
+	int N_Vertices = m_environment.get_VertexCount();
+	int N_Robots = m_initial_arrangement.get_RobotCount();
+	int N_Layers = mdd_depth;
+
+	encoding_context.m_vertex_occupancy_by_water_.resize(N_Robots + 1);
+	encoding_context.m_vertex_water_cardinality_.resize(N_Robots + 1);
+	encoding_context.m_edge_occupancy_by_water__.resize(N_Robots + 1);
+
+	MDDMutexes_vector Mutexes;
+	Mutexes.resize(N_Robots + 1);
+
+	InverseMDD_vector inverse_MDD;
+	construct_InverseMDD(N_Vertices, MDD, inverse_MDD);
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    encoding_context.m_vertex_occupancy_by_water_[robot_id].resize(N_Layers + 1);
+	    encoding_context.m_vertex_water_cardinality_[robot_id].resize(N_Layers + 1);
+
+	    Mutexes[robot_id].resize(N_Layers + 1);
+	    
+	    for (int layer = 0; layer <= N_Layers; ++layer)
+	    {
+		sIndexableBitIdentifier vertex_occupancy_by_water_(&encoding_context.m_variable_store,
+								   "vertex_occupancy_by_water-" + sInt_32_to_String(robot_id) + "_" + sInt_32_to_String(layer),
+								   sIntegerScope(0, MDD[robot_id][layer].size() - 1));
+		encoding_context.m_vertex_occupancy_by_water_[robot_id][layer] = vertex_occupancy_by_water_;
+		encoding_context.register_TranslateIdentifier(encoding_context.m_vertex_occupancy_by_water_[robot_id][layer]);
+
+		if (!extra_MDD[robot_id][layer].empty())
+		{
+		    sASSERT(extra_MDD[robot_id][layer].size() == 1);
+
+		    sIndexableBitIdentifier vertex_water_cardinality_(&encoding_context.m_variable_store,
+								      "vertex_water_cardinality-" + sInt_32_to_String(robot_id) + "_" + sInt_32_to_String(layer),
+								      sIntegerScope(0, 0));
+		    encoding_context.m_vertex_water_cardinality_[robot_id][layer] = vertex_water_cardinality_;
+		    encoding_context.register_TranslateIdentifier(encoding_context.m_vertex_water_cardinality_[robot_id][layer]);
+
+		    for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
+		    {
+			if (extra_MDD[robot_id][layer][0] != MDD[robot_id][layer][u])
+			{
+			    encoding_context.m_bit_generator->cast_Implication(solver,
+									       sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer], sIntegerIndex(u)),
+									       sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][layer], sIntegerIndex(0)));
+			}
+		    }
+		    sBitClauseGenerator::SpecifiedBitIdentifiers_vector prev_cardinality_Identifiers;
+
+		    for (int prev_layer = 0; prev_layer < layer; ++prev_layer)
+		    {
+			if (!extra_MDD[robot_id][prev_layer].empty())
+			{
+			    prev_cardinality_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][prev_layer], sIntegerIndex(0)));
+			}
+		    }
+		    if (!prev_cardinality_Identifiers.empty())
+		    {
+			encoding_context.m_bit_generator->cast_MultiConjunctiveImplication(solver,
+											   sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][layer], sIntegerIndex(0)),
+											   prev_cardinality_Identifiers);
+		    }
+		}
+	    }
+	}
+
+	sBitClauseGenerator::SpecifiedBitIdentifiers_vector cardinality_Identifiers;
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    for (int layer = 0; layer <= N_Layers; ++layer)
+	    {
+		if (!extra_MDD[robot_id][layer].empty())
+		{
+		    cardinality_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_water_cardinality_[robot_id][layer], sIntegerIndex(0)));
+		}
+	    }
+	}       
+	if (!cardinality_Identifiers.empty())
+	{
+	    encoding_context.m_bit_generator->cast_Cardinality(solver, cardinality_Identifiers, extra_cost);
+	}
+
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    encoding_context.m_edge_occupancy_by_water__[robot_id].resize(N_Layers);
+
+	    for (int layer = 0; layer < N_Layers; ++layer)
+	    {
+		encoding_context.m_edge_occupancy_by_water__[robot_id][layer].resize(MDD[robot_id][layer].size());
+
+		for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
+		{
+		    int N_neighbors = 0;
+
+		    for (int v = 0; v < MDD[robot_id][layer + 1].size(); ++v)
+		    {
+			if (m_environment.is_Adjacent(MDD[robot_id][layer][u], MDD[robot_id][layer + 1][v]) || MDD[robot_id][layer][u] == MDD[robot_id][layer + 1][v])
+			{
+			    ++N_neighbors;
+			}
+		    }
+		    sIndexableBitIdentifier edge_occupancy_by_water__(&encoding_context.m_variable_store,
+								      "edge_occupancy_by_water-" + sInt_32_to_String(robot_id) + "_" + sInt_32_to_String(layer) + "_" + sInt_32_to_String(MDD[robot_id][layer][u]),
+								      sIntegerScope(0, N_neighbors - 1));
+		    encoding_context.m_edge_occupancy_by_water__[robot_id][layer][u] = edge_occupancy_by_water__;
+		    encoding_context.register_TranslateIdentifier(encoding_context.m_edge_occupancy_by_water__[robot_id][layer][u]);
+
+		}
+	    }
+	}
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    for (int layer = 0; layer < N_Layers; ++layer)
+	    {
+		sBitClauseGenerator::SpecifiedBitIdentifiers_vector mutex_vertex_Identifiers;
+
+		for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
+		{
+		    sBitClauseGenerator::SpecifiedBitIdentifiers_vector mutex_target_Identifiers;
+
+		    int neighbor_index = 0;
+		    for (int v = 0; v < MDD[robot_id][layer + 1].size(); ++v)
+		    {
+			if (m_environment.is_Adjacent(MDD[robot_id][layer][u], MDD[robot_id][layer + 1][v]) || MDD[robot_id][layer][u] == MDD[robot_id][layer + 1][v])
+			{
+			    mutex_target_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_edge_occupancy_by_water__[robot_id][layer][u], sIntegerIndex(neighbor_index)));
+
+			    encoding_context.m_bit_generator->cast_Implication(solver,
+									       sSpecifiedBitIdentifier(&encoding_context.m_edge_occupancy_by_water__[robot_id][layer][u],
+												       sIntegerIndex(neighbor_index)),
+									       sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer + 1],
+												       sIntegerIndex(v)));
+			    neighbor_index++;
+			}
+		    }
+		    mutex_vertex_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer], sIntegerIndex(u)));	
+	    
+		    encoding_context.m_bit_generator->cast_MultiImplication(solver,
+									    sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer],
+												    sIntegerIndex(u)),
+									    mutex_target_Identifiers);
+
+		    encoding_context.m_bit_generator->cast_AllMutexConstraint(solver,
+									      mutex_target_Identifiers);   
+		}
+		encoding_context.m_bit_generator->cast_AllMutexConstraint(solver,
+									  mutex_vertex_Identifiers);
+	    }
+	}
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    sBitClauseGenerator::SpecifiedBitIdentifiers_vector mutex_vertex_Identifiers;
+		    
+	    for (int u = 0; u < MDD[robot_id][N_Layers].size(); ++u)
+	    {
+		mutex_vertex_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][N_Layers], sIntegerIndex(u)));
+	    }
+	    encoding_context.m_bit_generator->cast_AllMutexConstraint(solver,
+								      mutex_vertex_Identifiers);
+	}
+
+	for (int vertex_id = 0; vertex_id < N_Vertices; ++vertex_id)
+	{
+	    for (int layer = 0; layer <= N_Layers; ++layer)
+	    {
+		sBitClauseGenerator::SpecifiedBitIdentifiers_vector mutex_occupancy_Identifiers;
+
+		for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+		{
+		    for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
+		    {
+			if (MDD[robot_id][layer][u] == vertex_id)
+			{
+			    mutex_occupancy_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer], sIntegerIndex(u)));
+			}
+		    }
+		}
+		if (mutex_occupancy_Identifiers.size() > 1)
+		{
+		    encoding_context.m_bit_generator->cast_AllMutexConstraint(solver,
+									      mutex_occupancy_Identifiers);
+		}
+	    }
+	}
+
+
+	ScheduledMTXs_list scheduled_Mutexes;
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{	   
+	    for (int layer = 0; layer < N_Layers; ++layer)
+	    {
+		for (int other_robot_id = 1; other_robot_id <= N_Robots; ++other_robot_id)
+		{
+		    if (other_robot_id < robot_id)
+		    {
+			for (int uu = 0; uu < MDD[robot_id][layer].size(); ++uu)
+			{
+			    int uu_mdd_idx = inverse_MDD[other_robot_id][layer][MDD[robot_id][layer][uu]];
+			    
+			    if (uu_mdd_idx >= 0)
+			    {
+				scheduled_Mutexes.push_back(ScheduledMTX(layer, MTX_pair(MTX(robot_id, MDD[robot_id][layer][uu]), MTX(other_robot_id, MDD[other_robot_id][layer][uu_mdd_idx]))));
+			    }
+			}
+		    }
+		}
+	    }
+	}
+
+	std::vector<VertexIDs_vector> vertex_neighbor_IDs;
+	vertex_neighbor_IDs.resize(N_Vertices);
+
+	for (int vertex_id = 0; vertex_id < N_Vertices; ++vertex_id)
+	{
+	    sVertex::Neighbors_list &vertex_Neighbors = m_environment.m_Vertices[vertex_id].m_Neighbors;
+	    for (sVertex::Neighbors_list::const_iterator vertex_neighbor = vertex_Neighbors.begin(); vertex_neighbor != vertex_Neighbors.end(); ++vertex_neighbor)
+	    {
+		vertex_neighbor_IDs[vertex_id].push_back((*vertex_neighbor)->m_target->m_id);
+	    }
+	    vertex_neighbor_IDs[vertex_id].push_back(vertex_id);	    
+	}
+
+	while (!scheduled_Mutexes.empty())
+	{
+	    const ScheduledMTX &scheduled_MTX = scheduled_Mutexes.front();	    
+	    
+	    int vertex_u_id = scheduled_MTX.m_mtx.first.m_vertex_id;
+	    int vertex_w_id = scheduled_MTX.m_mtx.second.m_vertex_id;
+
+	    int robot_id = scheduled_MTX.m_mtx.first.m_robot_id;
+	    int other_robot_id = scheduled_MTX.m_mtx.second.m_robot_id;
+
+	    int layer = scheduled_MTX.m_layer;
+	    
+	    if (layer < N_Layers)
+	    {
+		/*
+		sVertex::Neighbors_list &u_Neighbors = m_environment.m_Vertices[vertex_u_id].m_Neighbors;
+		VertexIDs_vector u_neighbor_IDs;
+		for (sVertex::Neighbors_list::const_iterator u_neighbor = u_Neighbors.begin(); u_neighbor != u_Neighbors.end(); ++u_neighbor)
+		{
+		    u_neighbor_IDs.push_back((*u_neighbor)->m_target->m_id);
+		}
+		u_neighbor_IDs.push_back(vertex_u_id);
+		
+		sVertex::Neighbors_list &w_Neighbors = m_environment.m_Vertices[vertex_w_id].m_Neighbors;
+		VertexIDs_vector w_neighbor_IDs;
+		for (sVertex::Neighbors_list::const_iterator w_neighbor = w_Neighbors.begin(); w_neighbor != w_Neighbors.end(); ++w_neighbor)
+		{
+		    w_neighbor_IDs.push_back((*w_neighbor)->m_target->m_id);
+		}
+		w_neighbor_IDs.push_back(vertex_w_id);
+		*/
+		
+		for (VertexIDs_vector::const_iterator v_neighbor = vertex_neighbor_IDs[vertex_u_id].begin(); v_neighbor != vertex_neighbor_IDs[vertex_u_id].end(); ++v_neighbor)
+		{
+		    sInt_32 v_mdd_idx = inverse_MDD[robot_id][layer + 1][(*v_neighbor)];
+						    
+		    if (v_mdd_idx >= 0)
+		    {
+			for (VertexIDs_vector::const_iterator z_neighbor = vertex_neighbor_IDs[vertex_w_id].begin(); z_neighbor != vertex_neighbor_IDs[vertex_w_id].end(); ++z_neighbor)
+			{
+			    sInt_32 z_mdd_idx = inverse_MDD[other_robot_id][layer + 1][(*z_neighbor)];
+			    
+			    if (z_mdd_idx >= 0)
+			    {			    			    
+				if (*v_neighbor < *z_neighbor)
+				{
+				    int vertex_v_id = *v_neighbor;
+				    int vertex_z_id = *z_neighbor;
+
+				    bool all_mutex = true;
+
+				    /*
+				    sVertex::Neighbors_list &v_Neighbors = m_environment.m_Vertices[vertex_v_id].m_Neighbors;
+				    VertexIDs_vector v_neighbor_IDs;
+				    for (sVertex::Neighbors_list::const_iterator v_neighbor = v_Neighbors.begin(); v_neighbor != v_Neighbors.end(); ++v_neighbor)
+				    {
+					v_neighbor_IDs.push_back((*v_neighbor)->m_target->m_id);
+				    }
+				    v_neighbor_IDs.push_back(vertex_v_id);
+				    */
+				    
+				    for (VertexIDs_vector::const_iterator v_neighbor = vertex_neighbor_IDs[vertex_v_id].begin(); v_neighbor != vertex_neighbor_IDs[vertex_v_id].end(); ++v_neighbor)
+				    {
+					sInt_32 u_mdd_idx = inverse_MDD[robot_id][layer][(*v_neighbor)];
+					
+					if (u_mdd_idx >= 0)
+					{
+					    bool u_all_mutex = true;
+
+					    /*
+					    sVertex::Neighbors_list &z_Neighbors = m_environment.m_Vertices[vertex_z_id].m_Neighbors;
+					    VertexIDs_vector z_neighbor_IDs;
+					    for (sVertex::Neighbors_list::const_iterator z_neighbor = z_Neighbors.begin(); z_neighbor != z_Neighbors.end(); ++z_neighbor)
+					    {
+						z_neighbor_IDs.push_back((*z_neighbor)->m_target->m_id);
+					    }
+					    z_neighbor_IDs.push_back(vertex_z_id);
+					    */
+					    
+					    for (VertexIDs_vector::const_iterator z_neighbor = vertex_neighbor_IDs[vertex_z_id].begin(); z_neighbor != vertex_neighbor_IDs[vertex_z_id].end(); ++z_neighbor)
+					    {
+						sInt_32 w_mdd_idx = inverse_MDD[other_robot_id][layer][(*z_neighbor)];
+						
+						if (w_mdd_idx >= 0)
+						{
+						    bool mutex_found = false;						
+						    
+						    if (MDD[robot_id][layer][u_mdd_idx] == MDD[other_robot_id][layer][w_mdd_idx])
+						    {
+							mutex_found = true;
+						    }
+						    else
+						    {
+							VertexMutexes_umap::const_iterator mutexes_u = Mutexes[robot_id][layer].find(MDD[robot_id][layer][u_mdd_idx]);
+							
+							if (mutexes_u != Mutexes[robot_id][layer].end())
+							{
+							    for (Mutexes_set::const_iterator mutex_u = mutexes_u->second.begin(); mutex_u != mutexes_u->second.end(); ++mutex_u)
+							    {
+								if (mutex_u->m_robot_id == other_robot_id && mutex_u->m_vertex_id == MDD[other_robot_id][layer][w_mdd_idx])
+								{
+								    mutex_found = true;
+								    break;
+								}
+							    }
+							}
+						    }
+						    if (!mutex_found)
+						    {
+							u_all_mutex = false;
+							break;
+						    }
+						}
+					    }
+					    if (!u_all_mutex)
+					    {
+						all_mutex = false;
+						break;
+					    }
+					}
+				    }				    
+				    if (all_mutex)
+				    {
+					bool next_first_mutex = Mutexes[robot_id][layer + 1][vertex_v_id].insert(Mutex(other_robot_id, vertex_z_id, z_mdd_idx, v_mdd_idx)).second;
+					bool next_second_mutex = Mutexes[other_robot_id][layer + 1][vertex_z_id].insert(Mutex(robot_id, vertex_v_id, v_mdd_idx, z_mdd_idx)).second;
+
+					if (next_first_mutex || next_second_mutex)
+					{
+					    scheduled_Mutexes.push_back(ScheduledMTX(layer + 1, MTX_pair(MTX(robot_id, vertex_v_id), MTX(other_robot_id, vertex_z_id))));
+					}
+				    }
+				}	    
+			    }
+			}
+		    }
+		}
+	    }
+	    
+	    if (layer > 0)
+	    {
+		/*
+		sVertex::Neighbors_list &u_Neighbors = m_environment.m_Vertices[vertex_u_id].m_Neighbors;
+		VertexIDs_vector u_neighbor_IDs;
+		for (sVertex::Neighbors_list::const_iterator u_neighbor = u_Neighbors.begin(); u_neighbor != u_Neighbors.end(); ++u_neighbor)
+		{
+		    u_neighbor_IDs.push_back((*u_neighbor)->m_target->m_id);
+		}
+		u_neighbor_IDs.push_back(vertex_u_id);
+		
+		sVertex::Neighbors_list &w_Neighbors = m_environment.m_Vertices[vertex_w_id].m_Neighbors;
+		VertexIDs_vector w_neighbor_IDs;
+		for (sVertex::Neighbors_list::const_iterator w_neighbor = w_Neighbors.begin(); w_neighbor != w_Neighbors.end(); ++w_neighbor)
+		{
+		    w_neighbor_IDs.push_back((*w_neighbor)->m_target->m_id);
+		}
+		w_neighbor_IDs.push_back(vertex_w_id);
+		*/
+		
+		for (VertexIDs_vector::const_iterator v_neighbor = vertex_neighbor_IDs[vertex_u_id].begin(); v_neighbor != vertex_neighbor_IDs[vertex_u_id].end(); ++v_neighbor)
+		{
+		    sInt_32 v_mdd_idx = inverse_MDD[robot_id][layer - 1][(*v_neighbor)];
+						    
+		    if (v_mdd_idx >= 0)
+		    {
+			for (VertexIDs_vector::const_iterator z_neighbor = vertex_neighbor_IDs[vertex_w_id].begin(); z_neighbor != vertex_neighbor_IDs[vertex_w_id].end(); ++z_neighbor)
+			{
+			    sInt_32 z_mdd_idx = inverse_MDD[other_robot_id][layer - 1][(*z_neighbor)];
+			    
+			    if (z_mdd_idx >= 0)
+			    {			    			    
+				if (*v_neighbor < *z_neighbor)
+				{
+				    int vertex_v_id = *v_neighbor;
+				    int vertex_z_id = *z_neighbor;
+
+				    bool all_mutex = true;
+
+				    /*
+				    sVertex::Neighbors_list &v_Neighbors = m_environment.m_Vertices[vertex_v_id].m_Neighbors;
+				    VertexIDs_vector v_neighbor_IDs;
+				    for (sVertex::Neighbors_list::const_iterator v_neighbor = v_Neighbors.begin(); v_neighbor != v_Neighbors.end(); ++v_neighbor)
+				    {
+					v_neighbor_IDs.push_back((*v_neighbor)->m_target->m_id);
+				    }
+				    v_neighbor_IDs.push_back(vertex_v_id);
+				    */
+				    
+				    for (VertexIDs_vector::const_iterator v_neighbor = vertex_neighbor_IDs[vertex_v_id].begin(); v_neighbor != vertex_neighbor_IDs[vertex_v_id].end(); ++v_neighbor)
+				    {
+					sInt_32 u_mdd_idx = inverse_MDD[robot_id][layer][(*v_neighbor)];
+					
+					if (u_mdd_idx >= 0)
+					{
+					    bool u_all_mutex = true;
+
+					    /*
+					    sVertex::Neighbors_list &z_Neighbors = m_environment.m_Vertices[vertex_z_id].m_Neighbors;
+					    VertexIDs_vector z_neighbor_IDs;
+					    for (sVertex::Neighbors_list::const_iterator z_neighbor = z_Neighbors.begin(); z_neighbor != z_Neighbors.end(); ++z_neighbor)
+					    {
+						z_neighbor_IDs.push_back((*z_neighbor)->m_target->m_id);
+					    }
+					    z_neighbor_IDs.push_back(vertex_z_id);
+					    */
+					    
+					    for (VertexIDs_vector::const_iterator z_neighbor = vertex_neighbor_IDs[vertex_z_id].begin(); z_neighbor != vertex_neighbor_IDs[vertex_z_id].end(); ++z_neighbor)
+					    {
+						sInt_32 w_mdd_idx = inverse_MDD[other_robot_id][layer][(*z_neighbor)];
+						
+						if (w_mdd_idx >= 0)
+						{
+						    bool mutex_found = false;						
+						    
+						    if (MDD[robot_id][layer][u_mdd_idx] == MDD[other_robot_id][layer][w_mdd_idx])
+						    {
+							mutex_found = true;
+						    }
+						    else
+						    {
+							VertexMutexes_umap::const_iterator mutexes_u = Mutexes[robot_id][layer].find(MDD[robot_id][layer][u_mdd_idx]);
+							
+							if (mutexes_u != Mutexes[robot_id][layer].end())
+							{
+							    for (Mutexes_set::const_iterator mutex_u = mutexes_u->second.begin(); mutex_u != mutexes_u->second.end(); ++mutex_u)
+							    {
+								if (mutex_u->m_robot_id == other_robot_id && mutex_u->m_vertex_id == MDD[other_robot_id][layer][w_mdd_idx])
+								{
+								    mutex_found = true;
+								    break;
+								}
+							    }
+							}
+						    }
+						    if (!mutex_found)
+						    {
+							u_all_mutex = false;
+							break;
+						    }
+						}
+					    }
+					    if (!u_all_mutex)
+					    {
+						all_mutex = false;
+						break;
+					    }
+					}
+				    }				    
+				    if (all_mutex)
+				    {
+					bool next_first_mutex = Mutexes[robot_id][layer - 1][vertex_v_id].insert(Mutex(other_robot_id, vertex_z_id, z_mdd_idx, v_mdd_idx)).second;
+					bool next_second_mutex = Mutexes[other_robot_id][layer - 1][vertex_z_id].insert(Mutex(robot_id, vertex_v_id, v_mdd_idx, z_mdd_idx)).second;
+
+					if (next_first_mutex || next_second_mutex)
+					{
+					    scheduled_Mutexes.push_back(ScheduledMTX(layer - 1, MTX_pair(MTX(robot_id, vertex_v_id), MTX(other_robot_id, vertex_z_id))));
+					}
+				    }
+				}	    
+			    }
+			}
+		    }		    
+		}
+	    }
+	    scheduled_Mutexes.pop_front();
+	}
+//	printf("Now pre-summarizing ...\n");
+	int N_mutexes = 0;
+	
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{	    
+	    for (int layer = 0; layer <= N_Layers; ++layer)
+	    {
+		for (VertexMutexes_umap::const_iterator mutexes_u = Mutexes[robot_id][layer].begin(); mutexes_u != Mutexes[robot_id][layer].end(); ++mutexes_u)
+		{
+		    int vertex_u_id = mutexes_u->first;
+
+		    for (Mutexes_set::const_iterator mutex_u = mutexes_u->second.begin(); mutex_u != mutexes_u->second.end(); ++mutex_u)
+		    {			
+			int vertex_v_id = mutex_u->m_vertex_id;
+			int vertex_v_idx = mutex_u->m_mdd_idx;
+			int vertex_u_idx = mutex_u->m_mdd_other_idx;			
+			int other_robot_id = mutex_u->m_robot_id;
+			
+			if (vertex_u_id < vertex_v_id)
+			{
+			    encoding_context.m_bit_generator->cast_Mutex(solver,
+									 sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer],
+												 sIntegerIndex(vertex_u_idx)),
+									 sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[other_robot_id][layer],
+												 sIntegerIndex(vertex_v_idx)));
+//			    printf(" 	 Mutex: at level %d - [%d, %d (%d)] x [%d, %d (%d)]\n", layer, robot_id, vertex_u_id, vertex_u_idx, other_robot_id, vertex_v_id, vertex_v_idx);
+			    ++N_mutexes;
+			}
+		    }
+		}
+	    }
+	}		
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    for (int layer = 0; layer < N_Layers; ++layer)
+	    {
+		for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
+		{		    
+		    int neighbor_index = 0;
+		    for (int v = 0; v < MDD[robot_id][layer + 1].size(); ++v)
+		    {
+			if (m_environment.is_Adjacent(MDD[robot_id][layer][u], MDD[robot_id][layer + 1][v]) || MDD[robot_id][layer][u] == MDD[robot_id][layer + 1][v])
+			{
+			    sBitClauseGenerator::SpecifiedBitIdentifiers_vector biangular_Identifiers;
+		    
+			    if (MDD[robot_id][layer][u] != MDD[robot_id][layer + 1][v])
+			    {
+				for (sVertex::VertexIDs_vector::const_iterator conflict = m_environment.m_Vertices[MDD[robot_id][layer + 1][v]].m_Conflicts.begin();
+				     conflict != m_environment.m_Vertices[MDD[robot_id][layer + 1][v]].m_Conflicts.end(); ++conflict)
+				{
+				    for (int k = 0; k < m_robustness; ++k)
+				    {
+					if (layer - k >= 0)
+					{
+					    for (int other_robot_id = 1; other_robot_id <= N_Robots; ++other_robot_id)
+					    {
+						if (other_robot_id != robot_id)
+						{
+						    for (int vv = 0; vv < MDD[other_robot_id][layer - k].size(); ++vv)
+						    {
+							if (*conflict == MDD[other_robot_id][layer - k][vv])
+							{
+							    biangular_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[other_robot_id][layer - k],
+														    sIntegerIndex(vv)));
+							}
+						    }
+						}
+					    }
+					}
+				    }				    
+				}
+
+				for (int k = 0; k < m_robustness; ++k)
+				{
+				    if (layer - k >= 0)
+				    {
+					for (int other_robot_id = 1; other_robot_id <= N_Robots; ++other_robot_id)
+					{
+					    if (other_robot_id != robot_id)
+					    {
+						for (int vv = 0; vv < MDD[other_robot_id][layer - k].size(); ++vv)
+						{
+						    if (MDD[robot_id][layer + 1][v] == MDD[other_robot_id][layer - k][vv])
+						    {
+							biangular_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[other_robot_id][layer - k],
+														sIntegerIndex(vv)));
+						    }
+						}
+					    }
+					}
+				    }
+				}
+				if (!biangular_Identifiers.empty())
+				{
+				    encoding_context.m_bit_generator->cast_MultiBiangleMutex(solver,
+											     sSpecifiedBitIdentifier(&encoding_context.m_edge_occupancy_by_water__[robot_id][layer][u],
+														     sIntegerIndex(neighbor_index)),
+											     biangular_Identifiers);
+				}
+			    }
+			    ++neighbor_index;
+			}
+		    }
+		}
+	    }
+	}
+
+	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	{
+	    for (int u = 0; u < MDD[robot_id][0].size(); ++u)
+	    {
+		if (MDD[robot_id][0][u] == m_initial_arrangement.get_RobotLocation(robot_id))
+		{
+		    encoding_context.m_bit_generator->cast_BitSet(solver,
+								  sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][0],
+											  sIntegerIndex(u)));
+		}
+	    }
+	}
+	switch (m_goal_type)
+	{
+	case GOAL_TYPE_ARRANGEMENT:
+	{
+	    for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	    {
+		for (int u = 0; u < MDD[robot_id][N_Layers].size(); ++u)
+		{
+		    if (MDD[robot_id][N_Layers][u] == m_goal_arrangement.get_RobotLocation(robot_id))
+		    {
+			encoding_context.m_bit_generator->cast_BitSet(solver,
+								      sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][N_Layers],
+											      sIntegerIndex(u)));
+		    }
+		}
+	    }
+	    break;
+	}
+	case GOAL_TYPE_SPECIFICATION:
+	{
+	    for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	    {
+		for (int u = 0; u < MDD[robot_id][N_Layers].size(); ++u)
+		{
+		    sASSERT(m_goal_specification.get_RobotGoal(robot_id).size() == 1);
+
+		    if (MDD[robot_id][N_Layers][u] == *m_goal_specification.get_RobotGoal(robot_id).begin())
+		    {
+			encoding_context.m_bit_generator->cast_BitSet(solver,
+								      sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][N_Layers],
+											      sIntegerIndex(u)));
+		    }
+		}
+	    }
+	    break;
+	}
+	default:
+	{
+	    sASSERT(false);
+	    break;
+	}
+	}
+    }    
+    
 
     void sMultirobotInstance::to_Memory_GMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
@@ -17924,66 +21301,7 @@ namespace sReloc
 	//	s_GlobalPhaseStatistics.leave_Phase();
 	//	s_GlobalPhaseStatistics.leave_Phase();
     }
-
-
-    struct Mutex
-    {
-	Mutex() { /* nothing */ }
-	Mutex(int robot_id, int vertex_id, int mdd_idx, int mdd_other_idx)
-	    : m_robot_id(robot_id)
-	    , m_vertex_id(vertex_id)
-	    , m_mdd_idx(mdd_idx)
-	    , m_mdd_other_idx(mdd_other_idx)
-	{ /* nothing */ }
-
-	bool operator<(const Mutex &mutex) const
-	{
-	    return (m_robot_id < mutex.m_robot_id || (m_robot_id == mutex.m_robot_id && m_vertex_id < mutex.m_vertex_id));
-	}
-
-	int m_robot_id;
-	int m_vertex_id;
-	int m_mdd_idx;
-	int m_mdd_other_idx;
-    };
-
-    struct MTX
-    {
-	MTX() { /* nothing */ }
-	MTX(int robot_id, int vertex_id)
-	    : m_robot_id(robot_id)
-	    , m_vertex_id(vertex_id)
-	{ /* nothing */ }
-	
-	int m_robot_id;
-	int m_vertex_id;
-    };
-
-    typedef std::pair<MTX, MTX> MTX_pair;
-
-    struct ScheduledMTX
-    {
-	ScheduledMTX() { /* nothing */ }
-	ScheduledMTX(int layer, MTX_pair mtx)
-	    : m_layer(layer)
-	    , m_mtx(mtx)
-	{ /* nothing */ }
-	
-	int m_layer;
-	MTX_pair m_mtx;
-    };
-
-    typedef std::list<ScheduledMTX> ScheduledMTXs_list;
-
-    typedef std::vector<Mutex> Mutexes_vector;
-    typedef std::set<Mutex, std::less<Mutex> > Mutexes_set;    
-    typedef std::unordered_map<int, Mutexes_set> VertexMutexes_umap;
-    
-    typedef std::vector<VertexMutexes_umap> LayerMutexes_vector;
-    typedef std::vector<LayerMutexes_vector> RobotMutexes_vector;
-    
-    typedef RobotMutexes_vector MDDMutexes_vector;
-    
+  
 
     void sMultirobotInstance::to_Stream_MddPlusPlusMutexCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {

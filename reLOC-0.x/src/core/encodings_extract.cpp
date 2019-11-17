@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* encodings_extract.cpp / 0.21-robik_013                                     */
+/* encodings_extract.cpp / 0.21-robik_020                                     */
 /*----------------------------------------------------------------------------*/
 //
 // Multi-robot path-finding encodings related
@@ -4520,6 +4520,374 @@ namespace sReloc
     }
 
 
+    sResult sMultirobotSolutionCompressor::extract_ComputedMddUmtexSolution(const sRobotArrangement                 &start_arrangement,
+#ifdef sDEBUG
+									    const sUndirectedGraph                  &environment,
+#else
+									    const sUndirectedGraph                  &,
+#endif										       								       
+									    const sMultirobotInstance::MDD_vector   &MDD,
+									    int                                      computed_cost,
+									    const sMultirobotEncodingContext_CNFsat &final_encoding_context,
+									    sMultirobotSolution                     &computed_solution,
+									    int                                      thread_id)
+    {
+	sString output_filename;
+
+	printf("Extracting MDD UMTEX ...\n");
+
+	if (thread_id != THREAD_ID_UNDEFINED)
+	{
+	    output_filename = OUTPUT_MDD_UMTEX_FILENAME_PREFIX + "_" + sInt_32_to_String(computed_cost) + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + ".txt";
+	}
+	else
+	{
+	    output_filename = OUTPUT_MDD_UMTEX_FILENAME_PREFIX + "_" + sInt_32_to_String(computed_cost) + "-" + sInt_32_to_String(getpid()) + ".txt";
+	}
+	FILE *fr;
+	
+	if ((fr = fopen(output_filename.c_str(), "r")) == NULL)
+	{
+	    return sMULTIROBOT_SOLUTION_COMPRESSOR_OPEN_ERROR;
+	}
+	
+	char answer[32];
+	answer[0] = '\0';
+
+	fscanf(fr, "%s\n", answer);
+
+	Arrangements_vector mdd_Arrangements;
+	int mdd_depth = MDD[1].size();
+
+	for (int depth = 0; depth < mdd_depth; ++depth)
+	{
+	    mdd_Arrangements.push_back(sRobotArrangement(start_arrangement.get_VertexCount(), start_arrangement.get_RobotCount()));
+	}
+
+	while (!feof(fr))
+	{
+	    int literal;
+	    fscanf(fr, "%d", &literal);
+
+#ifdef sDEBUG
+/*
+	    sSpecifiedIdentifier specified_identifier = final_encoding_context.translate_CNF_Variable(sABS(literal));
+
+	    if (!specified_identifier.is_Null())
+	    {
+		const sString &base_name = specified_identifier.get_IndexableIdentifier()->get_BaseName();
+		
+		if (base_name.find("vertex_water_cardinality") == 0)
+		{
+		    printf("%s\n", base_name.c_str());
+		    printf("%d\n", literal);
+		}
+	    }
+*/
+#endif
+	    if (literal > 0)
+	    {
+		sSpecifiedIdentifier specified_identifier = final_encoding_context.translate_CNF_Variable(sABS(literal));
+
+		if (!specified_identifier.is_Null())
+		{
+		    const sString &base_name = specified_identifier.get_IndexableIdentifier()->get_BaseName();
+
+		    if (base_name.find("vertex_occupancy_by_water") == 0)
+		    {   
+			int robot_id = sUInt_32_from_String(base_name.substr(26, base_name.find('_', 26) - 26));
+			int level = sUInt_32_from_String(base_name.substr(base_name.find('_', 26) + 1, base_name.size()));
+
+
+			int mdd_index = *specified_identifier.get_ScopeIndexes()[0] - *(specified_identifier.get_IndexableIdentifier()->get_IndexScopes()[0]->get_Begin());
+//			printf("mdd idx:%d\n", mdd_index);
+
+			int vertex_id = MDD[robot_id][level][mdd_index];
+
+			mdd_Arrangements[level].place_Robot(robot_id, vertex_id);
+/*
+			printf("%s\n", base_name.c_str());
+			printf("level:%d,%d\n", level, mdd_Environments.size());
+
+			if (level == heighted_Environments.size() - 1)
+			{
+			    const sVertex::Neighbors_list &out_Neighbors = heighted_Environments[level].get_Vertex(vertex_id)->m_Neighbors;
+			    sVertex::Neighbors_list::const_iterator out_neighbor = out_Neighbors.begin();
+
+			    while (--neighbor_id >= 0)
+			    {
+				++out_neighbor;
+			    }
+
+			    Edge__ edge;
+			    
+			    edge.m_source_id = vertex_id;
+			    edge.m_target_id = (*out_neighbor)->m_target->m_id;
+			    edge.m_level = level;
+			    
+			    Edges.push_back(edge);
+			}
+			else
+			{
+			    if (neighbor_id == 0)
+			    {
+				Edge__ edge;
+
+				edge.m_source_id = vertex_id;
+				edge.m_target_id = vertex_id;
+				edge.m_level = level;
+			    
+				Edges.push_back(edge);
+			    }
+			    else
+			    {
+				--neighbor_id;
+
+				const sVertex::Neighbors_list &out_Neighbors = heighted_Environments[level].get_Vertex(vertex_id)->m_Neighbors;
+				sVertex::Neighbors_list::const_iterator out_neighbor = out_Neighbors.begin();
+				
+				while (--neighbor_id >= 0)
+				{
+				    ++out_neighbor;
+				}
+				
+				Edge__ edge;
+			    
+				edge.m_source_id = vertex_id;
+				edge.m_target_id = (*out_neighbor)->m_target->m_id;
+				edge.m_level = level;
+			    
+				Edges.push_back(edge);
+			    }
+			}
+*/
+		    }
+		}
+	    }
+	}
+
+	fclose(fr);
+
+	int N_Robots = start_arrangement.get_RobotCount();
+
+	for (int depth = 0; depth < mdd_depth - 1; ++depth)
+	{
+	    for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	    {
+		if (mdd_Arrangements[depth].get_RobotLocation(robot_id) != mdd_Arrangements[depth + 1].get_RobotLocation(robot_id))
+		{
+		    sASSERT(environment.is_Adjacent(mdd_Arrangements[depth].get_RobotLocation(robot_id), mdd_Arrangements[depth + 1].get_RobotLocation(robot_id)));
+		    computed_solution.add_Move(depth, sMultirobotSolution::Move(robot_id, mdd_Arrangements[depth].get_RobotLocation(robot_id), mdd_Arrangements[depth + 1].get_RobotLocation(robot_id)));
+		}
+	    }
+	}
+
+	#ifdef sDEBUG
+/*
+	for (int depth = 0; depth < mdd_depth; ++depth)
+	{
+	    mdd_Arrangements[depth].to_Screen();
+	}
+*/
+	#endif
+
+	#ifndef sDEBUG
+	{
+	    if (unlink(output_filename.c_str()) < 0)
+	    {
+		return sMULTIROBOT_SOLUTION_COMPRESSOR_UNLINK_ERROR;
+	    }	
+	}
+	#endif
+
+	return sRESULT_SUCCESS;
+    }
+
+
+    sResult sMultirobotSolutionCompressor::extract_ComputedMddMutexSolution(const sRobotArrangement                 &start_arrangement,
+#ifdef sDEBUG
+									    const sUndirectedGraph                  &environment,
+#else
+									    const sUndirectedGraph                  &,
+#endif										       								       
+									    const sMultirobotInstance::MDD_vector   &MDD,
+									    int                                      computed_cost,
+									    const sMultirobotEncodingContext_CNFsat &final_encoding_context,
+									    sMultirobotSolution                     &computed_solution,
+									    int                                      thread_id)
+    {
+	sString output_filename;
+
+	printf("Extracting MDD MUTEX ...\n");
+
+	if (thread_id != THREAD_ID_UNDEFINED)
+	{
+	    output_filename = OUTPUT_MDD_UMTEX_FILENAME_PREFIX + "_" + sInt_32_to_String(computed_cost) + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + ".txt";
+	}
+	else
+	{
+	    output_filename = OUTPUT_MDD_UMTEX_FILENAME_PREFIX + "_" + sInt_32_to_String(computed_cost) + "-" + sInt_32_to_String(getpid()) + ".txt";
+	}
+	FILE *fr;
+	
+	if ((fr = fopen(output_filename.c_str(), "r")) == NULL)
+	{
+	    return sMULTIROBOT_SOLUTION_COMPRESSOR_OPEN_ERROR;
+	}
+	
+	char answer[32];
+	answer[0] = '\0';
+
+	fscanf(fr, "%s\n", answer);
+
+	Arrangements_vector mdd_Arrangements;
+	int mdd_depth = MDD[1].size();
+
+	for (int depth = 0; depth < mdd_depth; ++depth)
+	{
+	    mdd_Arrangements.push_back(sRobotArrangement(start_arrangement.get_VertexCount(), start_arrangement.get_RobotCount()));
+	}
+
+	while (!feof(fr))
+	{
+	    int literal;
+	    fscanf(fr, "%d", &literal);
+
+#ifdef sDEBUG
+/*
+	    sSpecifiedIdentifier specified_identifier = final_encoding_context.translate_CNF_Variable(sABS(literal));
+
+	    if (!specified_identifier.is_Null())
+	    {
+		const sString &base_name = specified_identifier.get_IndexableIdentifier()->get_BaseName();
+		
+		if (base_name.find("vertex_water_cardinality") == 0)
+		{
+		    printf("%s\n", base_name.c_str());
+		    printf("%d\n", literal);
+		}
+	    }
+*/
+#endif
+	    if (literal > 0)
+	    {
+		sSpecifiedIdentifier specified_identifier = final_encoding_context.translate_CNF_Variable(sABS(literal));
+
+		if (!specified_identifier.is_Null())
+		{
+		    const sString &base_name = specified_identifier.get_IndexableIdentifier()->get_BaseName();
+
+		    if (base_name.find("vertex_occupancy_by_water") == 0)
+		    {   
+			int robot_id = sUInt_32_from_String(base_name.substr(26, base_name.find('_', 26) - 26));
+			int level = sUInt_32_from_String(base_name.substr(base_name.find('_', 26) + 1, base_name.size()));
+
+
+			int mdd_index = *specified_identifier.get_ScopeIndexes()[0] - *(specified_identifier.get_IndexableIdentifier()->get_IndexScopes()[0]->get_Begin());
+//			printf("mdd idx:%d\n", mdd_index);
+
+			int vertex_id = MDD[robot_id][level][mdd_index];
+
+			mdd_Arrangements[level].place_Robot(robot_id, vertex_id);
+/*
+			printf("%s\n", base_name.c_str());
+			printf("level:%d,%d\n", level, mdd_Environments.size());
+
+			if (level == heighted_Environments.size() - 1)
+			{
+			    const sVertex::Neighbors_list &out_Neighbors = heighted_Environments[level].get_Vertex(vertex_id)->m_Neighbors;
+			    sVertex::Neighbors_list::const_iterator out_neighbor = out_Neighbors.begin();
+
+			    while (--neighbor_id >= 0)
+			    {
+				++out_neighbor;
+			    }
+
+			    Edge__ edge;
+			    
+			    edge.m_source_id = vertex_id;
+			    edge.m_target_id = (*out_neighbor)->m_target->m_id;
+			    edge.m_level = level;
+			    
+			    Edges.push_back(edge);
+			}
+			else
+			{
+			    if (neighbor_id == 0)
+			    {
+				Edge__ edge;
+
+				edge.m_source_id = vertex_id;
+				edge.m_target_id = vertex_id;
+				edge.m_level = level;
+			    
+				Edges.push_back(edge);
+			    }
+			    else
+			    {
+				--neighbor_id;
+
+				const sVertex::Neighbors_list &out_Neighbors = heighted_Environments[level].get_Vertex(vertex_id)->m_Neighbors;
+				sVertex::Neighbors_list::const_iterator out_neighbor = out_Neighbors.begin();
+				
+				while (--neighbor_id >= 0)
+				{
+				    ++out_neighbor;
+				}
+				
+				Edge__ edge;
+			    
+				edge.m_source_id = vertex_id;
+				edge.m_target_id = (*out_neighbor)->m_target->m_id;
+				edge.m_level = level;
+			    
+				Edges.push_back(edge);
+			    }
+			}
+*/
+		    }
+		}
+	    }
+	}
+
+	fclose(fr);
+
+	int N_Robots = start_arrangement.get_RobotCount();
+
+	for (int depth = 0; depth < mdd_depth - 1; ++depth)
+	{
+	    for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	    {
+		if (mdd_Arrangements[depth].get_RobotLocation(robot_id) != mdd_Arrangements[depth + 1].get_RobotLocation(robot_id))
+		{
+		    sASSERT(environment.is_Adjacent(mdd_Arrangements[depth].get_RobotLocation(robot_id), mdd_Arrangements[depth + 1].get_RobotLocation(robot_id)));
+		    computed_solution.add_Move(depth, sMultirobotSolution::Move(robot_id, mdd_Arrangements[depth].get_RobotLocation(robot_id), mdd_Arrangements[depth + 1].get_RobotLocation(robot_id)));
+		}
+	    }
+	}
+
+	#ifdef sDEBUG
+/*
+	for (int depth = 0; depth < mdd_depth; ++depth)
+	{
+	    mdd_Arrangements[depth].to_Screen();
+	}
+*/
+	#endif
+
+	#ifndef sDEBUG
+	{
+	    if (unlink(output_filename.c_str()) < 0)
+	    {
+		return sMULTIROBOT_SOLUTION_COMPRESSOR_UNLINK_ERROR;
+	    }	
+	}
+	#endif
+
+	return sRESULT_SUCCESS;
+    }    
+   
+
     sResult sMultirobotSolutionCompressor::extract_ComputedGMddSolution(const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 									const sUndirectedGraph                  &environment,
@@ -5372,6 +5740,276 @@ namespace sReloc
 	}
 	return sRESULT_SUCCESS;
     }
+
+
+    sResult sMultirobotSolutionCompressor::intract_ComputedMddUmtexSolution(Glucose::Solver                         *solver,
+									    const sRobotArrangement                 &start_arrangement,
+#ifdef sDEBUG
+									    const sUndirectedGraph                  &environment,
+#else
+									    const sUndirectedGraph                  &,
+#endif
+									    const sMultirobotInstance::MDD_vector   &MDD,
+									    int                                     sUNUSED(computed_cost),
+									    const sMultirobotEncodingContext_CNFsat &final_encoding_context,
+									    sMultirobotSolution                     &computed_solution)
+    {
+	printf("Intracting MDD UMTEX ...\n");
+
+	Arrangements_vector mdd_Arrangements;
+	int mdd_depth = MDD[1].size();
+
+	for (int depth = 0; depth < mdd_depth; ++depth)
+	{
+	    mdd_Arrangements.push_back(sRobotArrangement(start_arrangement.get_VertexCount(), start_arrangement.get_RobotCount()));
+	}
+
+	for (int i = 0; i < solver->nVars(); i++)
+	{
+	    int literal;
+		    
+	    if (solver->model[i] != l_Undef)
+	    {
+		literal = (solver->model[i] == l_True) ? i + 1 : -(i+1);
+	    }
+	    else
+	    {
+		sASSERT(false);
+	    }
+
+	    if (literal > 0)
+	    {
+		sSpecifiedIdentifier specified_identifier = final_encoding_context.translate_CNF_Variable(sABS(literal));
+
+		if (!specified_identifier.is_Null())
+		{
+		    const sString &base_name = specified_identifier.get_IndexableIdentifier()->get_BaseName();
+
+		    if (base_name.find("vertex_occupancy_by_water") == 0)
+		    {   
+			int robot_id = sUInt_32_from_String(base_name.substr(26, base_name.find('_', 26) - 26));
+			int level = sUInt_32_from_String(base_name.substr(base_name.find('_', 26) + 1, base_name.size()));
+
+
+
+			int mdd_index = *specified_identifier.get_ScopeIndexes()[0] - *(specified_identifier.get_IndexableIdentifier()->get_IndexScopes()[0]->get_Begin());
+//			printf("mdd idx:%d\n", mdd_index);
+
+			int vertex_id = MDD[robot_id][level][mdd_index];
+
+//			printf("%d: %d <- %d\n", level, vertex_id, robot_id);
+			mdd_Arrangements[level].place_Robot(robot_id, vertex_id);
+/*
+			printf("%s\n", base_name.c_str());
+			printf("level:%d,%d\n", level, mdd_Environments.size());
+
+			if (level == heighted_Environments.size() - 1)
+			{
+			    const sVertex::Neighbors_list &out_Neighbors = heighted_Environments[level].get_Vertex(vertex_id)->m_Neighbors;
+			    sVertex::Neighbors_list::const_iterator out_neighbor = out_Neighbors.begin();
+
+			    while (--neighbor_id >= 0)
+			    {
+				++out_neighbor;
+			    }
+
+			    Edge__ edge;
+			    
+			    edge.m_source_id = vertex_id;
+			    edge.m_target_id = (*out_neighbor)->m_target->m_id;
+			    edge.m_level = level;
+			    
+			    Edges.push_back(edge);
+			}
+			else
+			{
+			    if (neighbor_id == 0)
+			    {
+				Edge__ edge;
+
+				edge.m_source_id = vertex_id;
+				edge.m_target_id = vertex_id;
+				edge.m_level = level;
+			    
+				Edges.push_back(edge);
+			    }
+			    else
+			    {
+				--neighbor_id;
+
+				const sVertex::Neighbors_list &out_Neighbors = heighted_Environments[level].get_Vertex(vertex_id)->m_Neighbors;
+				sVertex::Neighbors_list::const_iterator out_neighbor = out_Neighbors.begin();
+				
+				while (--neighbor_id >= 0)
+				{
+				    ++out_neighbor;
+				}
+				
+				Edge__ edge;
+			    
+				edge.m_source_id = vertex_id;
+				edge.m_target_id = (*out_neighbor)->m_target->m_id;
+				edge.m_level = level;
+			    
+				Edges.push_back(edge);
+			    }
+			}
+*/
+		    }
+		}
+	    }
+	}
+
+	int N_Robots = start_arrangement.get_RobotCount();
+
+	for (int depth = 0; depth < mdd_depth - 1; ++depth)
+	{
+	    for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	    {
+		if (mdd_Arrangements[depth].get_RobotLocation(robot_id) != mdd_Arrangements[depth + 1].get_RobotLocation(robot_id))
+		{
+		    sASSERT(environment.is_Adjacent(mdd_Arrangements[depth].get_RobotLocation(robot_id), mdd_Arrangements[depth + 1].get_RobotLocation(robot_id)));
+		    computed_solution.add_Move(depth, sMultirobotSolution::Move(robot_id, mdd_Arrangements[depth].get_RobotLocation(robot_id), mdd_Arrangements[depth + 1].get_RobotLocation(robot_id)));
+		}
+	    }
+	}
+	return sRESULT_SUCCESS;
+    }
+
+
+    sResult sMultirobotSolutionCompressor::intract_ComputedMddMutexSolution(Glucose::Solver                         *solver,
+									    const sRobotArrangement                 &start_arrangement,
+#ifdef sDEBUG
+									    const sUndirectedGraph                  &environment,
+#else
+									    const sUndirectedGraph                  &,
+#endif
+									    const sMultirobotInstance::MDD_vector   &MDD,
+									    int                                     sUNUSED(computed_cost),
+									    const sMultirobotEncodingContext_CNFsat &final_encoding_context,
+									    sMultirobotSolution                     &computed_solution)
+    {
+	printf("Intracting MDD MUTEX ...\n");
+
+	Arrangements_vector mdd_Arrangements;
+	int mdd_depth = MDD[1].size();
+
+	for (int depth = 0; depth < mdd_depth; ++depth)
+	{
+	    mdd_Arrangements.push_back(sRobotArrangement(start_arrangement.get_VertexCount(), start_arrangement.get_RobotCount()));
+	}
+
+	for (int i = 0; i < solver->nVars(); i++)
+	{
+	    int literal;
+		    
+	    if (solver->model[i] != l_Undef)
+	    {
+		literal = (solver->model[i] == l_True) ? i + 1 : -(i+1);
+	    }
+	    else
+	    {
+		sASSERT(false);
+	    }
+
+	    if (literal > 0)
+	    {
+		sSpecifiedIdentifier specified_identifier = final_encoding_context.translate_CNF_Variable(sABS(literal));
+
+		if (!specified_identifier.is_Null())
+		{
+		    const sString &base_name = specified_identifier.get_IndexableIdentifier()->get_BaseName();
+
+		    if (base_name.find("vertex_occupancy_by_water") == 0)
+		    {   
+			int robot_id = sUInt_32_from_String(base_name.substr(26, base_name.find('_', 26) - 26));
+			int level = sUInt_32_from_String(base_name.substr(base_name.find('_', 26) + 1, base_name.size()));
+
+
+
+			int mdd_index = *specified_identifier.get_ScopeIndexes()[0] - *(specified_identifier.get_IndexableIdentifier()->get_IndexScopes()[0]->get_Begin());
+//			printf("mdd idx:%d\n", mdd_index);
+
+			int vertex_id = MDD[robot_id][level][mdd_index];
+
+//			printf("%d: %d <- %d\n", level, vertex_id, robot_id);
+			mdd_Arrangements[level].place_Robot(robot_id, vertex_id);
+/*
+			printf("%s\n", base_name.c_str());
+			printf("level:%d,%d\n", level, mdd_Environments.size());
+
+			if (level == heighted_Environments.size() - 1)
+			{
+			    const sVertex::Neighbors_list &out_Neighbors = heighted_Environments[level].get_Vertex(vertex_id)->m_Neighbors;
+			    sVertex::Neighbors_list::const_iterator out_neighbor = out_Neighbors.begin();
+
+			    while (--neighbor_id >= 0)
+			    {
+				++out_neighbor;
+			    }
+
+			    Edge__ edge;
+			    
+			    edge.m_source_id = vertex_id;
+			    edge.m_target_id = (*out_neighbor)->m_target->m_id;
+			    edge.m_level = level;
+			    
+			    Edges.push_back(edge);
+			}
+			else
+			{
+			    if (neighbor_id == 0)
+			    {
+				Edge__ edge;
+
+				edge.m_source_id = vertex_id;
+				edge.m_target_id = vertex_id;
+				edge.m_level = level;
+			    
+				Edges.push_back(edge);
+			    }
+			    else
+			    {
+				--neighbor_id;
+
+				const sVertex::Neighbors_list &out_Neighbors = heighted_Environments[level].get_Vertex(vertex_id)->m_Neighbors;
+				sVertex::Neighbors_list::const_iterator out_neighbor = out_Neighbors.begin();
+				
+				while (--neighbor_id >= 0)
+				{
+				    ++out_neighbor;
+				}
+				
+				Edge__ edge;
+			    
+				edge.m_source_id = vertex_id;
+				edge.m_target_id = (*out_neighbor)->m_target->m_id;
+				edge.m_level = level;
+			    
+				Edges.push_back(edge);
+			    }
+			}
+*/
+		    }
+		}
+	    }
+	}
+
+	int N_Robots = start_arrangement.get_RobotCount();
+
+	for (int depth = 0; depth < mdd_depth - 1; ++depth)
+	{
+	    for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	    {
+		if (mdd_Arrangements[depth].get_RobotLocation(robot_id) != mdd_Arrangements[depth + 1].get_RobotLocation(robot_id))
+		{
+		    sASSERT(environment.is_Adjacent(mdd_Arrangements[depth].get_RobotLocation(robot_id), mdd_Arrangements[depth + 1].get_RobotLocation(robot_id)));
+		    computed_solution.add_Move(depth, sMultirobotSolution::Move(robot_id, mdd_Arrangements[depth].get_RobotLocation(robot_id), mdd_Arrangements[depth + 1].get_RobotLocation(robot_id)));
+		}
+	    }
+	}
+	return sRESULT_SUCCESS;
+    }        
     
 
     sResult sMultirobotSolutionCompressor::intract_ComputedGMddSolution(Glucose::Solver                         *solver,

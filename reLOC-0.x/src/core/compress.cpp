@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* compress.cpp / 0.21-robik_013                                              */
+/* compress.cpp / 0.21-robik_020                                              */
 /*----------------------------------------------------------------------------*/
 //
 // Compression tools for relocation problem solutions.
@@ -62,6 +62,8 @@ namespace sReloc
     const sString sMultirobotSolutionCompressor::CNF_PLURAL2_FILENAME_PREFIX = "_compress/makespan_compression_input.pl2";
     const sString sMultirobotSolutionCompressor::CNF_HEIGHTED_FILENAME_PREFIX = "_compress/makespan_compression_input.hei";
     const sString sMultirobotSolutionCompressor::CNF_MDD_FILENAME_PREFIX = "_compress/makespan_compression_input.mdd";
+    const sString sMultirobotSolutionCompressor::CNF_MDD_UMTEX_FILENAME_PREFIX = "_compress/makespan_compression_input.mddu";
+    const sString sMultirobotSolutionCompressor::CNF_MDD_MUTEX_FILENAME_PREFIX = "_compress/makespan_compression_input.mddx";    
     const sString sMultirobotSolutionCompressor::CNF_GMDD_FILENAME_PREFIX = "_compress/makespan_compression_input.gmdd";
     const sString sMultirobotSolutionCompressor::CNF_GEMDD_FILENAME_PREFIX = "_compress/makespan_compression_input.gemdd";
     const sString sMultirobotSolutionCompressor::CNF_ANO_FILENAME_PREFIX = "_compress/makespan_compression_input.ano";
@@ -112,6 +114,8 @@ namespace sReloc
     const sString sMultirobotSolutionCompressor::OUTPUT_PLURAL2_FILENAME_PREFIX = "_compress/makespan_compression_output.pl2";
     const sString sMultirobotSolutionCompressor::OUTPUT_HEIGHTED_FILENAME_PREFIX = "_compress/makespan_compression_output.hei";
     const sString sMultirobotSolutionCompressor::OUTPUT_MDD_FILENAME_PREFIX = "_compress/makespan_compression_output.mdd";
+    const sString sMultirobotSolutionCompressor::OUTPUT_MDD_UMTEX_FILENAME_PREFIX = "_compress/makespan_compression_output.mddu";
+    const sString sMultirobotSolutionCompressor::OUTPUT_MDD_MUTEX_FILENAME_PREFIX = "_compress/makespan_compression_output.mddx";    
     const sString sMultirobotSolutionCompressor::OUTPUT_GMDD_FILENAME_PREFIX = "_compress/makespan_compression_output.gmdd";
     const sString sMultirobotSolutionCompressor::OUTPUT_GEMDD_FILENAME_PREFIX = "_compress/makespan_compression_output.gemdd";
     const sString sMultirobotSolutionCompressor::OUTPUT_ANO_FILENAME_PREFIX = "_compress/makespan_compression_output.ano";
@@ -8278,7 +8282,7 @@ namespace sReloc
 	    }
 	    break;
 	}
-	case ENCODING_MDD:
+	case ENCODING_MDD:	    
 	case ENCODING_ID_MDD:
 	case ENCODING_AD_MDD:
 	case ENCODING_BMDD:
@@ -8307,6 +8311,56 @@ namespace sReloc
 	    }
 	    break;
 	}
+	case ENCODING_MDD_UMTEX:	    
+	{
+	    if (thread_id != THREAD_ID_UNDEFINED)
+	    {
+		cnf_filename = CNF_MDD_UMTEX_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + ".cnf";
+		cnf_out_filename = CNF_MDD_UMTEX_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + "_out.cnf";
+		output_filename = OUTPUT_MDD_UMTEX_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + ".txt";
+	    }
+	    else
+	    {
+		cnf_filename = CNF_MDD_UMTEX_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + ".cnf";
+		cnf_out_filename = CNF_MDD_UMTEX_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + "_out.cnf";
+		output_filename = OUTPUT_MDD_UMTEX_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + ".txt";
+	    }
+	    
+	    //		s_GlobalPhaseStatistics.enter_Phase("CNF generation");
+	    result = instance.to_File_MddUmtexCNFsat(cnf_filename, encoding_context, "", false);
+	    //		s_GlobalPhaseStatistics.leave_Phase();
+	    
+	    if (sFAILED(result))
+	    {
+		return result;
+	    }
+	    break;
+	}
+	case ENCODING_MDD_MUTEX:	    
+	{
+	    if (thread_id != THREAD_ID_UNDEFINED)
+	    {
+		cnf_filename = CNF_MDD_MUTEX_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + ".cnf";
+		cnf_out_filename = CNF_MDD_MUTEX_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + "_out.cnf";
+		output_filename = OUTPUT_MDD_MUTEX_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + ".txt";
+	    }
+	    else
+	    {
+		cnf_filename = CNF_MDD_MUTEX_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + ".cnf";
+		cnf_out_filename = CNF_MDD_MUTEX_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + "_out.cnf";
+		output_filename = OUTPUT_MDD_MUTEX_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + ".txt";
+	    }
+	    
+	    //		s_GlobalPhaseStatistics.enter_Phase("CNF generation");
+	    result = instance.to_File_MddMutexCNFsat(cnf_filename, encoding_context, "", false);
+	    //		s_GlobalPhaseStatistics.leave_Phase();
+	    
+	    if (sFAILED(result))
+	    {
+		return result;
+	    }
+	    break;
+	}		
 	case ENCODING_GMDD:
 	{
 	    if (thread_id != THREAD_ID_UNDEFINED)
@@ -8874,6 +8928,16 @@ namespace sReloc
 	    instance.to_Memory_MddCNFsat(*solver, encoding_context, "", false);
 	    break;
 	}
+	case ENCODING_MDD_UMTEX:
+	{
+	    instance.to_Memory_MddUmtexCNFsat(*solver, encoding_context, "", false);
+	    break;
+	}
+	case ENCODING_MDD_MUTEX:
+	{
+	    instance.to_Memory_MddMutexCNFsat(*solver, encoding_context, "", false);
+	    break;
+	}		
 	case ENCODING_GMDD:
 	{
 	    instance.to_Memory_GMddCNFsat(*solver, encoding_context, "", false);
@@ -10661,6 +10725,52 @@ namespace sReloc
 	    }
 	    break;
 	}
+	case ENCODING_MDD_UMTEX:
+	{
+	    if (thread_id != THREAD_ID_UNDEFINED)
+	    {
+		cnf_filename = CNF_MDD_UMTEX_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + ".cnf";
+		cnf_out_filename = CNF_MDD_UMTEX_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + "_out.cnf";
+		output_filename = OUTPUT_MDD_UMTEX_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + ".txt";
+	    }
+	    else
+	    {
+		cnf_filename = CNF_MDD_UMTEX_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + ".cnf";
+		cnf_out_filename = CNF_MDD_UMTEX_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + "_out.cnf";
+		output_filename = OUTPUT_MDD_UMTEX_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + ".txt";
+	    }
+	    
+	    result = instance.to_File_MddUmtexCNFsat(cnf_filename, encoding_context, "", false);
+	    
+	    if (sFAILED(result))
+	    {
+		return result;
+	    }
+	    break;
+	}
+	case ENCODING_MDD_MUTEX:
+	{
+	    if (thread_id != THREAD_ID_UNDEFINED)
+	    {
+		cnf_filename = CNF_MDD_MUTEX_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + ".cnf";
+		cnf_out_filename = CNF_MDD_MUTEX_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + "_out.cnf";
+		output_filename = OUTPUT_MDD_MUTEX_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + "#" + sInt_32_to_String(thread_id) + ".txt";
+	    }
+	    else
+	    {
+		cnf_filename = CNF_MDD_MUTEX_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + ".cnf";
+		cnf_out_filename = CNF_MDD_MUTEX_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + "_out.cnf";
+		output_filename = OUTPUT_MDD_MUTEX_FILENAME_PREFIX + "_" + sInt_32_to_String(total_cost) + "-" + sInt_32_to_String(getpid()) + ".txt";
+	    }
+	    
+	    result = instance.to_File_MddMutexCNFsat(cnf_filename, encoding_context, "", false);
+	    
+	    if (sFAILED(result))
+	    {
+		return result;
+	    }
+	    break;
+	}			
 	case ENCODING_GMDD:
 	{
 	    if (thread_id != THREAD_ID_UNDEFINED)
@@ -11133,6 +11243,28 @@ namespace sReloc
 					    thread_id);
 		break;
 	    }
+	    case ENCODING_MDD_UMTEX:
+	    {
+		extract_ComputedMddUmtexSolution(instance.m_initial_arrangement,
+						 instance.m_environment,
+						 instance.m_the_MDD,
+						 total_cost,
+						 encoding_context,
+						 solution,
+						 thread_id);
+		break;
+	    }
+	    case ENCODING_MDD_MUTEX:
+	    {
+		extract_ComputedMddMutexSolution(instance.m_initial_arrangement,
+						 instance.m_environment,
+						 instance.m_the_MDD,
+						 total_cost,
+						 encoding_context,
+						 solution,
+						 thread_id);
+		break;
+	    }	    	    
 	    case ENCODING_GMDD:
 	    {
 		extract_ComputedGMddSolution(instance.m_initial_arrangement,
@@ -11360,6 +11492,16 @@ namespace sReloc
 	    instance.to_Memory_MddCNFsat(*solver, encoding_context, "", false);
 	    break;
 	}
+	case ENCODING_MDD_UMTEX:
+	{	    
+	    instance.to_Memory_MddUmtexCNFsat(*solver, encoding_context, "", false);
+	    break;
+	}
+	case ENCODING_MDD_MUTEX:
+	{	    
+	    instance.to_Memory_MddMutexCNFsat(*solver, encoding_context, "", false);
+	    break;
+	}	
 	case ENCODING_GMDD:
 	{	    
 	    instance.to_Memory_GMddCNFsat(*solver, encoding_context, "", false);
@@ -11506,6 +11648,28 @@ namespace sReloc
 					    solution);
 		break;
 	    }
+	    case ENCODING_MDD_UMTEX:
+	    {
+		intract_ComputedMddUmtexSolution(*solver,
+						 instance.m_initial_arrangement,
+						 instance.m_environment,
+						 instance.m_the_MDD,
+						 total_cost,
+						 encoding_context,
+						 solution);
+		break;
+	    }
+	    case ENCODING_MDD_MUTEX:
+	    {
+		intract_ComputedMddMutexSolution(*solver,
+						 instance.m_initial_arrangement,
+						 instance.m_environment,
+						 instance.m_the_MDD,
+						 total_cost,
+						 encoding_context,
+						 solution);
+		break;
+	    }	    	    
 	    case ENCODING_GMDD:
 	    {
 		intract_ComputedGMddSolution(*solver,
@@ -13589,7 +13753,37 @@ namespace sReloc
 		    return result;
 		}
 		break;
+	    }	    
+	    case ENCODING_MDD_UMTEX:
+	    {		
+		result = extract_ComputedMddUmtexSolution(start_arrangement,
+							  environment,
+							  instance.m_the_MDD,
+							  optimal_cost,
+							  final_encoding_context,
+							  optimal_solution,
+							  thread_id);
+		if (sFAILED(result))
+		{
+		    return result;
+		}
+		break;
 	    }
+	    case ENCODING_MDD_MUTEX:
+	    {		
+		result = extract_ComputedMddMutexSolution(start_arrangement,
+							  environment,
+							  instance.m_the_MDD,
+							  optimal_cost,
+							  final_encoding_context,
+							  optimal_solution,
+							  thread_id);
+		if (sFAILED(result))
+		{
+		    return result;
+		}
+		break;
+	    }	    
 	    case ENCODING_GMDD:
 	    {		
 		result = extract_ComputedGMddSolution(start_arrangement,
@@ -13913,6 +14107,36 @@ namespace sReloc
 		}
 		break;
 	    }
+	    case ENCODING_MDD_UMTEX:
+	    {		
+		result = intract_ComputedMddUmtexSolution(*solver,
+							  start_arrangement,
+							  environment,
+							  instance.m_the_MDD,
+							  optimal_cost,
+							  final_encoding_context,
+							  optimal_solution);
+		if (sFAILED(result))
+		{
+		    return result;
+		}
+		break;
+	    }
+	    case ENCODING_MDD_MUTEX:
+	    {		
+		result = intract_ComputedMddMutexSolution(*solver,
+							  start_arrangement,
+							  environment,
+							  instance.m_the_MDD,
+							  optimal_cost,
+							  final_encoding_context,
+							  optimal_solution);
+		if (sFAILED(result))
+		{
+		    return result;
+		}
+		break;
+	    }	    	    
 	    case ENCODING_GMDD:
 	    {		
 		result = intract_ComputedGMddSolution(*solver,
