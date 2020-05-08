@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* encodings_mdd.cpp / 0.21-robik_020                                         */
+/* encodings_mdd.cpp / 0.21-robik_041                                         */
 /*----------------------------------------------------------------------------*/
 //
 // Multi-robot path-finding encodings based on
@@ -2351,6 +2351,9 @@ namespace sReloc
 	MDDMutexes_vector Mutexes;
 	Mutexes.resize(N_Robots + 1);
 
+	const sUndirectedGraph::Distances_2d_vector &source_Distances = m_environment.get_SourceShortestPaths();
+	const sUndirectedGraph::Distances_2d_vector &goal_Distances = m_environment.get_GoalShortestPaths();	
+
 	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
 	{
 	    encoding_context.m_vertex_occupancy_by_water_[robot_id].resize(N_Layers + 1);
@@ -2558,6 +2561,64 @@ namespace sReloc
 		}
 	    }
 	}
+
+	int super_mutexes = 0;
+
+	for (int robot_id = 1; robot_id < N_Robots; ++robot_id)
+	{	   
+	    for (int layer = 0; layer < N_Layers; ++layer)
+	    {
+		for (int other_robot_id = robot_id + 1; other_robot_id <= N_Robots; ++other_robot_id)		
+		{
+		    for (int uu = 0; uu < MDD[robot_id][layer].size(); ++uu)
+		    {
+			int uu_mdd_idx = inverse_MDD[other_robot_id][layer][MDD[robot_id][layer][uu]];
+			
+			if (uu_mdd_idx >= 0)
+			{
+			    for (int vv = 0; vv < MDD[other_robot_id][layer].size(); ++vv)
+			    {
+				if (MDD[robot_id][layer][uu] <  MDD[other_robot_id][layer][vv])
+				{
+				    int vv_mdd_idx = inverse_MDD[other_robot_id][layer][MDD[other_robot_id][layer][vv]];
+				    
+				    if (vv_mdd_idx >= 0)
+				    {
+					int robot_init_vertex_id = m_initial_arrangement.get_RobotLocation(robot_id);
+					int robot_goal_vertex_id = *m_goal_specification.get_RobotGoal(robot_id).begin();
+
+					int other_robot_init_vertex_id = m_initial_arrangement.get_RobotLocation(other_robot_id);
+					int other_robot_goal_vertex_id = *m_goal_specification.get_RobotGoal(other_robot_id).begin();
+
+					sInt_32 robot_through_cost = source_Distances[robot_init_vertex_id][MDD[robot_id][layer][uu]] + goal_Distances[robot_goal_vertex_id][MDD[robot_id][layer][uu]];
+					sInt_32 other_robot_through_cost = source_Distances[other_robot_init_vertex_id][MDD[other_robot_id][layer][vv]] + goal_Distances[other_robot_goal_vertex_id][MDD[other_robot_id][layer][vv]];
+					
+					sInt_32 rest_cost = 0;
+					for (int rest_robot_id = 1; rest_robot_id <= N_Robots; ++rest_robot_id)
+					{
+					    if (rest_robot_id != robot_id && rest_robot_id != other_robot_id)
+					    {
+						int rest_robot_init_vertex_id = m_initial_arrangement.get_RobotLocation(rest_robot_id);
+						int rest_robot_goal_vertex_id = *m_goal_specification.get_RobotGoal(rest_robot_id).begin();
+						
+						rest_cost += source_Distances[rest_robot_init_vertex_id][rest_robot_goal_vertex_id];
+					    }
+					}
+					int through_cost = rest_cost + robot_through_cost + other_robot_through_cost;
+					if (through_cost > encoding_context.m_max_total_cost)
+					{
+					    Mutexes[robot_id][layer][uu_mdd_idx].insert(Mutex(other_robot_id, vv_mdd_idx, vv, uu));
+					    scheduled_Mutexes.push_back(ScheduledMTX(layer, MTX_pair(MTX(robot_id, MDD[robot_id][layer][uu]), MTX(other_robot_id, MDD[other_robot_id][layer][vv]))));
+					    ++super_mutexes;
+					}
+				    }
+				}
+			    }
+			}
+		    }
+		}
+	    }
+	}	
 
 	std::vector<VertexIDs_vector> vertex_neighbor_IDs;
 	vertex_neighbor_IDs.resize(N_Vertices);
@@ -3287,7 +3348,10 @@ namespace sReloc
 	Mutexes.resize(N_Robots + 1);		
 
 	InverseMDD_vector inverse_MDD;
-	construct_InverseMDD(N_Vertices, MDD, inverse_MDD);		
+	construct_InverseMDD(N_Vertices, MDD, inverse_MDD);
+
+	const sUndirectedGraph::Distances_2d_vector &source_Distances = m_environment.get_SourceShortestPaths();
+	const sUndirectedGraph::Distances_2d_vector &goal_Distances = m_environment.get_GoalShortestPaths();	
 
 	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
 	{
@@ -3472,7 +3536,6 @@ namespace sReloc
 	    }
 	}
 
-
 	ScheduledMTXs_list scheduled_Mutexes;
 
 	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
@@ -3496,6 +3559,64 @@ namespace sReloc
 		}
 	    }
 	}
+
+	int super_mutexes = 0;
+
+	for (int robot_id = 1; robot_id < N_Robots; ++robot_id)
+	{	   
+	    for (int layer = 0; layer < N_Layers; ++layer)
+	    {
+		for (int other_robot_id = robot_id + 1; other_robot_id <= N_Robots; ++other_robot_id)		
+		{
+		    for (int uu = 0; uu < MDD[robot_id][layer].size(); ++uu)
+		    {
+			int uu_mdd_idx = inverse_MDD[other_robot_id][layer][MDD[robot_id][layer][uu]];
+			
+			if (uu_mdd_idx >= 0)
+			{
+			    for (int vv = 0; vv < MDD[other_robot_id][layer].size(); ++vv)
+			    {
+				if (MDD[robot_id][layer][uu] <  MDD[other_robot_id][layer][vv])
+				{
+				    int vv_mdd_idx = inverse_MDD[other_robot_id][layer][MDD[other_robot_id][layer][vv]];
+				    
+				    if (vv_mdd_idx >= 0)
+				    {
+					int robot_init_vertex_id = m_initial_arrangement.get_RobotLocation(robot_id);
+					int robot_goal_vertex_id = *m_goal_specification.get_RobotGoal(robot_id).begin();
+
+					int other_robot_init_vertex_id = m_initial_arrangement.get_RobotLocation(other_robot_id);
+					int other_robot_goal_vertex_id = *m_goal_specification.get_RobotGoal(other_robot_id).begin();
+
+					sInt_32 robot_through_cost = source_Distances[robot_init_vertex_id][MDD[robot_id][layer][uu]] + goal_Distances[robot_goal_vertex_id][MDD[robot_id][layer][uu]];
+					sInt_32 other_robot_through_cost = source_Distances[other_robot_init_vertex_id][MDD[other_robot_id][layer][vv]] + goal_Distances[other_robot_goal_vertex_id][MDD[other_robot_id][layer][vv]];
+					
+					sInt_32 rest_cost = 0;
+					for (int rest_robot_id = 1; rest_robot_id <= N_Robots; ++rest_robot_id)
+					{
+					    if (rest_robot_id != robot_id && rest_robot_id != other_robot_id)
+					    {
+						int rest_robot_init_vertex_id = m_initial_arrangement.get_RobotLocation(rest_robot_id);
+						int rest_robot_goal_vertex_id = *m_goal_specification.get_RobotGoal(rest_robot_id).begin();
+						
+						rest_cost += source_Distances[rest_robot_init_vertex_id][rest_robot_goal_vertex_id];
+					    }
+					}
+					int through_cost = rest_cost + robot_through_cost + other_robot_through_cost;
+					if (through_cost > encoding_context.m_max_total_cost)
+					{
+					    Mutexes[robot_id][layer][uu_mdd_idx].insert(Mutex(other_robot_id, vv_mdd_idx, vv, uu));
+					    scheduled_Mutexes.push_back(ScheduledMTX(layer, MTX_pair(MTX(robot_id, MDD[robot_id][layer][uu]), MTX(other_robot_id, MDD[other_robot_id][layer][vv]))));
+					    ++super_mutexes;
+					}
+				    }
+				}
+			    }
+			}
+		    }
+		}
+	    }
+	}		
 
 	std::vector<VertexIDs_vector> vertex_neighbor_IDs;
 	vertex_neighbor_IDs.resize(N_Vertices);
@@ -6051,7 +6172,10 @@ namespace sReloc
 	Mutexes.resize(N_Robots + 1);
 
 	InverseMDD_vector inverse_MDD;
-	construct_InverseMDD(N_Vertices, MDD, inverse_MDD);			
+	construct_InverseMDD(N_Vertices, MDD, inverse_MDD);
+
+	const sUndirectedGraph::Distances_2d_vector &source_Distances = m_environment.get_SourceShortestPaths();
+	const sUndirectedGraph::Distances_2d_vector &goal_Distances = m_environment.get_GoalShortestPaths();	
 
 	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
 	{
@@ -6228,7 +6352,6 @@ namespace sReloc
 	    }
 	}
 
-
 	ScheduledMTXs_list scheduled_Mutexes;
 
 	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
@@ -6252,6 +6375,64 @@ namespace sReloc
 		}
 	    }
 	}
+
+	int super_mutexes = 0;
+
+	for (int robot_id = 1; robot_id < N_Robots; ++robot_id)
+	{	   
+	    for (int layer = 0; layer < N_Layers; ++layer)
+	    {
+		for (int other_robot_id = robot_id + 1; other_robot_id <= N_Robots; ++other_robot_id)		
+		{
+		    for (int uu = 0; uu < MDD[robot_id][layer].size(); ++uu)
+		    {
+			int uu_mdd_idx = inverse_MDD[other_robot_id][layer][MDD[robot_id][layer][uu]];
+			
+			if (uu_mdd_idx >= 0)
+			{
+			    for (int vv = 0; vv < MDD[other_robot_id][layer].size(); ++vv)
+			    {
+				if (MDD[robot_id][layer][uu] <  MDD[other_robot_id][layer][vv])
+				{
+				    int vv_mdd_idx = inverse_MDD[other_robot_id][layer][MDD[other_robot_id][layer][vv]];
+				    
+				    if (vv_mdd_idx >= 0)
+				    {
+					int robot_init_vertex_id = m_initial_arrangement.get_RobotLocation(robot_id);
+					int robot_goal_vertex_id = *m_goal_specification.get_RobotGoal(robot_id).begin();
+
+					int other_robot_init_vertex_id = m_initial_arrangement.get_RobotLocation(other_robot_id);
+					int other_robot_goal_vertex_id = *m_goal_specification.get_RobotGoal(other_robot_id).begin();
+
+					sInt_32 robot_through_cost = source_Distances[robot_init_vertex_id][MDD[robot_id][layer][uu]] + goal_Distances[robot_goal_vertex_id][MDD[robot_id][layer][uu]];
+					sInt_32 other_robot_through_cost = source_Distances[other_robot_init_vertex_id][MDD[other_robot_id][layer][vv]] + goal_Distances[other_robot_goal_vertex_id][MDD[other_robot_id][layer][vv]];
+					
+					sInt_32 rest_cost = 0;
+					for (int rest_robot_id = 1; rest_robot_id <= N_Robots; ++rest_robot_id)
+					{
+					    if (rest_robot_id != robot_id && rest_robot_id != other_robot_id)
+					    {
+						int rest_robot_init_vertex_id = m_initial_arrangement.get_RobotLocation(rest_robot_id);
+						int rest_robot_goal_vertex_id = *m_goal_specification.get_RobotGoal(rest_robot_id).begin();
+						
+						rest_cost += source_Distances[rest_robot_init_vertex_id][rest_robot_goal_vertex_id];
+					    }
+					}
+					int through_cost = rest_cost + robot_through_cost + other_robot_through_cost;
+					if (through_cost > encoding_context.m_max_total_cost)
+					{
+					    Mutexes[robot_id][layer][uu_mdd_idx].insert(Mutex(other_robot_id, vv_mdd_idx, vv, uu));
+					    scheduled_Mutexes.push_back(ScheduledMTX(layer, MTX_pair(MTX(robot_id, MDD[robot_id][layer][uu]), MTX(other_robot_id, MDD[other_robot_id][layer][vv]))));
+					    ++super_mutexes;
+					}
+				    }
+				}
+			    }
+			}
+		    }
+		}
+	    }
+	}	
 
 	std::vector<VertexIDs_vector> vertex_neighbor_IDs;
 	vertex_neighbor_IDs.resize(N_Vertices);
@@ -6893,31 +7074,101 @@ namespace sReloc
 	    }
 	}
 
+	const sUndirectedGraph::Distances_2d_vector &source_Distances = m_environment.get_SourceShortestPaths();
+	const sUndirectedGraph::Distances_2d_vector &goal_Distances = m_environment.get_GoalShortestPaths();
 
 	ScheduledMTXs_list scheduled_Mutexes;
 
-	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
+	for (int robot_id = 1; robot_id < N_Robots; ++robot_id)
 	{	   
 	    for (int layer = 0; layer < N_Layers; ++layer)
 	    {
-		for (int other_robot_id = 1; other_robot_id <= N_Robots; ++other_robot_id)
+		for (int other_robot_id = robot_id + 1; other_robot_id <= N_Robots; ++other_robot_id)
 		{
-		    if (other_robot_id < robot_id)
+		    for (int uu = 0; uu < MDD[robot_id][layer].size(); ++uu)
 		    {
-			for (int uu = 0; uu < MDD[robot_id][layer].size(); ++uu)
+			int uu_mdd_idx = inverse_MDD[other_robot_id][layer][MDD[robot_id][layer][uu]];
+			
+			if (uu_mdd_idx >= 0)
 			{
-			    int uu_mdd_idx = inverse_MDD[other_robot_id][layer][MDD[robot_id][layer][uu]];
-			    
-			    if (uu_mdd_idx >= 0)
-			    {
-				scheduled_Mutexes.push_back(ScheduledMTX(layer, MTX_pair(MTX(robot_id, MDD[robot_id][layer][uu]), MTX(other_robot_id, MDD[other_robot_id][layer][uu_mdd_idx]))));
-			    }
+			    scheduled_Mutexes.push_back(ScheduledMTX(layer, MTX_pair(MTX(robot_id, MDD[robot_id][layer][uu]), MTX(other_robot_id, MDD[other_robot_id][layer][uu_mdd_idx]))));
+//			    printf("primarily Scheduled: %ld\n", scheduled_Mutexes.size());
 			}
 		    }
 		}
 	    }
 	}
 
+	int super_mutexes = 0;
+
+	for (int robot_id = 1; robot_id < N_Robots; ++robot_id)
+	{	   
+	    for (int layer = 0; layer < N_Layers; ++layer)
+	    {
+		for (int other_robot_id = robot_id + 1; other_robot_id <= N_Robots; ++other_robot_id)		
+		{
+		    for (int uu = 0; uu < MDD[robot_id][layer].size(); ++uu)
+		    {
+			int uu_mdd_idx = inverse_MDD[other_robot_id][layer][MDD[robot_id][layer][uu]];
+			
+			if (uu_mdd_idx >= 0)
+			{
+			    for (int vv = 0; vv < MDD[other_robot_id][layer].size(); ++vv)
+			    {
+				if (MDD[robot_id][layer][uu] <  MDD[other_robot_id][layer][vv])
+				{
+				    int vv_mdd_idx = inverse_MDD[other_robot_id][layer][MDD[other_robot_id][layer][vv]];
+				    
+				    if (vv_mdd_idx >= 0)
+				    {
+					int robot_init_vertex_id = m_initial_arrangement.get_RobotLocation(robot_id);
+					int robot_goal_vertex_id = *m_goal_specification.get_RobotGoal(robot_id).begin();
+
+					int other_robot_init_vertex_id = m_initial_arrangement.get_RobotLocation(other_robot_id);
+					int other_robot_goal_vertex_id = *m_goal_specification.get_RobotGoal(other_robot_id).begin();
+
+					sInt_32 robot_through_cost = source_Distances[robot_init_vertex_id][MDD[robot_id][layer][uu]] + goal_Distances[robot_goal_vertex_id][MDD[robot_id][layer][uu]];
+					sInt_32 other_robot_through_cost = source_Distances[other_robot_init_vertex_id][MDD[other_robot_id][layer][vv]] + goal_Distances[other_robot_goal_vertex_id][MDD[other_robot_id][layer][vv]];				
+/*
+					printf("Robot init:%d goal:%d (%d .. %d)\n", robot_init_vertex_id, robot_goal_vertex_id, layer, N_Layers);
+					printf("Other robot init:%d goal:%d (%d .. %d)\n", other_robot_init_vertex_id, other_robot_goal_vertex_id, layer, N_Layers);
+					printf("Robot through: %d [%d][%d]\n", robot_through_cost, source_Distances[robot_init_vertex_id][robot_goal_vertex_id], goal_Distances[robot_goal_vertex_id][robot_init_vertex_id]);
+					printf("Other robot through: %d [%d][%d]\n", other_robot_through_cost, source_Distances[other_robot_init_vertex_id][other_robot_goal_vertex_id], goal_Distances[other_robot_goal_vertex_id][other_robot_init_vertex_id]);
+					printf("Total extra: %d [%d]\n", extra_cost, encoding_context.m_max_total_cost);
+*/
+					sInt_32 rest_cost = 0;
+					for (int rest_robot_id = 1; rest_robot_id <= N_Robots; ++rest_robot_id)
+					{
+					    if (rest_robot_id != robot_id && rest_robot_id != other_robot_id)
+					    {
+						int rest_robot_init_vertex_id = m_initial_arrangement.get_RobotLocation(rest_robot_id);
+						int rest_robot_goal_vertex_id = *m_goal_specification.get_RobotGoal(rest_robot_id).begin();
+						
+						rest_cost += source_Distances[rest_robot_init_vertex_id][rest_robot_goal_vertex_id];
+					    }
+					}
+//					printf("Resto: %d\n", rest_cost);
+//					printf("RESTO: %d [max: %d]\n", rest_cost + robot_through_cost + other_robot_through_cost, encoding_context.m_max_total_cost);
+
+					int through_cost = rest_cost + robot_through_cost + other_robot_through_cost;
+					if (through_cost > encoding_context.m_max_total_cost)
+					{
+					    Mutexes[robot_id][layer][uu_mdd_idx].insert(Mutex(other_robot_id, vv_mdd_idx, vv, uu));
+					    scheduled_Mutexes.push_back(ScheduledMTX(layer, MTX_pair(MTX(robot_id, MDD[robot_id][layer][uu]), MTX(other_robot_id, MDD[other_robot_id][layer][vv]))));
+					    ++super_mutexes;
+					}
+				    }
+				}
+			    }
+			}
+		    }
+		}
+	    }
+	}
+/*
+	printf("Super mutexes: %d\n", super_mutexes);
+	printf("Scheduled: %ld\n", scheduled_Mutexes.size());
+*/
 	std::vector<VertexIDs_vector> vertex_neighbor_IDs;
 	vertex_neighbor_IDs.resize(N_Vertices);
 
@@ -7227,7 +7478,8 @@ namespace sReloc
 		    }
 		}
 	    }
-	}		
+	}
+//	printf("Total MTX: %d\n", N_mutexes);
 
 	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
 	{
