@@ -1,8 +1,0 @@
-SIZE=$2
-ENCODING=$1
-ROBOTS=$3
-OBSTACLES=$4
-
-./ext_obst_time.sh $ENCODING $SIZE $ROBOTS $OBSTACLES
-./ext_obst_variables.sh $ENCODING $SIZE $ROBOTS $OBSTACLES
-./ext_obst_sats.sh $ENCODING $SIZE $ROBOTS $OBSTACLES

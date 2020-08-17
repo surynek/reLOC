@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* solver_main.cpp / 0.21-robik_020                                           */
+/* solver_main.cpp / 0.21-robik_042                                           */
 /*----------------------------------------------------------------------------*/
 //
 // Solution generator - main program.
@@ -110,7 +110,7 @@ namespace sReloc
 	printf("                          idmdd|idmdd+|idmdd++|idmmdd|idmmdd+|idmmdd++|\n");
 	printf("                          admdd|admdd+|admdd++|admmdd|admmdd+|admmdd++|\n");
 	printf("                          mdd*|idmdd*|admdd*|gmdd|ano|gano|\n");
-	printf("                          pcmdd\n");	
+	printf("                          pcmdd}\n");	
 	printf("             [--strategy={linear-down|linear-up|binary}]\n");
 	printf("             [--completion={simultaneous|unirobot|whca|complete}]\n");       
 	printf("             [--makespan-limit=<int>]\n");
