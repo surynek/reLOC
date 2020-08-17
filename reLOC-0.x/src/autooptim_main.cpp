@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.21-robik                              */
 /*                                                                            */
-/*                      (C) Copyright 2019 Pavel Surynek                      */
+/*                  (C) Copyright 2011 - 2019 Pavel Surynek                   */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* autooptim_main.cpp / 0.21-robik_041                                        */
+/* autooptim_main.cpp / 0.21-robik_042                                        */
 /*----------------------------------------------------------------------------*/
 //
 // Automatic solution optimizer - main program.

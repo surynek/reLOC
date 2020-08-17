@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.21-robik                              */
 /*                                                                            */
-/*                      (C) Copyright 2019 Pavel Surynek                      */
+/*                  (C) Copyright 2011 - 2019 Pavel Surynek                   */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* version.h / 0.21-robik_041                                                 */
+/* version.h / 0.21-robik_042                                                 */
 /*----------------------------------------------------------------------------*/
 //
 // Version file for reLOC
@@ -30,7 +30,7 @@ namespace sReloc
 #define sPRODUCT "reLOC 0.21-robik"
 #define sAUTHOR "Pavel Surynek"
 #define sAUTHOR_LONG "Pavel Surynek <pavel@surynek.com>"
-#define sCOPYRIGHT "(C) Copyright 2019 Pavel Surynek"
+#define sCOPYRIGHT "(C) Copyright 2011 - 2019 Pavel Surynek"
 #define sURL "http://www.surynek.com"
 
 

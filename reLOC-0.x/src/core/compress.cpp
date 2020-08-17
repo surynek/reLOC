@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.21-robik                              */
 /*                                                                            */
-/*                      (C) Copyright 2019 Pavel Surynek                      */
+/*                  (C) Copyright 2011 - 2019 Pavel Surynek                   */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* compress.cpp / 0.21-robik_041                                              */
+/* compress.cpp / 0.21-robik_042                                              */
 /*----------------------------------------------------------------------------*/
 //
 // Compression tools for relocation problem solutions.

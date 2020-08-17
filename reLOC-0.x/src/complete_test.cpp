@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.21-robik                              */
 /*                                                                            */
-/*                      (C) Copyright 2019 Pavel Surynek                      */
+/*                  (C) Copyright 2011 - 2019 Pavel Surynek                   */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* complete_test.cpp / 0.21-robik_041                                         */
+/* complete_test.cpp / 0.21-robik_042                                         */
 /*----------------------------------------------------------------------------*/
 //
 // Complete CPF solver - testing program.
