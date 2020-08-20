@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* compress_test.cpp / 0.21-robik_042                                         */
+/* compress_test.cpp / 0.21-robik_048                                         */
 /*----------------------------------------------------------------------------*/
 //
 // Compression tools for relocation problem solutions - testing program.

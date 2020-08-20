@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* cnf.cpp / 0.21-robik_042                                                   */
+/* cnf.cpp / 0.21-robik_048                                                   */
 /*----------------------------------------------------------------------------*/
 //
 // Dimacs CNF formula production tools.
@@ -685,7 +685,7 @@ namespace sReloc
 	    {
 		solver->newVar();
 	    }
-	    glu_Lits.push((*lit > 0) ? Glucose::mkLit(glu_var) : ~Glucose::mkLit(glu_var));
+	    glu_Lits.push((*lit > 0) ? Glucose::mkLit(glu_var, false) : ~Glucose::mkLit(glu_var, false));
 	}
 	solver->addClause(glu_Lits);
     }
@@ -5251,7 +5251,7 @@ namespace sReloc
 	    {
 		solver->newVar();
 	    }
-	    glu_Lits.push((*lit > 0) ? Glucose::mkLit(glu_var) : ~Glucose::mkLit(glu_var));
+	    glu_Lits.push((*lit > 0) ? Glucose::mkLit(glu_var, false) : ~Glucose::mkLit(glu_var, false));
 	}
 	solver->addClause(glu_Lits);
     }
@@ -9003,7 +9003,7 @@ namespace sReloc
 	    {
 		solver->newVar();
 	    }
-	    glu_Lits.push((*lit > 0) ? Glucose::mkLit(glu_var) : ~Glucose::mkLit(glu_var));
+	    glu_Lits.push((*lit > 0) ? Glucose::mkLit(glu_var, false) : ~Glucose::mkLit(glu_var, false));
 	}
 	solver->addClause(glu_Lits);
     }

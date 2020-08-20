@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* statistics.h / 0.21-robik_042                                              */
+/* statistics.h / 0.21-robik_048                                              */
 /*----------------------------------------------------------------------------*/
 //
 // Statistical data collection and analytical tools.
@@ -23,7 +23,6 @@
 
 #include "types.h"
 #include "result.h"
-#include "multirobot.h"
 
 
 using namespace sReloc;
@@ -35,54 +34,7 @@ using namespace sReloc;
 namespace sReloc
 {
 
-    
-/*----------------------------------------------------------------------------*/
-// sMultirobotSolutionAnalyzer
-
-    class sMultirobotSolutionAnalyzer
-    {
-    public:
-	typedef std::map<int, int, std::less<int> > Distribution_map;
-	typedef std::map<int, int, std::less<int> > Trajectories_map;
-
-    public:
-	sMultirobotSolutionAnalyzer();
-	sMultirobotSolutionAnalyzer(const sMultirobotSolutionAnalyzer &solution_analyzer);
-	const sMultirobotSolutionAnalyzer& operator=(const sMultirobotSolutionAnalyzer &solution_analyzer);
-
-	void analyze_Solution(const sMultirobotSolution &solution,
-			      const sRobotArrangement   &initial_arrangement,
-			      sUndirectedGraph          &environment);
-	int calc_TotalCost(const sMultirobotSolution &solution,
-			   const sRobotArrangement   &initial_arrangement,
-			   sUndirectedGraph          &environment);
-	int calc_TotalFuel(const sMultirobotSolution &solution,
-			   const sRobotArrangement   &initial_arrangement,
-			   sUndirectedGraph          &environment);	
-
-    public:
-	virtual void to_Screen(const sString &indent = "") const;
-	virtual void to_Stream(FILE *fw, const sString &indent = "") const;
-
-	virtual void to_Screen_distribution(const Distribution_map &distribution, const sString &indent) const;
-	virtual void to_Stream_distribution(FILE *fw, const Distribution_map &distribution, const sString &indent) const;
-
-    private:
-	int m_total_makespan;
-	int m_total_distance;
-	int m_total_trajectory;
-	int m_total_cost;
-	int m_total_fuel;	
-
-	double m_average_parallelism;
-	double m_average_distance;
-	double m_average_trajectory;
-
-	Distribution_map m_distribution_Parallelisms;
-	Distribution_map m_distribution_Distances;
-	Distribution_map m_distribution_Trajectories;
-    };
-
+   
 
 /*----------------------------------------------------------------------------*/
 // sPhaseStatistics

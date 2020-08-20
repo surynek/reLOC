@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* compress.h / 0.21-robik_042                                                */
+/* compress.h / 0.21-robik_048                                                */
 /*----------------------------------------------------------------------------*/
 //
 // Compression tools for relocation problem solutions.
@@ -25,6 +25,7 @@
 
 #include "types.h"
 #include "result.h"
+#include "multirobot.h"
 
 
 using namespace std;

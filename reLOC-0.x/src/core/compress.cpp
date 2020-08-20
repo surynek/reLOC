@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* compress.cpp / 0.21-robik_042                                              */
+/* compress.cpp / 0.21-robik_048                                              */
 /*----------------------------------------------------------------------------*/
 //
 // Compression tools for relocation problem solutions.
@@ -1551,8 +1551,11 @@ namespace sReloc
 		return sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO;
 	    }
 
-	    Glucose::vec<Glucose::Lit> dummy;
-	    Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	    //Glucose::vec<Glucose::Lit> dummy;
+	    //Glucose::lbool ret = (*solver)->solveLimited(dummy);
+
+	    (*solver)->s_Glucose_timeout = m_minisat_timeout;		    
+	    Glucose::lbool ret = (*solver)->solve_();	    
 	    
 	    if (ret == l_True)
 	    {
@@ -1802,8 +1805,11 @@ namespace sReloc
 	    return sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO;
 	}
 
-	Glucose::vec<Glucose::Lit> dummy;
-	Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	//Glucose::vec<Glucose::Lit> dummy;
+	//Glucose::lbool ret = (*solver)->solveLimited(dummy);
+
+	(*solver)->s_Glucose_timeout = m_minisat_timeout;		    
+	Glucose::lbool ret = (*solver)->solve_();	
 	
 	if (ret == l_True)
 	{
@@ -3591,8 +3597,10 @@ namespace sReloc
 #endif
 	    }
 
-	    Glucose::vec<Glucose::Lit> dummy;
-	    Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	    //Glucose::vec<Glucose::Lit> dummy;
+	    
+	    (*solver)->s_Glucose_timeout = m_minisat_timeout;		    
+	    Glucose::lbool ret = (*solver)->solve_();
 	    
 	    if (ret == l_True)
 	    {
@@ -4673,8 +4681,11 @@ namespace sReloc
 		first_unsatisfiable_makespan = makespan_try;
 	    }
 
-	    Glucose::vec<Glucose::Lit> dummy;
-	    Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	    //Glucose::vec<Glucose::Lit> dummy;
+	    //Glucose::lbool ret = (*solver)->solveLimited(dummy);
+
+	    (*solver)->s_Glucose_timeout = m_minisat_timeout;		    
+	    Glucose::lbool ret = (*solver)->solve_();	    
 	    
 	    if (ret == l_True)
 	    {
@@ -7249,8 +7260,11 @@ namespace sReloc
 		return sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO;
 	    }
 
-	    Glucose::vec<Glucose::Lit> dummy;
-	    Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	    //Glucose::vec<Glucose::Lit> dummy;
+	    //Glucose::lbool ret = (*solver)->solveLimited(dummy);
+
+	    (*solver)->s_Glucose_timeout = m_minisat_timeout;		    
+	    Glucose::lbool ret = (*solver)->solve_();	    
 	    
 	    if (ret == l_True)
 	    {
@@ -9048,8 +9062,11 @@ namespace sReloc
 	    return sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO;
 	}
 	
-	Glucose::vec<Glucose::Lit> dummy;
-	Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	//Glucose::vec<Glucose::Lit> dummy;
+	//Glucose::lbool ret = (*solver)->solveLimited(dummy);
+
+	(*solver)->s_Glucose_timeout = m_minisat_timeout;		    
+	Glucose::lbool ret = (*solver)->solve_();	
 	
 	if (ret == l_True)
 	{
@@ -9282,8 +9299,11 @@ namespace sReloc
 	    return sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO;
 	}
 	
-	Glucose::vec<Glucose::Lit> dummy;
-	Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	//Glucose::vec<Glucose::Lit> dummy;
+	//Glucose::lbool ret = (*solver)->solveLimited(dummy);
+
+	(*solver)->s_Glucose_timeout = m_minisat_timeout;		    
+	Glucose::lbool ret = (*solver)->solve_();	
 	
 	if (ret == l_True)
 	{
@@ -9714,8 +9734,11 @@ namespace sReloc
 	    return sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO;
 	}
 	
-	Glucose::vec<Glucose::Lit> dummy;
-	Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	//Glucose::vec<Glucose::Lit> dummy;
+	//Glucose::lbool ret = (*solver)->solveLimited(dummy);
+
+	(*solver)->s_Glucose_timeout = m_minisat_timeout;		    
+	Glucose::lbool ret = (*solver)->solve_();	
 	
 	if (ret == l_True)
 	{
@@ -10056,8 +10079,11 @@ namespace sReloc
 	    return sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO;
 	}
 	
-	Glucose::vec<Glucose::Lit> dummy;
-	Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	//Glucose::vec<Glucose::Lit> dummy;
+	//Glucose::lbool ret = (*solver)->solveLimited(dummy);
+
+	(*solver)->s_Glucose_timeout = m_minisat_timeout;		    
+	Glucose::lbool ret = (*solver)->solve_();	
 	
 	if (ret == l_True)
 	{
@@ -10202,8 +10228,11 @@ namespace sReloc
 		return sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO;
 	    }
 	    
-	    Glucose::vec<Glucose::Lit> dummy;
-	    Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	    //Glucose::vec<Glucose::Lit> dummy;
+	    //Glucose::lbool ret = (*solver)->solveLimited(dummy);
+
+	    (*solver)->s_Glucose_timeout = m_minisat_timeout;		    
+	    Glucose::lbool ret = (*solver)->solve_();	    
 	    
 	    if (ret == l_True)
 	    {
@@ -11619,8 +11648,11 @@ namespace sReloc
 	    return sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO;
 	}
 
-	Glucose::vec<Glucose::Lit> dummy;
-	Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	//Glucose::vec<Glucose::Lit> dummy;
+	//Glucose::lbool ret = (*solver)->solveLimited(dummy);
+
+	(*solver)->s_Glucose_timeout = m_minisat_timeout;		    
+	Glucose::lbool ret = (*solver)->solve_();	
 
 	if (ret == l_True)
 	{
@@ -13506,8 +13538,11 @@ namespace sReloc
 		return sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO;
 	    }
 
-	    Glucose::vec<Glucose::Lit> dummy;
-	    Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	    //Glucose::vec<Glucose::Lit> dummy;
+	    //Glucose::lbool ret = (*solver)->solveLimited(dummy);
+
+	    (*solver)->s_Glucose_timeout = m_minisat_timeout;		    
+	    Glucose::lbool ret = (*solver)->solve_();	    
 	    
 	    if (ret == l_True)
 	    {
@@ -18267,8 +18302,11 @@ namespace sReloc
 		return sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO;
 	    }
 
-	    Glucose::vec<Glucose::Lit> dummy;
-	    Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	    //Glucose::vec<Glucose::Lit> dummy;
+	    //Glucose::lbool ret = (*solver)->solveLimited(dummy);
+
+	    (*solver)->s_Glucose_timeout = m_minisat_timeout;		    
+	    Glucose::lbool ret = (*solver)->solve_();	    
 	    
 	    if (ret == l_True)
 	    {
@@ -19744,8 +19782,11 @@ namespace sReloc
 		return sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO;
 	    }
 
-	    Glucose::vec<Glucose::Lit> dummy;
-	    Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	    //Glucose::vec<Glucose::Lit> dummy;
+	    //Glucose::lbool ret = (*solver)->solveLimited(dummy);
+
+	    (*solver)->s_Glucose_timeout = m_minisat_timeout;		    
+	    Glucose::lbool ret = (*solver)->solve_();	    
 	    
 	    if (ret == l_True)
 	    {

@@ -35,6 +35,8 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 #include "Constants.h"
 #include "System.h"
 
+#include "core/statistics.h"
+
 using namespace Glucose;
 
 //=================================================================================================
@@ -139,6 +141,7 @@ Solver::Solver() :
   , asynch_interrupt   (false)
   , incremental(opt_incremental)
   , nbVarsInitialFormula(INT32_MAX)
+  , s_Glucose_timeout(0.0)
 {
   MYFLAG=0;  
   // Initialize only first time. Useful for incremental solving, useless otherwise
@@ -1028,8 +1031,13 @@ bool Solver::simplify()
 |    all variables are decision variables, this means that the clause set is satisfiable. 'l_False'
 |    if the clause set is unsatisfiable. 'l_Undef' if the bound on number of conflicts is reached.
 |________________________________________________________________________________________________@*/
+
+double s__Glucose_end_time, s__Glucose_start_time;
+
 lbool Solver::search(int /*nof_conflicts*/)
 {
+    double s__Glucose_start_time = sPhaseStatistics::get_CPU_Seconds();
+		  
     assert(ok);
     int         backtrack_level;
     int         conflictC = 0;
@@ -1051,6 +1059,19 @@ lbool Solver::search(int /*nof_conflicts*/)
 		   (int)dec_vars - (trail_lim.size() == 0 ? trail.size() : trail_lim[0]), nClauses(), (int)clauses_literals, 
 		   (int)nbReduceDB, nLearnts(), (int)nbDL2,(int)nbRemovedClauses, progressEstimate()*100);
 	  }
+
+	  if (conflicts % 1024 == 0)
+	  {
+	      if (s_Glucose_timeout >= 0)
+	      {
+		  s__Glucose_end_time = sPhaseStatistics::get_CPU_Seconds();
+		  if (s__Glucose_end_time - s__Glucose_start_time > s_Glucose_timeout)
+		  {
+		      return l_Undef;
+		  }
+	      }
+	  }
+
 	  if (decisionLevel() == 0) {
 	    return l_False;
 	    
@@ -1149,7 +1170,7 @@ lbool Solver::search(int /*nof_conflicts*/)
                 next = pickBranchLit();
 
                 if (next == lit_Undef){
-		  printf("c last restart ## conflicts  :  %d %d \n",conflictC,decisionLevel());
+		  // printf("c last restart ## conflicts  :  %d %d \n",conflictC,decisionLevel());
 		  // Model found:
 		  return l_True;
 		}
@@ -1238,6 +1259,8 @@ printf("c ==================================[ Search Statistics (every %6d confl
       printf("c =========================================================================================================\n");
     }
 
+    double s_Glucose_start_time = sPhaseStatistics::get_CPU_Seconds();    
+
     // Search:
     int curr_restarts = 0;
     while (status == l_Undef){
@@ -1245,6 +1268,15 @@ printf("c ==================================[ Search Statistics (every %6d confl
 
         if (!withinBudget()) break;
         curr_restarts++;
+
+	if (s_Glucose_timeout >= 0)
+	{
+	    double s_Glucose_end_time = sPhaseStatistics::get_CPU_Seconds();
+	    if (s_Glucose_end_time - s_Glucose_start_time > s_Glucose_timeout)
+	    {
+		return l_Undef;
+	    }
+	}
     }
 
     if (!incremental && verbosity >= 1)
