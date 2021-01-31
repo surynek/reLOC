@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.21-robik                              */
 /*                                                                            */
-/*                  (C) Copyright 2011 - 2019 Pavel Surynek                   */
+/*                  (C) Copyright 2011 - 2021 Pavel Surynek                   */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* statistics.h / 0.21-robik_048                                              */
+/* statistics.h / 0.21-robik_054                                              */
 /*----------------------------------------------------------------------------*/
 //
 // Statistical data collection and analytical tools.
@@ -49,6 +49,30 @@ namespace sReloc
 	struct Phase;
 	typedef std::map<sString, Phase*, std::less<sString> > Phases_map;
 
+	struct MicroPhase
+	{
+	    MicroPhase()
+	    : m_key(-1)
+	    { /* nothing */ }
+	    
+	    MicroPhase(sInt_32 key)
+	    : m_key(key)
+	    { /* nothing */ }
+
+	    sInt_32 m_key;
+
+	    double m_start_WC;
+	    double m_finish_WC;
+
+	    double m_start_CPU;
+	    double m_finish_CPU;
+
+	    double m_WC_Seconds;
+	    double m_CPU_Seconds;
+	};
+
+	typedef std::map<sInt_32, MicroPhase, std::less<sInt_32> > MicroPhases_map;
+
 	struct Phase
 	{
 	    Phase(const sString &name, Phase *parent_phase);
@@ -72,6 +96,8 @@ namespace sReloc
 
 	    Phase *m_parent_phase;
 	    Phases_map m_sub_Phases;
+
+	    MicroPhases_map m_micro_Phases;	    
 	};
 
     private: /* the object cannot be copied */
@@ -87,8 +113,14 @@ namespace sReloc
 	void enter_Phase(const sString &phase_name);
 	void leave_Phase(void);
 
+	void enter_MicroPhase(sInt_32 key);
+	void leave_MicroPhase(void);
+
 	void restart_CurrentPhase(void);
 	void suspend_CurrentPhase(void);
+
+	void restart_CurrentMicroPhase(void);
+	void suspend_CurrentMicroPhase(void);	
 
 	static double get_WC_Seconds(void);
 	static double get_CPU_Seconds(void);
@@ -102,6 +134,7 @@ namespace sReloc
 
     public:
 	Phase *m_current_phase;
+	sInt_32 m_curr_micro_key;
 
 	double m_curr_phase_start_WC;
 	double m_curr_phase_finish_WC;

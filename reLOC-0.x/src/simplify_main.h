@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.21-robik                              */
 /*                                                                            */
-/*                  (C) Copyright 2011 - 2019 Pavel Surynek                   */
+/*                  (C) Copyright 2011 - 2021 Pavel Surynek                   */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* simplify_main.h / 0.21-robik_048                                           */
+/* simplify_main.h / 0.21-robik_054                                           */
 /*----------------------------------------------------------------------------*/
 //
 // Simplify - main program.

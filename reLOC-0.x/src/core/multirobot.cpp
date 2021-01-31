@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.21-robik                              */
 /*                                                                            */
-/*                  (C) Copyright 2011 - 2019 Pavel Surynek                   */
+/*                  (C) Copyright 2011 - 2021 Pavel Surynek                   */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* multirobot.cpp / 0.21-robik_048                                            */
+/* multirobot.cpp / 0.21-robik_054                                            */
 /*----------------------------------------------------------------------------*/
 //
 // Multirobot coordinated path-finding solving package.

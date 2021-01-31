@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.21-robik                              */
 /*                                                                            */
-/*                  (C) Copyright 2011 - 2019 Pavel Surynek                   */
+/*                  (C) Copyright 2011 - 2021 Pavel Surynek                   */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* netgen_main.h / 0.21-robik_048                                             */
+/* netgen_main.h / 0.21-robik_054                                             */
 /*----------------------------------------------------------------------------*/
 //
 // Network Instance Generator - main program.

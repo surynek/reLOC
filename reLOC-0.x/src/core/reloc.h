@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.21-robik                              */
 /*                                                                            */
-/*                  (C) Copyright 2011 - 2019 Pavel Surynek                   */
+/*                  (C) Copyright 2011 - 2021 Pavel Surynek                   */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* reloc.h / 0.21-robik_048                                                   */
+/* reloc.h / 0.21-robik_054                                                   */
 /*----------------------------------------------------------------------------*/
 //
 // Relocation problem solving package - original development header.

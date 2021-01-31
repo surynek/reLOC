@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.21-robik                              */
 /*                                                                            */
-/*                  (C) Copyright 2011 - 2019 Pavel Surynek                   */
+/*                  (C) Copyright 2011 - 2021 Pavel Surynek                   */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* statistics.cpp / 0.21-robik_048                                            */
+/* statistics.cpp / 0.21-robik_054                                            */
 /*----------------------------------------------------------------------------*/
 //
 // Statistical data collection and analytical tools.
@@ -133,6 +133,19 @@ namespace sReloc
     }
 
 
+    void sPhaseStatistics::enter_MicroPhase(sInt_32 key)
+    {
+	m_curr_micro_key = key;
+	restart_CurrentMicroPhase();
+    }    
+
+
+    void sPhaseStatistics::leave_MicroPhase(void)
+    {
+	suspend_CurrentMicroPhase();
+    }    
+
+    
     double sPhaseStatistics::get_WC_Seconds(void)
     {
 	struct timeval timeval;
@@ -163,6 +176,30 @@ namespace sReloc
 
 	m_current_phase->m_WC_Seconds += m_curr_phase_finish_WC - m_curr_phase_start_WC;
 	m_current_phase->m_CPU_Seconds += m_curr_phase_finish_CPU - m_curr_phase_start_CPU;
+    }
+
+
+    void sPhaseStatistics::restart_CurrentMicroPhase(void)
+    {
+	sASSERT(m_curr_micro_key != -1);
+	MicroPhase &micro_phase = m_current_phase->m_micro_Phases[m_curr_micro_key];
+	micro_phase.m_key = m_curr_micro_key;
+	
+	micro_phase.m_start_WC = get_WC_Seconds();
+	micro_phase.m_start_CPU = get_CPU_Seconds();	
+    }    
+
+    
+    void sPhaseStatistics::suspend_CurrentMicroPhase(void)
+    {
+	sASSERT(m_curr_micro_key != -1);
+	MicroPhase &micro_phase = m_current_phase->m_micro_Phases[m_curr_micro_key];
+	
+	micro_phase.m_finish_WC = get_WC_Seconds();
+	micro_phase.m_finish_CPU = get_CPU_Seconds();
+
+	micro_phase.m_WC_Seconds += micro_phase.m_finish_WC - micro_phase.m_start_WC;
+	micro_phase.m_CPU_Seconds += micro_phase.m_finish_CPU - micro_phase.m_start_CPU;
     }
 
 
@@ -208,16 +245,31 @@ namespace sReloc
     void sPhaseStatistics::to_Stream_subphases(FILE *fw, const Phase &phase, const sString &indent)
     {
 	fprintf(fw, "%s%sPhase (name = '%s') [\n", indent.c_str(), sRELOC_INDENT.c_str(), phase.m_name.c_str());
-	fprintf(fw, "%s%s%sTotal SAT solver calls         = %ld\n", indent.c_str(), sRELOC_INDENT.c_str(), sRELOC_INDENT.c_str(), phase.m_total_sat_solver_Calls);
-	fprintf(fw, "%s%s%sSatisfiable SAT solver calls   = %ld\n", indent.c_str(), sRELOC_INDENT.c_str(), sRELOC_INDENT.c_str(), phase.m_SAT_sat_solver_Calls);
-	fprintf(fw, "%s%s%sUnsatisfiable SAT solver calls = %ld\n", indent.c_str(), sRELOC_INDENT.c_str(), sRELOC_INDENT.c_str(), phase.m_UNSAT_sat_solver_Calls);
-	fprintf(fw, "%s%s%sIndeterminate SAT solver calls = %ld\n", indent.c_str(), sRELOC_INDENT.c_str(), sRELOC_INDENT.c_str(), phase.m_INDET_sat_solver_Calls);
-	fprintf(fw, "%s%s%sMove executions                = %ld\n", indent.c_str(), sRELOC_INDENT.c_str(), sRELOC_INDENT.c_str(), phase.m_move_Executions);
-	fprintf(fw, "%s%s%sProduced CNF variables         = %ld\n", indent.c_str(), sRELOC_INDENT.c_str(), sRELOC_INDENT.c_str(), phase.m_produced_cnf_Variables);
-	fprintf(fw, "%s%s%sProduced CNF clauses           = %ld\n", indent.c_str(), sRELOC_INDENT.c_str(), sRELOC_INDENT.c_str(), phase.m_produced_cnf_Clauses);
-	fprintf(fw, "%s%s%sSearch steps                   = %ld\n", indent.c_str(), sRELOC_INDENT.c_str(), sRELOC_INDENT.c_str(), phase.m_search_Steps);
-	fprintf(fw, "%s%s%sWall clock TIME (seconds)      = %.3f\n", indent.c_str(), sRELOC_INDENT.c_str(), sRELOC_INDENT.c_str(), phase.m_WC_Seconds);
-	fprintf(fw, "%s%s%sCPU/machine TIME (seconds)     = %.3f\n", indent.c_str(), sRELOC_INDENT.c_str(), sRELOC_INDENT.c_str(), phase.m_CPU_Seconds);
+	fprintf(fw, "%s%s%sTotal SAT solver calls            = %ld\n", indent.c_str(), sRELOC_INDENT.c_str(), sRELOC_INDENT.c_str(), phase.m_total_sat_solver_Calls);
+	fprintf(fw, "%s%s%sSatisfiable SAT solver calls      = %ld\n", indent.c_str(), sRELOC_INDENT.c_str(), sRELOC_INDENT.c_str(), phase.m_SAT_sat_solver_Calls);
+	fprintf(fw, "%s%s%sUnsatisfiable SAT solver calls    = %ld\n", indent.c_str(), sRELOC_INDENT.c_str(), sRELOC_INDENT.c_str(), phase.m_UNSAT_sat_solver_Calls);
+	fprintf(fw, "%s%s%sIndeterminate SAT solver calls    = %ld\n", indent.c_str(), sRELOC_INDENT.c_str(), sRELOC_INDENT.c_str(), phase.m_INDET_sat_solver_Calls);
+	fprintf(fw, "%s%s%sMove executions                   = %ld\n", indent.c_str(), sRELOC_INDENT.c_str(), sRELOC_INDENT.c_str(), phase.m_move_Executions);
+	fprintf(fw, "%s%s%sProduced CNF variables            = %ld\n", indent.c_str(), sRELOC_INDENT.c_str(), sRELOC_INDENT.c_str(), phase.m_produced_cnf_Variables);
+	fprintf(fw, "%s%s%sProduced CNF clauses              = %ld\n", indent.c_str(), sRELOC_INDENT.c_str(), sRELOC_INDENT.c_str(), phase.m_produced_cnf_Clauses);
+	fprintf(fw, "%s%s%sSearch steps                      = %ld\n", indent.c_str(), sRELOC_INDENT.c_str(), sRELOC_INDENT.c_str(), phase.m_search_Steps);
+	fprintf(fw, "%s%s%sWall clock TIME (seconds)         = %.3f\n", indent.c_str(), sRELOC_INDENT.c_str(), sRELOC_INDENT.c_str(), phase.m_WC_Seconds);
+	fprintf(fw, "%s%s%sCPU/machine TIME (seconds)        = %.3f\n", indent.c_str(), sRELOC_INDENT.c_str(), sRELOC_INDENT.c_str(), phase.m_CPU_Seconds);
+
+	fprintf(fw, "%s%s%sMicro wall clock TIMEs (seconds)  = ", indent.c_str(), sRELOC_INDENT.c_str(), sRELOC_INDENT.c_str());
+	for (MicroPhases_map::const_iterator micro_phase = phase.m_micro_Phases.begin(); micro_phase != phase.m_micro_Phases.end(); ++micro_phase)
+	{
+	    fprintf(fw, "%d: %.3f  ", micro_phase->second.m_key, micro_phase->second.m_WC_Seconds);
+	}
+	fprintf(fw, "\n");	
+
+	fprintf(fw, "%s%s%sMicro CPU/machine TIMEs (seconds) = ", indent.c_str(), sRELOC_INDENT.c_str(), sRELOC_INDENT.c_str());
+	for (MicroPhases_map::const_iterator micro_phase = phase.m_micro_Phases.begin(); micro_phase != phase.m_micro_Phases.end(); ++micro_phase)
+	{
+	    fprintf(fw, "%d: %.3f  ", micro_phase->second.m_key, micro_phase->second.m_CPU_Seconds);
+	}
+	fprintf(fw, "\n");		
+	
 	fprintf(fw, "%s%s]\n", indent.c_str(), sRELOC_INDENT.c_str());
 
 	if (!phase.m_sub_Phases.empty())

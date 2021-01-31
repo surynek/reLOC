@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.21-robik                              */
 /*                                                                            */
-/*                  (C) Copyright 2011 - 2019 Pavel Surynek                   */
+/*                  (C) Copyright 2011 - 2021 Pavel Surynek                   */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* config.h / 0.21-robik_048                                                  */
+/* config.h / 0.21-robik_054                                                  */
 /*----------------------------------------------------------------------------*/
 //
 // Configuration file for reLOC package - global settings.
