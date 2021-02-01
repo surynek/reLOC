@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.21-robik                              */
 /*                                                                            */
-/*                      (C) Copyright 2019 Pavel Surynek                      */
+/*                  (C) Copyright 2011 - 2021 Pavel Surynek                   */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* cnf.cpp / 0.21-robik_041                                                   */
+/* cnf.cpp / 0.21-robik_057                                                   */
 /*----------------------------------------------------------------------------*/
 //
 // Dimacs CNF formula production tools.
@@ -685,7 +685,7 @@ namespace sReloc
 	    {
 		solver->newVar();
 	    }
-	    glu_Lits.push((*lit > 0) ? Glucose::mkLit(glu_var) : ~Glucose::mkLit(glu_var));
+	    glu_Lits.push((*lit > 0) ? Glucose::mkLit(glu_var, false) : ~Glucose::mkLit(glu_var, false));
 	}
 	solver->addClause(glu_Lits);
     }
@@ -5251,7 +5251,7 @@ namespace sReloc
 	    {
 		solver->newVar();
 	    }
-	    glu_Lits.push((*lit > 0) ? Glucose::mkLit(glu_var) : ~Glucose::mkLit(glu_var));
+	    glu_Lits.push((*lit > 0) ? Glucose::mkLit(glu_var, false) : ~Glucose::mkLit(glu_var, false));
 	}
 	solver->addClause(glu_Lits);
     }
@@ -9003,7 +9003,7 @@ namespace sReloc
 	    {
 		solver->newVar();
 	    }
-	    glu_Lits.push((*lit > 0) ? Glucose::mkLit(glu_var) : ~Glucose::mkLit(glu_var));
+	    glu_Lits.push((*lit > 0) ? Glucose::mkLit(glu_var, false) : ~Glucose::mkLit(glu_var, false));
 	}
 	solver->addClause(glu_Lits);
     }

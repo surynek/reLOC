@@ -37,9 +37,12 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 #include "BoundedQueue.h"
 #include "Constants.h"
 
+#include "core/statistics.h"
 
 namespace Glucose {
 
+#define sDouble double
+    
 //=================================================================================================
 // Solver -- the main class:
 
@@ -268,7 +271,13 @@ protected:
 
     // Variables added for incremental mode
     int incremental; // Use incremental SAT Solver
-    int nbVarsInitialFormula; // nb VAR in formula without assumptions (incremental SAT)
+    int nbVarsInitialFormula; // nb VAR in formula without assumptions (incremental SAT)    
+
+public:
+    sDouble s_Glucose_timeout;
+
+//protected:    
+public:
     double totalTime4Sat,totalTime4Unsat;
     int nbSatCalls,nbUnsatCalls;
     vec<int> assumptionPositions,initialPositions;

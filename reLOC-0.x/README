@@ -27,9 +27,9 @@ solvers for various item relocation problems including:
   - token permutation (TPERM).
 
 Please see the paper for more details. Most
-of solving algorithms in this package are
-based on reduction to the SAT problem. Indivudual
-solvers can be invoked from the command line.
+of solving algorithms in this package is
+based on reduction to SAT. Indivudual solvers
+can be invoked from command line.
 
 The command line programs are solver_reLOC
 (calls the external glucose executable) and
@@ -47,14 +47,14 @@ Use --help to see all command line options
 and be aware that not all combinations work
 together.
 
-The option --encoding=mdd is for running the MAPF
-solver. Token swapping (TSWAP) can be used with
---encoding=temdd or tmdd (if the graph is full).
-Token rotation (TROT) is enabled through
+The option --encoding=mdd is for running the solver
+MAPF. Token swapping (TSWAP) can be used with
+--encoding=temdd of tmdd (if the graph is full).
+Token rotation (TROT) is enable through
 --encoding=pmdd (looks like this is a mistake and
-token permutation will be invoked, but this is correct).
+token permutation will be enable, but this is correct).
 And finally, token permutation (TPERM) will be
-enabled by --encoding=rmdd.
+enable by --encoding=rmdd.
 
 Please enjoy your problem solving...
 Pavel Surynek, 09/2018

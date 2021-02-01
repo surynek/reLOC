@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.21-robik                              */
 /*                                                                            */
-/*                      (C) Copyright 2019 Pavel Surynek                      */
+/*                  (C) Copyright 2011 - 2021 Pavel Surynek                   */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* encodings_binary.cpp / 0.21-robik_041                                      */
+/* encodings_binary.cpp / 0.21-robik_057                                      */
 /*----------------------------------------------------------------------------*/
 //
 // Multi-robot path-finding encodings based on

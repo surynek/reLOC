@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.21-robik                              */
 /*                                                                            */
-/*                      (C) Copyright 2019 Pavel Surynek                      */
+/*                  (C) Copyright 2011 - 2021 Pavel Surynek                   */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* compress.cpp / 0.21-robik_041                                              */
+/* compress.cpp / 0.21-robik_057                                              */
 /*----------------------------------------------------------------------------*/
 //
 // Compression tools for relocation problem solutions.
@@ -1551,8 +1551,11 @@ namespace sReloc
 		return sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO;
 	    }
 
-	    Glucose::vec<Glucose::Lit> dummy;
-	    Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	    //Glucose::vec<Glucose::Lit> dummy;
+	    //Glucose::lbool ret = (*solver)->solveLimited(dummy);
+
+	    (*solver)->s_Glucose_timeout = m_minisat_timeout;		    
+	    Glucose::lbool ret = (*solver)->solve_();	    
 	    
 	    if (ret == l_True)
 	    {
@@ -1802,8 +1805,11 @@ namespace sReloc
 	    return sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO;
 	}
 
-	Glucose::vec<Glucose::Lit> dummy;
-	Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	//Glucose::vec<Glucose::Lit> dummy;
+	//Glucose::lbool ret = (*solver)->solveLimited(dummy);
+
+	(*solver)->s_Glucose_timeout = m_minisat_timeout;		    
+	Glucose::lbool ret = (*solver)->solve_();	
 	
 	if (ret == l_True)
 	{
@@ -3591,8 +3597,10 @@ namespace sReloc
 #endif
 	    }
 
-	    Glucose::vec<Glucose::Lit> dummy;
-	    Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	    //Glucose::vec<Glucose::Lit> dummy;
+	    
+	    (*solver)->s_Glucose_timeout = m_minisat_timeout;		    
+	    Glucose::lbool ret = (*solver)->solve_();
 	    
 	    if (ret == l_True)
 	    {
@@ -4673,8 +4681,11 @@ namespace sReloc
 		first_unsatisfiable_makespan = makespan_try;
 	    }
 
-	    Glucose::vec<Glucose::Lit> dummy;
-	    Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	    //Glucose::vec<Glucose::Lit> dummy;
+	    //Glucose::lbool ret = (*solver)->solveLimited(dummy);
+
+	    (*solver)->s_Glucose_timeout = m_minisat_timeout;		    
+	    Glucose::lbool ret = (*solver)->solve_();	    
 	    
 	    if (ret == l_True)
 	    {
@@ -7249,8 +7260,11 @@ namespace sReloc
 		return sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO;
 	    }
 
-	    Glucose::vec<Glucose::Lit> dummy;
-	    Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	    //Glucose::vec<Glucose::Lit> dummy;
+	    //Glucose::lbool ret = (*solver)->solveLimited(dummy);
+
+	    (*solver)->s_Glucose_timeout = m_minisat_timeout;		    
+	    Glucose::lbool ret = (*solver)->solve_();	    
 	    
 	    if (ret == l_True)
 	    {
@@ -7440,7 +7454,13 @@ namespace sReloc
 	expansion_count = 0;
 
 	while (true)
-	{
+	{	    
+            #ifdef sSTATISTICS
+	    {
+		s_GlobalPhaseStatistics.enter_MicroPhase(total_cost);
+	    }
+	    #endif
+	    
 	    sMultirobotEncodingContext_CNFsat encoding_context(0);
 	    encoding_context.m_max_total_cost = total_cost;
 	    encoding_context.m_max_total_fuel = total_cost;	    
@@ -7451,6 +7471,12 @@ namespace sReloc
 
 	    if (sFAILED(result = compute_CostSolvability(instance, total_cost, final_encoding_context, thread_id)))
 	    {
+                #ifdef sSTATISTICS
+		{
+		    s_GlobalPhaseStatistics.leave_MicroPhase();
+		}
+	        #endif	    
+		
 		return result;
 	    }
 	    
@@ -7459,6 +7485,12 @@ namespace sReloc
 	    case sMULTIROBOT_SOLUTION_COMPRESSOR_SAT_INFO:
 	    {
 		optimal_cost = total_cost;
+                #ifdef sSTATISTICS
+		{
+		    s_GlobalPhaseStatistics.leave_MicroPhase();
+		}
+	        #endif	    
+		
 		return sRESULT_SUCCESS;
 	    }
 	    case sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO:
@@ -7468,6 +7500,12 @@ namespace sReloc
 	    case sMULTIROBOT_SOLUTION_COMPRESSOR_INDET_INFO:
 	    {
 		optimal_cost = MAKESPAN_UNDEFINED;
+                #ifdef sSTATISTICS
+		{
+		    s_GlobalPhaseStatistics.leave_MicroPhase();
+		}
+	        #endif	    
+		
 		return result;
 	    }
 	    default:
@@ -7492,6 +7530,12 @@ namespace sReloc
 	    }
 
 	    ++expansion_count;
+
+            #ifdef sSTATISTICS
+	    {
+		s_GlobalPhaseStatistics.leave_MicroPhase();
+	    }
+	    #endif	    
 	}
 	return sRESULT_SUCCESS;
     }
@@ -7519,6 +7563,12 @@ namespace sReloc
 
 	while (true)
 	{
+            #ifdef sSTATISTICS
+	    {
+		s_GlobalPhaseStatistics.enter_MicroPhase(total_cost);
+	    }
+	    #endif
+	    
 	    if (*solver != NULL)
 	    {
 		delete *solver;
@@ -7527,7 +7577,7 @@ namespace sReloc
 
 	    sMultirobotEncodingContext_CNFsat encoding_context(0);
 	    encoding_context.m_max_total_cost = total_cost;
-	    encoding_context.m_max_total_fuel = total_cost;	    
+	    encoding_context.m_max_total_fuel = total_cost;
 
 #ifdef sVERBOSE
 	    printf("Solving cost %d (%d) ...\n", total_cost, max_individual_cost);
@@ -7535,6 +7585,12 @@ namespace sReloc
 
 	    if (sFAILED(result = incompute_CostSolvability(solver, instance, total_cost, final_encoding_context, thread_id)))
 	    {
+                #ifdef sSTATISTICS
+		{
+		    s_GlobalPhaseStatistics.leave_MicroPhase();
+		}
+	        #endif	    
+		
 		return result;
 	    }
 	    
@@ -7543,6 +7599,12 @@ namespace sReloc
 	    case sMULTIROBOT_SOLUTION_COMPRESSOR_SAT_INFO:
 	    {
 		optimal_cost = total_cost;
+                #ifdef sSTATISTICS
+		{
+		    s_GlobalPhaseStatistics.leave_MicroPhase();
+		}
+	        #endif	    
+		
 		return sRESULT_SUCCESS;
 	    }
 	    case sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO:
@@ -7552,6 +7614,12 @@ namespace sReloc
 	    case sMULTIROBOT_SOLUTION_COMPRESSOR_INDET_INFO:
 	    {
 		optimal_cost = MAKESPAN_UNDEFINED;
+                #ifdef sSTATISTICS
+		{
+		    s_GlobalPhaseStatistics.leave_MicroPhase();
+		}
+	        #endif	    
+		
 		return result;
 	    }
 	    default:
@@ -7574,8 +7642,13 @@ namespace sReloc
 	    {
 		break;
 	    }
-
 	    ++expansion_count;
+	    
+	    #ifdef sSTATISTICS
+	    {
+		s_GlobalPhaseStatistics.leave_MicroPhase();
+	    }
+	    #endif
 	}
 	return sRESULT_SUCCESS;
     }
@@ -9048,8 +9121,11 @@ namespace sReloc
 	    return sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO;
 	}
 	
-	Glucose::vec<Glucose::Lit> dummy;
-	Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	//Glucose::vec<Glucose::Lit> dummy;
+	//Glucose::lbool ret = (*solver)->solveLimited(dummy);
+
+	(*solver)->s_Glucose_timeout = m_minisat_timeout;		    
+	Glucose::lbool ret = (*solver)->solve_();	
 	
 	if (ret == l_True)
 	{
@@ -9282,8 +9358,11 @@ namespace sReloc
 	    return sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO;
 	}
 	
-	Glucose::vec<Glucose::Lit> dummy;
-	Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	//Glucose::vec<Glucose::Lit> dummy;
+	//Glucose::lbool ret = (*solver)->solveLimited(dummy);
+
+	(*solver)->s_Glucose_timeout = m_minisat_timeout;		    
+	Glucose::lbool ret = (*solver)->solve_();	
 	
 	if (ret == l_True)
 	{
@@ -9714,8 +9793,11 @@ namespace sReloc
 	    return sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO;
 	}
 	
-	Glucose::vec<Glucose::Lit> dummy;
-	Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	//Glucose::vec<Glucose::Lit> dummy;
+	//Glucose::lbool ret = (*solver)->solveLimited(dummy);
+
+	(*solver)->s_Glucose_timeout = m_minisat_timeout;		    
+	Glucose::lbool ret = (*solver)->solve_();	
 	
 	if (ret == l_True)
 	{
@@ -10056,8 +10138,11 @@ namespace sReloc
 	    return sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO;
 	}
 	
-	Glucose::vec<Glucose::Lit> dummy;
-	Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	//Glucose::vec<Glucose::Lit> dummy;
+	//Glucose::lbool ret = (*solver)->solveLimited(dummy);
+
+	(*solver)->s_Glucose_timeout = m_minisat_timeout;		    
+	Glucose::lbool ret = (*solver)->solve_();	
 	
 	if (ret == l_True)
 	{
@@ -10139,6 +10224,12 @@ namespace sReloc
 
 	while (true)
 	{
+            #ifdef sSTATISTICS
+	    {
+		s_GlobalPhaseStatistics.enter_MicroPhase(total_cost);
+	    }
+	    #endif
+	    
 	    if (*solver != NULL)
 	    {
 		delete *solver;
@@ -10194,16 +10285,26 @@ namespace sReloc
 
 	    if (!(*solver)->simplify())
 	    {
-#ifdef sSTATISTICS
+                #ifdef sSTATISTICS
 		{
 		    ++s_GlobalPhaseStatistics.get_CurrentPhase().m_UNSAT_sat_solver_Calls;
 		}
-#endif		
+                #endif
+
+                #ifdef sSTATISTICS
+		{
+		    s_GlobalPhaseStatistics.leave_MicroPhase();
+		}
+	        #endif	    
+		
 		return sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO;
 	    }
 	    
-	    Glucose::vec<Glucose::Lit> dummy;
-	    Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	    //Glucose::vec<Glucose::Lit> dummy;
+	    //Glucose::lbool ret = (*solver)->solveLimited(dummy);
+
+	    (*solver)->s_Glucose_timeout = m_minisat_timeout;		    
+	    Glucose::lbool ret = (*solver)->solve_();	    
 	    
 	    if (ret == l_True)
 	    {
@@ -10216,6 +10317,13 @@ namespace sReloc
 		{
 		    final_encoding_context = encoding_context;
 		    optimal_cost = total_cost;
+		    
+                    #ifdef sSTATISTICS
+		    {
+			s_GlobalPhaseStatistics.leave_MicroPhase();
+		    }
+	            #endif	    
+		    
 		    return sRESULT_SUCCESS;
 		}
 		else
@@ -10248,6 +10356,12 @@ namespace sReloc
 	    {
 		break;
 	    }
+
+            #ifdef sSTATISTICS
+	    {
+		s_GlobalPhaseStatistics.leave_MicroPhase();
+	    }
+	    #endif	    
 	}
 	return sRESULT_SUCCESS;
     }
@@ -10300,6 +10414,12 @@ namespace sReloc
 
 	while (true)
 	{
+            #ifdef sSTATISTICS
+	    {
+		s_GlobalPhaseStatistics.enter_MicroPhase(total_cost);
+	    }
+	    #endif
+	    
 	    printf("Lower bound: %d\n", lower_bound);
 	    printf("Upper bound: %d\n", upper_bound);
 	    printf("Total total: %d\n", upper_encoding_context.m_max_total_cost);
@@ -10350,6 +10470,12 @@ namespace sReloc
 
 		if (sFAILED(result))
 		{
+                    #ifdef sSTATISTICS
+		    {
+			s_GlobalPhaseStatistics.leave_MicroPhase();
+		    }
+	            #endif	    
+		    
 		    return result;
 		}
 		break;
@@ -10373,6 +10499,12 @@ namespace sReloc
 
 		if (sFAILED(result))
 		{
+                    #ifdef sSTATISTICS
+		    {
+			s_GlobalPhaseStatistics.leave_MicroPhase();
+		    }
+	            #endif	    
+		    
 		    return result;
 		}
 		break;
@@ -10391,6 +10523,12 @@ namespace sReloc
 	    
 	    if (preprocess_result < 0)
 	    {
+                #ifdef sSTATISTICS
+		{
+		    s_GlobalPhaseStatistics.leave_MicroPhase();
+		}
+	        #endif	    
+		
 		return sMULTIROBOT_SOLUTION_COMPRESSOR_SYSTEM_CALL_ERROR;
 	    }
 	    FILE *fro;
@@ -10420,6 +10558,12 @@ namespace sReloc
 	    
 	    if (system_result < 0)
 	    {
+                #ifdef sSTATISTICS
+		{
+		    s_GlobalPhaseStatistics.leave_MicroPhase();
+		}
+	        #endif	    
+		
 		return sMULTIROBOT_SOLUTION_COMPRESSOR_SYSTEM_CALL_ERROR;
 	    }
 	    
@@ -10432,6 +10576,12 @@ namespace sReloc
 	    FILE *fr;
 	    if ((fr = fopen(output_filename.c_str(), "r")) == NULL)
 	    {
+                #ifdef sSTATISTICS
+		{
+		    s_GlobalPhaseStatistics.leave_MicroPhase();
+		}
+	        #endif	    
+		
 		return sMULTIROBOT_SOLUTION_COMPRESSOR_OPEN_ERROR;
 	    }
 	    
@@ -10445,6 +10595,12 @@ namespace sReloc
 	    {
 		if (unlink(cnf_filename.c_str()) < 0)
 		{
+                    #ifdef sSTATISTICS
+		    {
+			s_GlobalPhaseStatistics.leave_MicroPhase();
+		    }
+	            #endif	    
+		    
 		    return sMULTIROBOT_SOLUTION_COMPRESSOR_UNLINK_ERROR;
 		}
 	    }
@@ -10461,6 +10617,12 @@ namespace sReloc
 		{
 		    if (unlink(output_filename.c_str()) < 0)
 		    {
+                        #ifdef sSTATISTICS
+			{
+			    s_GlobalPhaseStatistics.leave_MicroPhase();
+			}
+	                #endif	    
+			
 			return sMULTIROBOT_SOLUTION_COMPRESSOR_UNLINK_ERROR;
 		    }
 		}
@@ -10480,6 +10642,12 @@ namespace sReloc
 		{
 		    if (unlink(output_filename.c_str()) < 0)
 		    {
+                        #ifdef sSTATISTICS
+			{
+			    s_GlobalPhaseStatistics.leave_MicroPhase();
+			}
+	                #endif	    
+			
 			return sMULTIROBOT_SOLUTION_COMPRESSOR_UNLINK_ERROR;
 		    }
 		}
@@ -10496,6 +10664,12 @@ namespace sReloc
 		{
 		    final_encoding_context = encoding_context;
 		    optimal_cost = total_cost;
+                    #ifdef sSTATISTICS
+		    {
+			s_GlobalPhaseStatistics.leave_MicroPhase();
+		    }
+	            #endif	    
+		    
 		    return sRESULT_SUCCESS;
 		}
 		else
@@ -10511,6 +10685,12 @@ namespace sReloc
 	    {
 		break;
 	    }
+
+            #ifdef sSTATISTICS
+	    {
+		s_GlobalPhaseStatistics.leave_MicroPhase();
+	    }
+	    #endif	    
 	}
 	return sRESULT_SUCCESS;
     }
@@ -11619,8 +11799,11 @@ namespace sReloc
 	    return sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO;
 	}
 
-	Glucose::vec<Glucose::Lit> dummy;
-	Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	//Glucose::vec<Glucose::Lit> dummy;
+	//Glucose::lbool ret = (*solver)->solveLimited(dummy);
+
+	(*solver)->s_Glucose_timeout = m_minisat_timeout;		    
+	Glucose::lbool ret = (*solver)->solve_();	
 
 	if (ret == l_True)
 	{
@@ -13506,8 +13689,11 @@ namespace sReloc
 		return sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO;
 	    }
 
-	    Glucose::vec<Glucose::Lit> dummy;
-	    Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	    //Glucose::vec<Glucose::Lit> dummy;
+	    //Glucose::lbool ret = (*solver)->solveLimited(dummy);
+
+	    (*solver)->s_Glucose_timeout = m_minisat_timeout;		    
+	    Glucose::lbool ret = (*solver)->solve_();	    
 	    
 	    if (ret == l_True)
 	    {
@@ -18267,8 +18453,11 @@ namespace sReloc
 		return sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO;
 	    }
 
-	    Glucose::vec<Glucose::Lit> dummy;
-	    Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	    //Glucose::vec<Glucose::Lit> dummy;
+	    //Glucose::lbool ret = (*solver)->solveLimited(dummy);
+
+	    (*solver)->s_Glucose_timeout = m_minisat_timeout;		    
+	    Glucose::lbool ret = (*solver)->solve_();	    
 	    
 	    if (ret == l_True)
 	    {
@@ -19744,8 +19933,11 @@ namespace sReloc
 		return sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO;
 	    }
 
-	    Glucose::vec<Glucose::Lit> dummy;
-	    Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	    //Glucose::vec<Glucose::Lit> dummy;
+	    //Glucose::lbool ret = (*solver)->solveLimited(dummy);
+
+	    (*solver)->s_Glucose_timeout = m_minisat_timeout;		    
+	    Glucose::lbool ret = (*solver)->solve_();	    
 	    
 	    if (ret == l_True)
 	    {

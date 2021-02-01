@@ -3,12 +3,12 @@
 /*                                                                            */
 /*                              reLOC 0.21-robik                              */
 /*                                                                            */
-/*                      (C) Copyright 2019 Pavel Surynek                      */
+/*                  (C) Copyright 2011 - 2021 Pavel Surynek                   */
 /*                http://www.surynek.com | <pavel@surynek.com>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* statistics.h / 0.21-robik_041                                              */
+/* statistics.h / 0.21-robik_057                                              */
 /*----------------------------------------------------------------------------*/
 //
 // Statistical data collection and analytical tools.
@@ -23,7 +23,6 @@
 
 #include "types.h"
 #include "result.h"
-#include "multirobot.h"
 
 
 using namespace sReloc;
@@ -35,54 +34,7 @@ using namespace sReloc;
 namespace sReloc
 {
 
-    
-/*----------------------------------------------------------------------------*/
-// sMultirobotSolutionAnalyzer
-
-    class sMultirobotSolutionAnalyzer
-    {
-    public:
-	typedef std::map<int, int, std::less<int> > Distribution_map;
-	typedef std::map<int, int, std::less<int> > Trajectories_map;
-
-    public:
-	sMultirobotSolutionAnalyzer();
-	sMultirobotSolutionAnalyzer(const sMultirobotSolutionAnalyzer &solution_analyzer);
-	const sMultirobotSolutionAnalyzer& operator=(const sMultirobotSolutionAnalyzer &solution_analyzer);
-
-	void analyze_Solution(const sMultirobotSolution &solution,
-			      const sRobotArrangement   &initial_arrangement,
-			      sUndirectedGraph          &environment);
-	int calc_TotalCost(const sMultirobotSolution &solution,
-			   const sRobotArrangement   &initial_arrangement,
-			   sUndirectedGraph          &environment);
-	int calc_TotalFuel(const sMultirobotSolution &solution,
-			   const sRobotArrangement   &initial_arrangement,
-			   sUndirectedGraph          &environment);	
-
-    public:
-	virtual void to_Screen(const sString &indent = "") const;
-	virtual void to_Stream(FILE *fw, const sString &indent = "") const;
-
-	virtual void to_Screen_distribution(const Distribution_map &distribution, const sString &indent) const;
-	virtual void to_Stream_distribution(FILE *fw, const Distribution_map &distribution, const sString &indent) const;
-
-    private:
-	int m_total_makespan;
-	int m_total_distance;
-	int m_total_trajectory;
-	int m_total_cost;
-	int m_total_fuel;	
-
-	double m_average_parallelism;
-	double m_average_distance;
-	double m_average_trajectory;
-
-	Distribution_map m_distribution_Parallelisms;
-	Distribution_map m_distribution_Distances;
-	Distribution_map m_distribution_Trajectories;
-    };
-
+   
 
 /*----------------------------------------------------------------------------*/
 // sPhaseStatistics
@@ -96,6 +48,30 @@ namespace sReloc
     public:
 	struct Phase;
 	typedef std::map<sString, Phase*, std::less<sString> > Phases_map;
+
+	struct MicroPhase
+	{
+	    MicroPhase()
+	    : m_key(-1)
+	    { /* nothing */ }
+	    
+	    MicroPhase(sInt_32 key)
+	    : m_key(key)
+	    { /* nothing */ }
+
+	    sInt_32 m_key;
+
+	    double m_start_WC;
+	    double m_finish_WC;
+
+	    double m_start_CPU;
+	    double m_finish_CPU;
+
+	    double m_WC_Seconds;
+	    double m_CPU_Seconds;
+	};
+
+	typedef std::map<sInt_32, MicroPhase, std::less<sInt_32> > MicroPhases_map;
 
 	struct Phase
 	{
@@ -120,6 +96,8 @@ namespace sReloc
 
 	    Phase *m_parent_phase;
 	    Phases_map m_sub_Phases;
+
+	    MicroPhases_map m_micro_Phases;	    
 	};
 
     private: /* the object cannot be copied */
@@ -135,8 +113,14 @@ namespace sReloc
 	void enter_Phase(const sString &phase_name);
 	void leave_Phase(void);
 
+	void enter_MicroPhase(sInt_32 key);
+	void leave_MicroPhase(void);
+
 	void restart_CurrentPhase(void);
 	void suspend_CurrentPhase(void);
+
+	void restart_CurrentMicroPhase(void);
+	void suspend_CurrentMicroPhase(void);	
 
 	static double get_WC_Seconds(void);
 	static double get_CPU_Seconds(void);
@@ -150,6 +134,7 @@ namespace sReloc
 
     public:
 	Phase *m_current_phase;
+	sInt_32 m_curr_micro_key;
 
 	double m_curr_phase_start_WC;
 	double m_curr_phase_finish_WC;
