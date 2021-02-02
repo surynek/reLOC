@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* encodings_mdd.cpp / 0.21-robik_056                                         */
+/* encodings_mdd.cpp / 0.21-robik_057                                         */
 /*----------------------------------------------------------------------------*/
 //
 // Multi-robot path-finding encodings based on
@@ -8911,7 +8911,7 @@ namespace sReloc
 	encoding_context.m_vertex_water_cardinality_.resize(N_Robots + 1);
 	encoding_context.m_edge_occupancy_by_water__.resize(N_Robots + 1);
 
-	bool bound = false;
+	bool bound = true;
 
 	if (m_ratio > 0.0)
 	{
@@ -8921,6 +8921,10 @@ namespace sReloc
 	    if (encoding_context.m_max_total_cost + extra_cost < mdd_depth * N_Robots)
 	    {
 		bound = true;
+	    }
+	    else
+	    {
+		bound = false;
 	    }
 	}			
 
@@ -9650,7 +9654,7 @@ namespace sReloc
 	encoding_context.m_vertex_water_cardinality_.resize(N_Robots + 1);
 	encoding_context.m_edge_occupancy_by_water__.resize(N_Robots + 1);
 
-	bool bound = false;
+	bool bound = true;
 
 	if (m_ratio > 0.0)
 	{
@@ -9660,6 +9664,10 @@ namespace sReloc
 	    if (encoding_context.m_max_total_cost + extra_cost < mdd_depth * N_Robots)
 	    {
 		bound = true;
+	    }
+	    else
+	    {
+		bound = false;
 	    }
 	}			
 
@@ -10406,7 +10414,7 @@ namespace sReloc
 	int N_Robots = m_initial_arrangement.get_RobotCount();
 	int N_Layers = mdd_depth;
 
-	bool bound = false;
+	bool bound = true;
 
 	encoding_context.m_vertex_occupancy_by_water_.resize(N_Robots + 1);
 	
@@ -10418,6 +10426,10 @@ namespace sReloc
 	    if (encoding_context.m_max_total_cost + extra_cost < mdd_depth * N_Robots)
 	    {
 		bound = true;
+	    }
+	    else
+	    {
+		bound = false;
 	    }
 	}	
 
@@ -12188,7 +12200,7 @@ namespace sReloc
 	encoding_context.m_vertex_water_cardinality_.resize(N_Robots + 1);
 	encoding_context.m_edge_occupancy_by_water__.resize(N_Robots + 1);
 
-	bool bound = false;
+	bool bound = true;
 
 	if (m_ratio > 0.0)
 	{
@@ -12198,6 +12210,10 @@ namespace sReloc
 	    if (encoding_context.m_max_total_cost + extra_cost < mdd_depth * N_Robots)
 	    {
 		bound = true;
+	    }
+	    else
+	    {
+		bound = false;
 	    }
 	}			
 
@@ -12572,7 +12588,7 @@ namespace sReloc
 	encoding_context.m_vertex_water_cardinality_.resize(N_Robots + 1);
 	encoding_context.m_edge_occupancy_by_water__.resize(N_Robots + 1);
 
-	bool bound = false;
+	bool bound = true;
 
 	if (m_ratio > 0.0)
 	{
@@ -12582,6 +12598,10 @@ namespace sReloc
 	    if (encoding_context.m_max_total_cost + extra_cost < mdd_depth * N_Robots)
 	    {
 		bound = true;
+	    }
+	    else
+	    {
+		bound = false;
 	    }
 	}			
 
@@ -12966,7 +12986,7 @@ namespace sReloc
 	int N_Robots = m_initial_arrangement.get_RobotCount();
 	int N_Layers = mdd_depth;
 
-	bool bound = false;
+	bool bound = true;
 
 	encoding_context.m_vertex_occupancy_by_water_.resize(N_Robots + 1);
 	encoding_context.m_vertex_water_cardinality_.resize(N_Robots + 1);
@@ -12980,6 +13000,10 @@ namespace sReloc
 	    if (encoding_context.m_max_total_cost + extra_cost < mdd_depth * N_Robots)
 	    {
 		bound = true;
+	    }
+	    else
+	    {
+		bound = false;
 	    }
 	}		
 
@@ -21136,7 +21160,7 @@ namespace sReloc
 	encoding_context.m_vertex_water_cardinality_.resize(N_Robots + 1);
 //	encoding_context.m_edge_occupancy_by_water__.resize(N_Robots + 1);
 
-	bool bound = false;
+	bool bound = true;
 
 	if (m_ratio > 0.0)
 	{
@@ -21146,6 +21170,10 @@ namespace sReloc
 	    if (encoding_context.m_max_total_cost + extra_cost < mdd_depth * N_Robots)
 	    {
 		bound = true;
+	    }
+	    else
+	    {
+		bound = false;
 	    }
 	}				
 
@@ -24046,7 +24074,7 @@ namespace sReloc
 
 	//	s_GlobalPhaseStatistics.enter_Phase("Counting");
 
-	bool bound = false;
+	bool bound = true;
 
 	if (m_ratio > 0.0)
 	{
@@ -24056,6 +24084,10 @@ namespace sReloc
 	    if (encoding_context.m_max_total_cost + extra_cost < mdd_depth * N_Robots)
 	    {
 		bound = true;
+	    }
+	    else
+	    {
+		bound = false;
 	    }
 	}	
 
