@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* compress.cpp / 0.22-robik_065                                              */
+/* compress.cpp / 0.22-robik_067                                              */
 /*----------------------------------------------------------------------------*/
 //
 // Compression tools for relocation problem solutions.
@@ -31,6 +31,18 @@
 #include "compress.h"
 #include "statistics.h"
 
+
+#ifdef sUSE_GLUCOSE
+      using namespace Glucose;
+#endif
+
+#ifdef sUSE_MAPLE
+      using namespace Maple;
+#endif
+
+#ifdef sUSE_COMSPS
+      using namespace Comsps;
+#endif
 
 
 /*----------------------------------------------------------------------------*/

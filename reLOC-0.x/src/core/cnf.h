@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* cnf.h / 0.22-robik_065                                                     */
+/* cnf.h / 0.22-robik_067                                                     */
 /*----------------------------------------------------------------------------*/
 //
 // Dimacs CNF formula production tools.
@@ -52,6 +52,18 @@
     #include "maple/Solver.h"
 
     #define sSATSolver_Type Maple::Solver
+#endif
+
+
+#ifdef sUSE_COMSPS
+    #include "comsps/System.h"
+    #include "comsps/ParseUtils.h"
+    #include "comsps/Options.h"
+    #include "comsps/Dimacs.h"
+
+    #include "comsps/Solver.h"
+
+    #define sSATSolver_Type Comsps::Solver
 #endif
 
 

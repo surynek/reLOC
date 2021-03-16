@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* compress.h / 0.22-robik_065                                                */
+/* compress.h / 0.22-robik_067                                                */
 /*----------------------------------------------------------------------------*/
 //
 // Compression tools for relocation problem solutions.
@@ -38,6 +38,11 @@ using namespace sReloc;
 
 #ifdef sUSE_MAPLE
     #define sSATSolverBool_Type Maple::lbool
+#endif
+
+
+#ifdef sUSE_COMSPS
+    #define sSATSolverBool_Type Comsps::lbool
 #endif
 
 

@@ -1,4 +1,4 @@
-SUBDIRS =   src/core src/glucose src/maple src scripts
+SUBDIRS =   src/core src/glucose src/maple src/comsps src scripts
 
 all: debug
 

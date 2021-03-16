@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* cnf.cpp / 0.22-robik_065                                                   */
+/* cnf.cpp / 0.22-robik_067                                                   */
 /*----------------------------------------------------------------------------*/
 //
 // Dimacs CNF formula production tools.
@@ -708,7 +708,25 @@ namespace sReloc
 	}
 	solver->addClause(glu_Lits);
     }
-#endif    
+#endif
+
+#ifdef sUSE_COMSPS 
+    void sBinaryTree::cast_Clause(sSATSolver_Type *solver, vector<int> &Lits)
+    {
+	Comsps::vec<Comsps::Lit> glu_Lits;
+	
+	for (vector<int>::const_iterator lit = Lits.begin(); lit != Lits.end(); ++lit)
+	{
+	    int glu_var = sABS(*lit) - 1;
+	    while (glu_var >= solver->nVars())
+	    {
+		solver->newVar();
+	    }
+	    glu_Lits.push((*lit > 0) ? Comsps::mkLit(glu_var, false) : ~Comsps::mkLit(glu_var, false));
+	}
+	solver->addClause(glu_Lits);
+    }
+#endif        
     
     void sBinaryTree::to_Screen(const sString &indent) const
     {
@@ -5293,7 +5311,25 @@ namespace sReloc
 	}
 	solver->addClause(glu_Lits);
     }
-#endif    
+#endif
+
+#ifdef sUSE_COMSPS    
+    void sStateClauseGenerator::cast_Clause(sSATSolver_Type *solver, vector<int> &Lits)
+    {
+	Comsps::vec<Comsps::Lit> glu_Lits;
+	
+	for (vector<int>::const_iterator lit = Lits.begin(); lit != Lits.end(); ++lit)
+	{
+	    int glu_var = sABS(*lit) - 1;
+	    while (glu_var >= solver->nVars())
+	    {
+		solver->newVar();
+	    }
+	    glu_Lits.push((*lit > 0) ? Comsps::mkLit(glu_var, false) : ~Comsps::mkLit(glu_var, false));
+	}
+	solver->addClause(glu_Lits);
+    }
+#endif        
      
 
 
@@ -9065,7 +9101,26 @@ namespace sReloc
 	}
 	solver->addClause(glu_Lits);
     }
-#endif    
+#endif
+
+    
+#ifdef sUSE_COMSPS    
+    void sBitClauseGenerator::cast_Clause(sSATSolver_Type *solver, vector<int> &Lits)
+    {
+	Comsps::vec<Comsps::Lit> glu_Lits;
+
+	for (vector<int>::const_iterator lit = Lits.begin(); lit != Lits.end(); ++lit)
+	{
+	    int glu_var = sABS(*lit) - 1;
+	    while (glu_var >= solver->nVars())
+	    {
+		solver->newVar();
+	    }
+	    glu_Lits.push((*lit > 0) ? Comsps::mkLit(glu_var, false) : ~Comsps::mkLit(glu_var, false));
+	}
+	solver->addClause(glu_Lits);
+    }
+#endif        
 
     
 /*----------------------------------------------------------------------------*/

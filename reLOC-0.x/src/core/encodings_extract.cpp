@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* encodings_extract.cpp / 0.22-robik_065                                     */
+/* encodings_extract.cpp / 0.22-robik_067                                     */
 /*----------------------------------------------------------------------------*/
 //
 // Multi-robot path-finding encodings related
@@ -36,6 +36,18 @@
 
 
 using namespace sReloc;
+
+#ifdef sUSE_GLUCOSE
+      using namespace Glucose;
+#endif
+
+#ifdef sUSE_MAPLE
+      using namespace Maple;
+#endif
+
+#ifdef sUSE_COMSPS
+      using namespace Comsps;
+#endif
 
 
 /*----------------------------------------------------------------------------*/
