@@ -1,14 +1,14 @@
 /*============================================================================*/
 /*                                                                            */
 /*                                                                            */
-/*                              reLOC 0.21-robik                              */
+/*                              reLOC 0.22-robik                              */
 /*                                                                            */
 /*                  (C) Copyright 2011 - 2021 Pavel Surynek                   */
 /*                http://www.surynek.net | <pavel@surynek.net>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* multirobot_test.cpp / 0.21-robik_064                                       */
+/* multirobot_test.cpp / 0.22-robik_065                                       */
 /*----------------------------------------------------------------------------*/
 //
 // Multirobot coordinated path-finding - testing program.

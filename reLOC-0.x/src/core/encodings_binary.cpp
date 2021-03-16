@@ -1,14 +1,14 @@
 /*============================================================================*/
 /*                                                                            */
 /*                                                                            */
-/*                              reLOC 0.21-robik                              */
+/*                              reLOC 0.22-robik                              */
 /*                                                                            */
 /*                  (C) Copyright 2011 - 2021 Pavel Surynek                   */
 /*                http://www.surynek.net | <pavel@surynek.net>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* encodings_binary.cpp / 0.21-robik_064                                      */
+/* encodings_binary.cpp / 0.22-robik_065                                      */
 /*----------------------------------------------------------------------------*/
 //
 // Multi-robot path-finding encodings based on

@@ -1,14 +1,14 @@
 /*============================================================================*/
 /*                                                                            */
 /*                                                                            */
-/*                              reLOC 0.21-robik                              */
+/*                              reLOC 0.22-robik                              */
 /*                                                                            */
 /*                  (C) Copyright 2011 - 2021 Pavel Surynek                   */
 /*                http://www.surynek.net | <pavel@surynek.net>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* hierarch_test.cpp / 0.21-robik_064                                         */
+/* hierarch_test.cpp / 0.22-robik_065                                         */
 /*----------------------------------------------------------------------------*/
 //
 // Hierarchical version of relocation problem - testing program.
