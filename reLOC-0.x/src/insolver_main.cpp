@@ -4,11 +4,11 @@
 /*                              reLOC 0.21-robik                              */
 /*                                                                            */
 /*                  (C) Copyright 2011 - 2021 Pavel Surynek                   */
-/*                http://www.surynek.com | <pavel@surynek.com>                */
+/*                http://www.surynek.net | <pavel@surynek.net>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* insolver_main.cpp / 0.21-robik_058                                         */
+/* insolver_main.cpp / 0.21-robik_064                                         */
 /*----------------------------------------------------------------------------*/
 //
 // Solution generator - main program.
@@ -351,7 +351,7 @@ namespace sReloc
 		compressor.set_Ratio(command_parameters.m_suboptimal_ratio);
 		compressor.set_Robustness(command_parameters.m_robustness);		
 
-		Glucose::Solver *solver = NULL;
+		sSATSolver_Type *solver = NULL;
 		result = compressor.incompute_UnirobotsSolution(&solver,
 								initial_arrangement,
 								robot_goal,
@@ -401,7 +401,7 @@ namespace sReloc
 		compressor.set_Ratio(command_parameters.m_suboptimal_ratio);
 		compressor.set_Robustness(command_parameters.m_robustness);		
 
-		Glucose::Solver *solver = NULL;		
+		sSATSolver_Type *solver = NULL;		
 		result = compressor.incompute_OrtoOptimalSolution(&solver,
 								  initial_arrangement,
 								  robot_goal,
@@ -424,7 +424,7 @@ namespace sReloc
 		compressor.set_Ratio(command_parameters.m_suboptimal_ratio);
 		compressor.set_Robustness(command_parameters.m_robustness);		
 
-		Glucose::Solver *solver = NULL;
+		sSATSolver_Type *solver = NULL;
 		result = compressor.incompute_OrtoOptimalSolution(&solver,
 								  initial_arrangement,
 								  robot_goal,
@@ -447,7 +447,7 @@ namespace sReloc
 		compressor.set_Ratio(command_parameters.m_suboptimal_ratio);
 		compressor.set_Robustness(command_parameters.m_robustness);		
 
-		Glucose::Solver *solver = NULL;
+		sSATSolver_Type *solver = NULL;
 		result = compressor.incompute_OrtoOptimalSolution(&solver,
 								  initial_arrangement,
 								  robot_goal,
@@ -469,7 +469,7 @@ namespace sReloc
 		compressor.set_Ratio(command_parameters.m_suboptimal_ratio);
 		compressor.set_Robustness(command_parameters.m_robustness);		
 
-		Glucose::Solver *solver = NULL;
+		sSATSolver_Type *solver = NULL;
 		result = compressor.incompute_CostOptimalSolution(&solver,
 								  initial_arrangement,
 								  robot_goal,
@@ -509,7 +509,7 @@ namespace sReloc
 		compressor.set_Ratio(command_parameters.m_suboptimal_ratio);
 		compressor.set_Robustness(command_parameters.m_robustness);		
 
-		Glucose::Solver *solver = NULL;
+		sSATSolver_Type *solver = NULL;
 		result = compressor.incompute_CostOptimalSolution(&solver,
 								  initial_arrangement,
 								  robot_goal,
@@ -545,7 +545,7 @@ namespace sReloc
 		compressor.set_Ratio(command_parameters.m_suboptimal_ratio);
 		compressor.set_Robustness(command_parameters.m_robustness);		
 
-		Glucose::Solver *solver = NULL;
+		sSATSolver_Type *solver = NULL;
 		int fuel_makespan;
 		result = compressor.incompute_FuelOptimalSolution(&solver,
 								  initial_arrangement,
@@ -577,7 +577,7 @@ namespace sReloc
 		compressor.set_Ratio(command_parameters.m_suboptimal_ratio);
 		compressor.set_Robustness(command_parameters.m_robustness);		
 
-		Glucose::Solver *solver = NULL;
+		sSATSolver_Type *solver = NULL;
 		result = compressor.incompute_CostOptimalSolutionID(&solver,
 								    initial_arrangement,
 								    robot_goal,
@@ -617,7 +617,7 @@ namespace sReloc
 		compressor.set_Ratio(command_parameters.m_suboptimal_ratio);
 		compressor.set_Robustness(command_parameters.m_robustness);		
 
-		Glucose::Solver *solver = NULL;
+		sSATSolver_Type *solver = NULL;
 		result = compressor.incompute_CostOptimalSolutionAD(&solver,
 								    initial_arrangement,
 								    robot_goal,
@@ -653,7 +653,7 @@ namespace sReloc
 		compressor.set_Ratio(command_parameters.m_suboptimal_ratio);
 		compressor.set_Robustness(command_parameters.m_robustness);		
 
-		Glucose::Solver *solver = NULL;
+		sSATSolver_Type *solver = NULL;
 		result = compressor.incompute_CostOptimalSolution_binary(&solver,
 									 initial_arrangement,
 									 robot_goal,
@@ -679,7 +679,7 @@ namespace sReloc
 		compressor.set_Ratio(command_parameters.m_suboptimal_ratio);
 		compressor.set_Robustness(command_parameters.m_robustness);		
 
-		Glucose::Solver *solver = NULL;
+		sSATSolver_Type *solver = NULL;
 		result = compressor.incompute_BestCostSolution(&solver,
 							       initial_arrangement,
 							       robot_goal,
@@ -705,7 +705,7 @@ namespace sReloc
 		compressor.set_Ratio(command_parameters.m_suboptimal_ratio);
 		compressor.set_Robustness(command_parameters.m_robustness);		
 
-		Glucose::Solver *solver = NULL;
+		sSATSolver_Type *solver = NULL;
 		result = compressor.incompute_BestCostSolution(&solver,
 							       initial_arrangement,
 							       robot_goal,
@@ -731,7 +731,7 @@ namespace sReloc
 		compressor.set_Ratio(command_parameters.m_suboptimal_ratio);
 		compressor.set_Robustness(command_parameters.m_robustness);		
 
-		Glucose::Solver *solver = NULL;
+		sSATSolver_Type *solver = NULL;
 		result = compressor.incompute_BestCostSolution(&solver,
 							       initial_arrangement,
 							       robot_goal,
@@ -770,7 +770,7 @@ namespace sReloc
 		compressor.set_Ratio(command_parameters.m_suboptimal_ratio);
 		compressor.set_Robustness(command_parameters.m_robustness);		
 
-		Glucose::Solver *solver = NULL;
+		sSATSolver_Type *solver = NULL;
 		result = compressor.incompute_BestCostSolution(&solver,
 							       initial_arrangement,
 							       robot_goal,
@@ -810,7 +810,7 @@ namespace sReloc
 		compressor.set_Ratio(command_parameters.m_suboptimal_ratio);
 		compressor.set_Robustness(command_parameters.m_robustness);		
 
-		Glucose::Solver *solver = NULL;
+		sSATSolver_Type *solver = NULL;
 		result = compressor.incompute_CostOptimalSolution(&solver,
 								  initial_arrangement,
 								  robot_goal,
@@ -855,7 +855,7 @@ namespace sReloc
 								     sDEFAULT_N_PARALLEL_THREADS,
 								     command_parameters.m_cnf_encoding);
 
-			    Glucose::Solver *solver = NULL;
+			    sSATSolver_Type *solver = NULL;
 			    result = compressor.incompute_SpecifiedSolution(&solver,
 									    initial_arrangement,
 									    robot_goal,
@@ -912,7 +912,7 @@ namespace sReloc
 			    {
 			    case sCommandParameters::STRATEGY_LINEAR_DOWN:
 			    {
-				Glucose::Solver *solver = NULL;
+				sSATSolver_Type *solver = NULL;
 				result = compressor.incompute_OptimalSolution(&solver,
 									      initial_arrangement,
 									      robot_goal,
@@ -927,7 +927,7 @@ namespace sReloc
 			    {
 				if (command_parameters.m_independence_detection)
 				{
-				    Glucose::Solver *solver = NULL;
+				    sSATSolver_Type *solver = NULL;
 				    result = compressor.incompute_MakespanOptimalSolutionID(&solver,
 											    initial_arrangement,
 											    robot_goal,
@@ -939,7 +939,7 @@ namespace sReloc
 				}
 				else if (command_parameters.m_avoidance_detection)
 				{
-				    Glucose::Solver *solver = NULL;
+				    sSATSolver_Type *solver = NULL;
 				    result = compressor.incompute_MakespanOptimalSolutionAD(&solver,
 											    initial_arrangement,
 											    robot_goal,
@@ -951,7 +951,7 @@ namespace sReloc
 				}
 				else
 				{
-				    Glucose::Solver *solver = NULL;
+				    sSATSolver_Type *solver = NULL;
 				    result = compressor.incompute_OptimalSolution_(&solver,
 										   initial_arrangement,
 										   robot_goal,
@@ -965,7 +965,7 @@ namespace sReloc
 			    }
 			    case sCommandParameters::STRATEGY_BINARY:
 			    {
-				Glucose::Solver *solver = NULL;
+				sSATSolver_Type *solver = NULL;
 				result = compressor.incompute_OptimalSolution(&solver,
 									      initial_arrangement,
 									      robot_goal,

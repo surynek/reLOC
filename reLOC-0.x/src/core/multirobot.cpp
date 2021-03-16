@@ -4,11 +4,11 @@
 /*                              reLOC 0.21-robik                              */
 /*                                                                            */
 /*                  (C) Copyright 2011 - 2021 Pavel Surynek                   */
-/*                http://www.surynek.com | <pavel@surynek.com>                */
+/*                http://www.surynek.net | <pavel@surynek.net>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* multirobot.cpp / 0.21-robik_058                                            */
+/* multirobot.cpp / 0.21-robik_064                                            */
 /*----------------------------------------------------------------------------*/
 //
 // Multirobot coordinated path-finding solving package.
@@ -972,8 +972,11 @@ namespace sReloc
 	}
 	c = fgetc(fr);
 
-	m_robot_Locs.resize(N_Robots + 1, (const int)UNDEFINED_LOCATION);
-	m_vertex_Occups.resize(N_Vertices, (const int)VACANT_VERTEX);
+	int undefined_location = UNDEFINED_LOCATION;
+	m_robot_Locs.resize(N_Robots + 1, undefined_location);
+
+	int vacant_vertex = VACANT_VERTEX;	
+	m_vertex_Occups.resize(N_Vertices, vacant_vertex);
 
 	while (c == '(')
 	{
@@ -1144,8 +1147,10 @@ namespace sReloc
 	}
 	c = fgetc(fr);
 
-	m_robot_Locs.resize(N_Robots + 1, (const int)UNDEFINED_LOCATION);
-	m_vertex_Occups.resize(N_Vertices, (const int)VACANT_VERTEX);
+	int undefined_location = UNDEFINED_LOCATION;
+	m_robot_Locs.resize(N_Robots + 1, undefined_location);
+	int vacant_vertex = VACANT_VERTEX;
+	m_vertex_Occups.resize(N_Vertices, vacant_vertex);
 
 	while (c == '(')
 	{

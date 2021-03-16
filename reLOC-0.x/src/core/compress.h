@@ -4,11 +4,11 @@
 /*                              reLOC 0.21-robik                              */
 /*                                                                            */
 /*                  (C) Copyright 2011 - 2021 Pavel Surynek                   */
-/*                http://www.surynek.com | <pavel@surynek.com>                */
+/*                http://www.surynek.net | <pavel@surynek.net>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* compress.h / 0.21-robik_058                                                */
+/* compress.h / 0.21-robik_064                                                */
 /*----------------------------------------------------------------------------*/
 //
 // Compression tools for relocation problem solutions.
@@ -31,11 +31,20 @@
 using namespace std;
 using namespace sReloc;
 
+#ifdef sUSE_GLUCOSE
+    #define sSATSolverBool_Type Glucose::lbool
+#endif
+
+
+#ifdef sUSE_MAPLE
+    #define sSATSolverBool_Type Maple::lbool
+#endif
+
 
 /*----------------------------------------------------------------------------*/
 
 namespace sReloc
-{
+{    
 
 
 /*----------------------------------------------------------------------------*/
@@ -381,13 +390,13 @@ namespace sReloc
 					  int                     &specified_makespan,
 					  int                      thread_id = THREAD_ID_UNDEFINED);	
 
-	sResult incompute_OptimalMakespan(Glucose::Solver        **solver,
+	sResult incompute_OptimalMakespan(sSATSolver_Type        **solver,
 					  sMultirobotInstance     &instance,
 					  int                      makespan_upper_bound,
 					  int                     &optimal_makespan,
 					  int                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_SpecifiedMakespan(Glucose::Solver        **solver,
+	sResult incompute_SpecifiedMakespan(sSATSolver_Type        **solver,
 					    sMultirobotInstance     &instance,
 					    int                     &specified_makespan,
 					    int                      thread_id = THREAD_ID_UNDEFINED);
@@ -407,7 +416,7 @@ namespace sReloc
 					  int                     &specified_makespan,
 					  int                      thread_id = THREAD_ID_UNDEFINED);	
 
-	sResult incompute_OptimalMakespan(Glucose::Solver        **solver,
+	sResult incompute_OptimalMakespan(sSATSolver_Type        **solver,
 					  const sRobotArrangement &start_arrangement,
 					  const sRobotGoal        &final_arrangement,
 					  const sUndirectedGraph  &environment,
@@ -416,7 +425,7 @@ namespace sReloc
 					  int                     &optimal_makespan,
 					  int                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_OptimalMakespan(Glucose::Solver        **solver,
+	sResult incompute_OptimalMakespan(sSATSolver_Type        **solver,
 					  const sRobotArrangement &start_arrangement,
 					  const sRobotGoal        &final_arrangement,
 					  const sUndirectedGraph  &environment,
@@ -429,7 +438,7 @@ namespace sReloc
 					 int                     &optimal_makespan,
 					 int                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_OptimalMakespan_(Glucose::Solver        **solver,
+	sResult incompute_OptimalMakespan_(sSATSolver_Type        **solver,
 					   sMultirobotInstance     &instance,
 					   int                      makespan_upper_bound,
 					   int                     &optimal_makespan,
@@ -443,7 +452,7 @@ namespace sReloc
 					 int                     &optimal_makespan,
 					 int                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_OptimalMakespan_(Glucose::Solver        **solver,
+	sResult incompute_OptimalMakespan_(sSATSolver_Type        **solver,
 					   const sRobotArrangement &start_arrangement,
 					   const sRobotGoal        &final_arrangement,
 					   const sUndirectedGraph  &environment,
@@ -458,7 +467,7 @@ namespace sReloc
 					int                     &optimal_makespan,
 					int                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_OptimalMakespan(Glucose::Solver        **solver,
+	sResult incompute_OptimalMakespan(sSATSolver_Type        **solver,
 					  sMultirobotInstance     &instance,
 					  int                      makespan_lower_bound,
 					  int                      makespan_upper_bound,
@@ -474,7 +483,7 @@ namespace sReloc
 					int                     &optimal_makespan,
 					int                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_OptimalMakespan(Glucose::Solver        **solver,
+	sResult incompute_OptimalMakespan(sSATSolver_Type        **solver,
 					  const sRobotArrangement &start_arrangement,
 					  const sRobotGoal        &final_arrangement,
 					  const sUndirectedGraph  &environment,
@@ -495,14 +504,14 @@ namespace sReloc
 					  sMultirobotEncodingContext_CNFsat &final_encoding_context,
 					  int                                thread_id = THREAD_ID_UNDEFINED);	
 
-	sResult incompute_OptimalMakespan(Glucose::Solver                  **solver,
+	sResult incompute_OptimalMakespan(sSATSolver_Type                  **solver,
 					  sMultirobotInstance               &instance,
 					  int                                makespan_upper_bound,
 					  int                               &optimal_makespan,
 					  sMultirobotEncodingContext_CNFsat &final_encoding_context,
 					  int                                thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_SpecifiedMakespan(Glucose::Solver                  **solver,
+	sResult incompute_SpecifiedMakespan(sSATSolver_Type                  **solver,
 					    sMultirobotInstance               &instance,
 					    int                               &specified_makespan,
 					    sMultirobotEncodingContext_CNFsat &final_encoding_context,
@@ -517,7 +526,7 @@ namespace sReloc
 					sMultirobotEncodingContext_CNFsat &final_encoding_context,
 					int                                thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_OptimalMakespan(Glucose::Solver                  **solver,
+	sResult incompute_OptimalMakespan(sSATSolver_Type                  **solver,
 					  const sRobotArrangement           &start_arrangement,
 					  const sRobotGoal                  &final_arrangement,
 					  const sUndirectedGraph            &environment,
@@ -533,7 +542,7 @@ namespace sReloc
 					 sMultirobotEncodingContext_CNFsat &final_encoding_context,
 					 int                                thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_OptimalMakespan_(Glucose::Solver                  **solver,
+	sResult incompute_OptimalMakespan_(sSATSolver_Type                  **solver,
 					   sMultirobotInstance               &instance,
 					   int                                makespan_upper_bound,
 					   int                               &optimal_makespan,
@@ -549,7 +558,7 @@ namespace sReloc
 					 sMultirobotEncodingContext_CNFsat &final_encoding_context,
 					 int                                thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_OptimalMakespan_(Glucose::Solver                  **solver,
+	sResult incompute_OptimalMakespan_(sSATSolver_Type                  **solver,
 					   const sRobotArrangement           &start_arrangement,
 					   const sRobotGoal                  &final_arrangement,
 					   const sUndirectedGraph            &environment,
@@ -566,7 +575,7 @@ namespace sReloc
 					sMultirobotEncodingContext_CNFsat &final_encoding_context,
 					int                                thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_OptimalMakespan(Glucose::Solver                  **solver,
+	sResult incompute_OptimalMakespan(sSATSolver_Type                  **solver,
 					  sMultirobotInstance               &instance,
 					  int                                makespan_lower_bound,
 					  int                                makespan_upper_bound,
@@ -584,7 +593,7 @@ namespace sReloc
 					sMultirobotEncodingContext_CNFsat &final_encoding_context,
 					int                                thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_OptimalMakespan(Glucose::Solver                  **solver,
+	sResult incompute_OptimalMakespan(sSATSolver_Type                  **solver,
 					  const sRobotArrangement           &start_arrangement,
 					  const sRobotGoal                  &final_arrangement,
 					  const sUndirectedGraph            &environment,
@@ -615,7 +624,7 @@ namespace sReloc
 					  sMultirobotSolution     &specified_solution,
 					  int                      thread_id = THREAD_ID_UNDEFINED);	
 
-	sResult incompute_OptimalSolution(Glucose::Solver        **solver,
+	sResult incompute_OptimalSolution(sSATSolver_Type        **solver,
 					  const sRobotArrangement &start_arrangement,
 					  const sRobotGoal        &final_arrangement,
 					  const sUndirectedGraph  &environment,
@@ -625,7 +634,7 @@ namespace sReloc
 					  sMultirobotSolution     &optimal_solution,
 					  int                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_SpecifiedSolution(Glucose::Solver        **solver,
+	sResult incompute_SpecifiedSolution(sSATSolver_Type        **solver,
 					    const sRobotArrangement &start_arrangement,
 					    const sRobotGoal        &final_arrangement,
 					    const sUndirectedGraph  &environment,
@@ -643,7 +652,7 @@ namespace sReloc
 					 sMultirobotSolution     &optimal_solution,
 					 int                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_OptimalSolution_(Glucose::Solver        **solver,
+	sResult incompute_OptimalSolution_(sSATSolver_Type        **solver,
 					   const sRobotArrangement &start_arrangement,
 					   const sRobotGoal        &final_arrangement,
 					   const sUndirectedGraph  &environment,
@@ -663,7 +672,7 @@ namespace sReloc
 					sMultirobotSolution     &optimal_solution,
 					int                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_OptimalSolution(Glucose::Solver        **solver,
+	sResult incompute_OptimalSolution(sSATSolver_Type        **solver,
 					  const sRobotArrangement &start_arrangement,
 					  const sRobotGoal        &final_arrangement,
 					  const sUndirectedGraph  &environment,
@@ -685,7 +694,7 @@ namespace sReloc
 					    sMultirobotEncodingContext_CNFsat &final_encoding_context,
 					    int                                thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_OrtoOptimalMakespan(Glucose::Solver                  **solver,
+	sResult incompute_OrtoOptimalMakespan(sSATSolver_Type                  **solver,
 					      const sRobotArrangement           &start_arrangement,
 					      const sRobotGoal                  &final_arrangement,
 					      const sUndirectedGraph            &environment,
@@ -704,7 +713,7 @@ namespace sReloc
 					    sMultirobotSolution     &optimal_solution,
 					    int                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_OrtoOptimalSolution(Glucose::Solver        **solver,
+	sResult incompute_OrtoOptimalSolution(sSATSolver_Type        **solver,
 					      const sRobotArrangement &start_arrangement,
 					      const sRobotGoal        &final_arrangement,
 					      const sUndirectedGraph  &environment,
@@ -724,7 +733,7 @@ namespace sReloc
 				    sMultirobotEncodingContext_CNFsat &final_encoding_context,
 				    int                                thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_OptimalCost(Glucose::Solver                  **solver,
+	sResult incompute_OptimalCost(sSATSolver_Type                  **solver,
 				      const sRobotArrangement           &start_arrangement,
 				      const sRobotGoal                  &final_arrangement,
 				      const sUndirectedGraph            &environment,
@@ -742,7 +751,7 @@ namespace sReloc
 				    sMultirobotEncodingContext_CNFsat &final_encoding_context,
 				    int                                thread_id = THREAD_ID_UNDEFINED);
 	
-	sResult incompute_OptimalCost(Glucose::Solver                  **solver,
+	sResult incompute_OptimalCost(sSATSolver_Type                  **solver,
 				      sMultirobotInstance               &instance,
 				      int                                max_total_cost,
 				      int                               &optimal_cost,
@@ -761,7 +770,7 @@ namespace sReloc
 				    sMultirobotEncodingContext_CNFsat &final_encoding_context,
 				    int                                thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_OptimalFuel(Glucose::Solver                  **solver,
+	sResult incompute_OptimalFuel(sSATSolver_Type                  **solver,
 				      const sRobotArrangement           &start_arrangement,
 				      const sRobotGoal                  &final_arrangement,
 				      const sUndirectedGraph            &environment,
@@ -781,7 +790,7 @@ namespace sReloc
 				    sMultirobotEncodingContext_CNFsat &final_encoding_context,
 				    int                                thread_id = THREAD_ID_UNDEFINED);
 	
-	sResult incompute_OptimalFuel(Glucose::Solver                  **solver,
+	sResult incompute_OptimalFuel(sSATSolver_Type                  **solver,
 				      sMultirobotInstance               &instance,
 				      int                                max_total_fuel,
 				      int                               &optimal_fuel,
@@ -796,7 +805,7 @@ namespace sReloc
 					  sMultirobotEncodingContext_CNFsat &final_encoding_context,
 					  int                                thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_OptimalCost_avoid(Glucose::Solver                  **solver,
+	sResult incompute_OptimalCost_avoid(sSATSolver_Type                  **solver,
 					    sMultirobotInstance               &instance,
 					    const Arrangements_vector         &blocking_solution,
 					    int                                optimal_cost,					  
@@ -812,7 +821,7 @@ namespace sReloc
 					  sMultirobotEncodingContext_CNFsat &final_encoding_context,
 					  int                                thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_OptimalCost_avoid(Glucose::Solver                  **solver,
+	sResult incompute_OptimalCost_avoid(sSATSolver_Type                  **solver,
 					    const sRobotArrangement           &start_arrangement,
 					    const sRobotGoal                  &final_arrangement,
 					    const sUndirectedGraph            &environment,
@@ -828,7 +837,7 @@ namespace sReloc
 					      sMultirobotEncodingContext_CNFsat &final_encoding_context,
 					      int                                thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_OptimalMakespan_avoid(Glucose::Solver                  **solver,
+	sResult incompute_OptimalMakespan_avoid(sSATSolver_Type                  **solver,
 						sMultirobotInstance               &instance,
 						const Arrangements_vector         &blocking_solution,
 						int                                optimal_makespan,					  
@@ -844,7 +853,7 @@ namespace sReloc
 					      sMultirobotEncodingContext_CNFsat &final_encoding_context,
 					      int                                thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_OptimalMakespan_avoid(Glucose::Solver                  **solver,
+	sResult incompute_OptimalMakespan_avoid(sSATSolver_Type                  **solver,
 						const sRobotArrangement           &start_arrangement,
 						const sRobotGoal                  &final_arrangement,
 						const sUndirectedGraph            &environment,
@@ -863,7 +872,7 @@ namespace sReloc
 					   sMultirobotEncodingContext_CNFsat &final_encoding_context,
 					   int                                thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_OptimalCost_binary(Glucose::Solver                  **solver,
+	sResult incompute_OptimalCost_binary(sSATSolver_Type                  **solver,
 					     const sRobotArrangement           &start_arrangement,
 					     const sRobotGoal                  &final_arrangement,
 					     sUndirectedGraph                  &environment,
@@ -881,7 +890,7 @@ namespace sReloc
 					sMultirobotEncodingContext_CNFsat &encoding_context,
 					int                                thread_id);
 
-	sResult incompute_CostSolvability(Glucose::Solver                  **solver,
+	sResult incompute_CostSolvability(sSATSolver_Type                  **solver,
 					  sMultirobotInstance               &instance,
 					  int                                total_cost,
 					  int                                extra_cost,
@@ -895,7 +904,7 @@ namespace sReloc
 					sMultirobotEncodingContext_CNFsat &final_encoding_context,
 					int                                thread_id);
 
-	sResult incompute_CostSolvability(Glucose::Solver                  **solver,
+	sResult incompute_CostSolvability(sSATSolver_Type                  **solver,
 					  sMultirobotInstance               &instance,
 					  int                                total_cost,
 					  sMultirobotEncodingContext_CNFsat &final_encoding_context,
@@ -907,7 +916,7 @@ namespace sReloc
 					sMultirobotEncodingContext_CNFsat &final_encoding_context,
 					int                                thread_id);
 
-	sResult incompute_FuelSolvability(Glucose::Solver                  **solver,
+	sResult incompute_FuelSolvability(sSATSolver_Type                  **solver,
 					  sMultirobotInstance               &instance,
 					  int                                total_fuel,
 					  int                                fuel_makespan,					  
@@ -920,7 +929,7 @@ namespace sReloc
 					      sMultirobotEncodingContext_CNFsat &final_encoding_context,
 					      int                                thread_id);
 
-	sResult incompute_CostSolvability_avoid(Glucose::Solver                  **solver,
+	sResult incompute_CostSolvability_avoid(sSATSolver_Type                  **solver,
 						sMultirobotInstance               &instance,
 						int                                total_cost,
 						const Arrangements_vector         &blocking_solution,
@@ -933,7 +942,7 @@ namespace sReloc
 						  sMultirobotEncodingContext_CNFsat &final_encoding_context,
 						  int                                thread_id);
 
-	sResult incompute_MakespanSolvability_avoid(Glucose::Solver                  **solver,
+	sResult incompute_MakespanSolvability_avoid(sSATSolver_Type                  **solver,
 						    sMultirobotInstance               &instance,
 						    int                                makespan,
 						    const Arrangements_vector         &blocking_solution,
@@ -949,7 +958,7 @@ namespace sReloc
 					     sMultirobotEncodingContext_CNFsat &encoding_context,
 					     int                                thread_id);
 
-	sResult incompute_BestExtraCost_linear(Glucose::Solver                  **solver,
+	sResult incompute_BestExtraCost_linear(sSATSolver_Type                  **solver,
 					       sMultirobotInstance               &instance,
 					       int                                total_cost,
 					       int                                lower_extra_cost,
@@ -968,7 +977,7 @@ namespace sReloc
 					     sMultirobotEncodingContext_CNFsat &encoding_context,
 					     int                                thread_id);
 
-	sResult incompute_BestExtraCost_binary(Glucose::Solver                  **solver,
+	sResult incompute_BestExtraCost_binary(sSATSolver_Type                  **solver,
 					       sMultirobotInstance               &instance,
 					       int                                total_cost,
 					       int                                lower_extra_cost,
@@ -983,7 +992,7 @@ namespace sReloc
 				      int                 &cost_reduction,
 				      int                  thread_id);
 
-	sResult incompute_CostReduction(Glucose::Solver    **solver,
+	sResult incompute_CostReduction(sSATSolver_Type    **solver,
 					sMultirobotInstance &instance,
 					int                  max_total_cost,
 					int                 &cost_reduction,
@@ -999,7 +1008,7 @@ namespace sReloc
 				 sMultirobotEncodingContext_CNFsat &final_encoding_context,
 				 int                                thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_BestCost(Glucose::Solver                  **solver,
+	sResult incompute_BestCost(sSATSolver_Type                  **solver,
 				   const sRobotArrangement           &start_arrangement,
 				   const sRobotGoal                  &final_arrangement,
 				   sUndirectedGraph                  &environment,
@@ -1019,7 +1028,7 @@ namespace sReloc
 				  sMultirobotEncodingContext_CNFsat &final_encoding_context,
 				  int                                thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_UpperCost(Glucose::Solver                  **solver,
+	sResult incompute_UpperCost(sSATSolver_Type                  **solver,
 				    const sRobotArrangement           &start_arrangement,
 				    const sRobotGoal                  &final_arrangement,
 				    sUndirectedGraph                  &environment,
@@ -1039,7 +1048,7 @@ namespace sReloc
 					    sMultirobotSolution                            &optimal_solution,
 					    int                                             thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_CostOptimalSolution(Glucose::Solver                               **solver,
+	sResult incompute_CostOptimalSolution(sSATSolver_Type                               **solver,
 					      const sRobotArrangement                        &start_arrangement,
 					      const sRobotGoal                               &final_arrangement,
 					      const sUndirectedGraph                         &environment,
@@ -1060,7 +1069,7 @@ namespace sReloc
 					    sMultirobotSolution                            &optimal_solution,
 					    int                                             thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_CostOptimalSolution(Glucose::Solver                               **solver,
+	sResult incompute_CostOptimalSolution(sSATSolver_Type                               **solver,
 					      const sRobotArrangement                        &start_arrangement,
 					      const sRobotGoal                               &final_arrangement,
 					      const sUndirectedGraph                         &environment,
@@ -1082,7 +1091,7 @@ namespace sReloc
 					    sMultirobotSolution                            &optimal_solution,
 					    int                                             thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_FuelOptimalSolution(Glucose::Solver                               **solver,
+	sResult incompute_FuelOptimalSolution(sSATSolver_Type                               **solver,
 					      const sRobotArrangement                        &start_arrangement,
 					      const sRobotGoal                               &final_arrangement,
 					      const sUndirectedGraph                         &environment,
@@ -1103,7 +1112,7 @@ namespace sReloc
 						  sMultirobotSolution                            &optimal_solution,
 						  int                                             thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_CostOptimalSolution_avoid(Glucose::Solver                               **solver,
+	sResult incompute_CostOptimalSolution_avoid(sSATSolver_Type                               **solver,
 						    const sRobotArrangement                        &start_arrangement,
 						    const sRobotGoal                               &final_arrangement,
 						    const sUndirectedGraph                         &environment,
@@ -1123,7 +1132,7 @@ namespace sReloc
 						      int                                             thread_id = THREAD_ID_UNDEFINED);
 
 
-	sResult incompute_MakespanOptimalSolution_avoid(Glucose::Solver                               **solver,
+	sResult incompute_MakespanOptimalSolution_avoid(sSATSolver_Type                               **solver,
 							const sRobotArrangement                        &start_arrangement,
 							const sRobotGoal                               &final_arrangement,
 							const sUndirectedGraph                         &environment,
@@ -1143,7 +1152,7 @@ namespace sReloc
 					      sMultirobotSolution                            &optimal_solution,
 					      int                                             thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_CostOptimalSolutionID(Glucose::Solver                               **solver,
+	sResult incompute_CostOptimalSolutionID(sSATSolver_Type                               **solver,
 						const sRobotArrangement                        &start_arrangement,
 						const sRobotGoal                               &final_arrangement,
 						const sUndirectedGraph                         &environment,
@@ -1169,7 +1178,7 @@ namespace sReloc
 					SolutionCosts_vector       &group_optimal_Costs,
 					int                         thread_id = THREAD_ID_UNDEFINED);
 
-	sResult inresolve_GroupDependency(Glucose::Solver           **solver,
+	sResult inresolve_GroupDependency(sSATSolver_Type           **solver,
 					  RobotGroups_vector         &robot_Groups,
 					  int                         group_A_idx,
 					  int                         group_B_idx,
@@ -1199,7 +1208,7 @@ namespace sReloc
 						SolutionMakespans_vector   &group_optimal_Makespans,
 						int                         thread_id = THREAD_ID_UNDEFINED);
 
-	sResult inresolve_MakespanGroupDependency(Glucose::Solver           **solver,
+	sResult inresolve_MakespanGroupDependency(sSATSolver_Type           **solver,
 						  RobotGroups_vector         &robot_Groups,
 						  int                         group_A_idx,
 						  int                         group_B_idx,
@@ -1224,7 +1233,7 @@ namespace sReloc
 					      sMultirobotSolution                            &optimal_solution,
 					      int                                             thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_CostOptimalSolutionAD(Glucose::Solver                               **solver,
+	sResult incompute_CostOptimalSolutionAD(sSATSolver_Type                               **solver,
 						const sRobotArrangement                        &start_arrangement,
 						const sRobotGoal                               &final_arrangement,
 						const sUndirectedGraph                         &environment,
@@ -1244,7 +1253,7 @@ namespace sReloc
 						  sMultirobotSolution     &optimal_solution,
 						  int                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_MakespanOptimalSolutionID(Glucose::Solver        **solver,
+	sResult incompute_MakespanOptimalSolutionID(sSATSolver_Type        **solver,
 						    const sRobotArrangement &start_arrangement,
 						    const sRobotGoal        &final_arrangement,
 						    const sUndirectedGraph  &environment,
@@ -1263,7 +1272,7 @@ namespace sReloc
 						  sMultirobotSolution     &optimal_solution,
 						  int                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_MakespanOptimalSolutionAD(Glucose::Solver        **solver,
+	sResult incompute_MakespanOptimalSolutionAD(sSATSolver_Type        **solver,
 						    const sRobotArrangement &start_arrangement,
 						    const sRobotGoal        &final_arrangement,
 						    const sUndirectedGraph  &environment,
@@ -1283,7 +1292,7 @@ namespace sReloc
 						   sMultirobotSolution                            &optimal_solution,
 						   int                                             thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_CostOptimalSolution_binary(Glucose::Solver                               **solver,
+	sResult incompute_CostOptimalSolution_binary(sSATSolver_Type                               **solver,
 						     const sRobotArrangement                        &start_arrangement,
 						     const sRobotGoal                               &final_arrangement,
 						     sUndirectedGraph                               &environment,
@@ -1304,7 +1313,7 @@ namespace sReloc
 					 sMultirobotSolution                            &optimal_solution,
 					 int                                             thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_BestCostSolution(Glucose::Solver                               **solver,
+	sResult incompute_BestCostSolution(sSATSolver_Type                               **solver,
 					   const sRobotArrangement                        &start_arrangement,
 					   const sRobotGoal                               &final_arrangement,
 					   sUndirectedGraph                               &environment,
@@ -1325,7 +1334,7 @@ namespace sReloc
 					 int                                thread_id = THREAD_ID_UNDEFINED);
 
 
-	sResult incompute_UnirobotMakespan(Glucose::Solver                  **solver,
+	sResult incompute_UnirobotMakespan(sSATSolver_Type                  **solver,
 					   const sRobotArrangement           &start_arrangement,
 					   const sRobotGoal                  &final_arrangement,
 					   const sUndirectedGraph            &environment,
@@ -1345,7 +1354,7 @@ namespace sReloc
 					 sMultirobotSolution     &unirobot_solution,
 					 int                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_UnirobotSolution(Glucose::Solver        **solver,
+	sResult incompute_UnirobotSolution(sSATSolver_Type        **solver,
 					   int                      unirobot_id,
 					   const sRobotArrangement &start_arrangement,
 					   const sRobotGoal        &final_arrangement,
@@ -1365,7 +1374,7 @@ namespace sReloc
 					  sMultirobotSolution     &unirobot_solution,
 					  int                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_UnirobotsSolution(Glucose::Solver        **solver,
+	sResult incompute_UnirobotsSolution(sSATSolver_Type        **solver,
 					    const sRobotArrangement &start_arrangement,
 					    const sRobotGoal        &final_arrangement,
 					    const sUndirectedGraph  &environment,
@@ -1386,7 +1395,7 @@ namespace sReloc
 					   int                     &suboptimal_makespan,
 					   int                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_SuboptimalMakespan(Glucose::Solver        **solver,
+	sResult incompute_SuboptimalMakespan(sSATSolver_Type        **solver,
 					     const sRobotArrangement &start_arrangement,
 					     const sRobotArrangement &final_arrangement,
 					     const sUndirectedGraph  &environment,
@@ -1406,7 +1415,7 @@ namespace sReloc
 					   sMultirobotEncodingContext_CNFsat &final_encoding_context,
 					   int                                thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_SuboptimalMakespan(Glucose::Solver                  **solver,
+	sResult incompute_SuboptimalMakespan(sSATSolver_Type                  **solver,
 					     const sRobotArrangement           &start_arrangement,
 					     const sRobotArrangement           &final_arrangement,
 					     const sUndirectedGraph            &environment,
@@ -1427,7 +1436,7 @@ namespace sReloc
 					   sMultirobotSolution     &suboptimal_solution,
 					   int                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult incompute_SuboptimalSolution(Glucose::Solver        **solver,
+	sResult incompute_SuboptimalSolution(sSATSolver_Type        **solver,
 					     const sRobotArrangement &start_arrangement,
 					     const sRobotArrangement &final_arrangement,
 					     const sUndirectedGraph  &environment,
@@ -1448,7 +1457,7 @@ namespace sReloc
 						sMultirobotSolution                     &computed_solution,
 						int                                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedInverseSolution(Glucose::Solver                         *solver,
+	sResult intract_ComputedInverseSolution(sSATSolver_Type                         *solver,
 						const sRobotArrangement                 &start_arrangement,
 						const sUndirectedGraph                  &environment,
 						int                                      computed_makespan,
@@ -1462,7 +1471,7 @@ namespace sReloc
 						 sMultirobotSolution                     &computed_solution,
 						 int                                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedAdvancedSolution(Glucose::Solver                         *solver,
+	sResult intract_ComputedAdvancedSolution(sSATSolver_Type                         *solver,
 						 const sRobotArrangement                 &start_arrangement,
 						 const sUndirectedGraph                  &environment,
 						 int                                      computed_makespan,
@@ -1476,7 +1485,7 @@ namespace sReloc
 						     sMultirobotSolution                     &computed_solution,
 						     int                                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedDifferentialSolution(Glucose::Solver                         *solver,
+	sResult intract_ComputedDifferentialSolution(sSATSolver_Type                         *solver,
 						     const sRobotArrangement                 &start_arrangement,
 						     const sUndirectedGraph                  &environment,
 						     int                                      computed_makespan,
@@ -1490,7 +1499,7 @@ namespace sReloc
 						  sMultirobotSolution                     &computed_solution,
 						  int                                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedBijectionSolution(Glucose::Solver                         *solver,
+	sResult intract_ComputedBijectionSolution(sSATSolver_Type                         *solver,
 						  const sRobotArrangement                 &start_arrangement,
 						  const sUndirectedGraph                  &environment,
 						  int                                      computed_makespan,
@@ -1504,7 +1513,7 @@ namespace sReloc
 							  sMultirobotSolution                     &computed_solution,
 							  int                                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedHeuristicAdvancedSolution(Glucose::Solver                         *solver,
+	sResult intract_ComputedHeuristicAdvancedSolution(sSATSolver_Type                         *solver,
 							  const sRobotArrangement                 &start_arrangement,
 							  const sUndirectedGraph                  &environment,
 							  int                                      computed_makespan,
@@ -1518,7 +1527,7 @@ namespace sReloc
 							      sMultirobotSolution                     &computed_solution,
 							      int                                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedHeuristicDifferentialSolution(Glucose::Solver                         *solver,
+	sResult intract_ComputedHeuristicDifferentialSolution(sSATSolver_Type                         *solver,
 							      const sRobotArrangement                 &start_arrangement,
 							      const sUndirectedGraph                  &environment,
 							      int                                      computed_makespan,
@@ -1532,7 +1541,7 @@ namespace sReloc
 							   sMultirobotSolution                     &computed_solution,
 							   int                                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedHeuristicBijectionSolution(Glucose::Solver                         *solver,
+	sResult intract_ComputedHeuristicBijectionSolution(sSATSolver_Type                         *solver,
 							   const sRobotArrangement                 &start_arrangement,
 							   const sUndirectedGraph                  &environment,
 							   int                                      computed_makespan,
@@ -1546,7 +1555,7 @@ namespace sReloc
 						sMultirobotSolution                     &computed_solution,
 						int                                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedBitwiseSolution(Glucose::Solver                         *solver,
+	sResult intract_ComputedBitwiseSolution(sSATSolver_Type                         *solver,
 						const sRobotArrangement                 &start_arrangement,
 						const sUndirectedGraph                  &environment,
 						int                                      computed_makespan,
@@ -1560,7 +1569,7 @@ namespace sReloc
 					     sMultirobotSolution                     &computed_solution,
 					     int                                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedFlowSolution(Glucose::Solver                         *solver,
+	sResult intract_ComputedFlowSolution(sSATSolver_Type                         *solver,
 					     const sRobotArrangement                 &start_arrangement,
 					     const sUndirectedGraph                  &environment,
 					     int                                      computed_makespan,
@@ -1574,7 +1583,7 @@ namespace sReloc
 						 sMultirobotSolution                     &computed_solution,
 						 int                                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedMatchingSolution(Glucose::Solver                         *solver,
+	sResult intract_ComputedMatchingSolution(sSATSolver_Type                         *solver,
 						 const sRobotArrangement                 &start_arrangement,
 						 const sUndirectedGraph                  &environment,
 						 int                                      computed_makespan,
@@ -1588,7 +1597,7 @@ namespace sReloc
 							  sMultirobotSolution                     &computed_solution,
 							  int                                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedHeuristicMatchingSolution(Glucose::Solver                         *solver,
+	sResult intract_ComputedHeuristicMatchingSolution(sSATSolver_Type                         *solver,
 							  const sRobotArrangement                 &start_arrangement,
 							  const sUndirectedGraph                  &environment,
 							  int                                      computed_makespan,
@@ -1602,7 +1611,7 @@ namespace sReloc
 					       sMultirobotSolution                     &computed_solution,
 					       int                                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedDirectSolution(Glucose::Solver                         *solver,
+	sResult intract_ComputedDirectSolution(sSATSolver_Type                         *solver,
 					       const sRobotArrangement                 &start_arrangement,
 					       const sUndirectedGraph                  &environment,
 					       int                                      computed_makespan,					       
@@ -1616,7 +1625,7 @@ namespace sReloc
 							sMultirobotSolution                     &computed_solution,
 							int                                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedHeuristicDirectSolution(Glucose::Solver                         *solver,
+	sResult intract_ComputedHeuristicDirectSolution(sSATSolver_Type                         *solver,
 							const sRobotArrangement                 &start_arrangement,
 							const sUndirectedGraph                  &environment,
 							int                                      computed_makespan,							
@@ -1630,7 +1639,7 @@ namespace sReloc
 						   sMultirobotSolution                     &computed_solution,
 						   int                                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedSimplicialSolution(Glucose::Solver                         *solver,
+	sResult intract_ComputedSimplicialSolution(sSATSolver_Type                         *solver,
 						   const sRobotArrangement                 &start_arrangement,
 						   const sUndirectedGraph                  &environment,
 						   int                                      computed_makespan,						   
@@ -1644,7 +1653,7 @@ namespace sReloc
 							    sMultirobotSolution                     &computed_solution,
 							    int                                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedHeuristicSimplicialSolution(Glucose::Solver                         *solver,
+	sResult intract_ComputedHeuristicSimplicialSolution(sSATSolver_Type                         *solver,
 							    const sRobotArrangement                 &start_arrangement,
 							    const sUndirectedGraph                  &environment,
 							    int                                      computed_makespan,							    
@@ -1658,7 +1667,7 @@ namespace sReloc
 						 sMultirobotSolution                     &computed_solution,
 						 int                                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedSingularSolution(Glucose::Solver                         *solver,
+	sResult intract_ComputedSingularSolution(sSATSolver_Type                         *solver,
 						 const sRobotArrangement                 &start_arrangement,
 						 const sUndirectedGraph                  &environment,
 						 int                                      computed_makespan,
@@ -1672,7 +1681,7 @@ namespace sReloc
 					       sMultirobotSolution                     &computed_solution,
 					       int                                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedPluralSolution(Glucose::Solver                         *solver,
+	sResult intract_ComputedPluralSolution(sSATSolver_Type                         *solver,
 					       const sRobotArrangement                 &start_arrangement,
 					       const sUndirectedGraph                  &environment,
 					       int                                      computed_makespan,
@@ -1687,7 +1696,7 @@ namespace sReloc
 						sMultirobotSolution                     &computed_solution,
 						int                                      thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedPlural2Solution(Glucose::Solver                         *solver,
+	sResult intract_ComputedPlural2Solution(sSATSolver_Type                         *solver,
 						const sRobotArrangement                 &start_arrangement,
 						const sUndirectedGraph                  &environment,
 						const sUndirectedGraph                  &sparse_environment,
@@ -1703,7 +1712,7 @@ namespace sReloc
 						 sMultirobotSolution                            &computed_solution,
 						 int                                             thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedHeightedSolution(Glucose::Solver                                *solver,
+	sResult intract_ComputedHeightedSolution(sSATSolver_Type                                *solver,
 						 const sRobotArrangement                        &start_arrangement,
 						 const sUndirectedGraph                         &environment,
 						 int                                             computed_cost,
@@ -1719,7 +1728,7 @@ namespace sReloc
 					    sMultirobotSolution                            &computed_solution,
 					    int                                             thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedMddSolution(Glucose::Solver                                *solver,
+	sResult intract_ComputedMddSolution(sSATSolver_Type                                *solver,
 					    const sRobotArrangement                        &start_arrangement,
 					    const sUndirectedGraph                         &environment,
 					    const sMultirobotInstance::MDD_vector          &MDD,
@@ -1735,7 +1744,7 @@ namespace sReloc
 						 sMultirobotSolution                            &computed_solution,
 						 int                                             thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedMddUmtexSolution(Glucose::Solver                                *solver,
+	sResult intract_ComputedMddUmtexSolution(sSATSolver_Type                                *solver,
 						 const sRobotArrangement                        &start_arrangement,
 						 const sUndirectedGraph                         &environment,
 						 const sMultirobotInstance::MDD_vector          &MDD,
@@ -1751,7 +1760,7 @@ namespace sReloc
 						 sMultirobotSolution                            &computed_solution,
 						 int                                             thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedMddMutexSolution(Glucose::Solver                                *solver,
+	sResult intract_ComputedMddMutexSolution(sSATSolver_Type                                *solver,
 						 const sRobotArrangement                        &start_arrangement,
 						 const sUndirectedGraph                         &environment,
 						 const sMultirobotInstance::MDD_vector          &MDD,
@@ -1767,7 +1776,7 @@ namespace sReloc
 					     sMultirobotSolution                            &computed_solution,
 					     int                                             thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedGMddSolution(Glucose::Solver                                *solver,
+	sResult intract_ComputedGMddSolution(sSATSolver_Type                                *solver,
 					     const sRobotArrangement                        &start_arrangement,
 					     const sUndirectedGraph                         &environment,
 					     const sMultirobotInstance::MDD_vector          &MDD,
@@ -1783,7 +1792,7 @@ namespace sReloc
 					      sMultirobotSolution                            &computed_solution,
 					      int                                             thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedGEMddSolution(Glucose::Solver                                *solver,
+	sResult intract_ComputedGEMddSolution(sSATSolver_Type                                *solver,
 					      const sRobotArrangement                        &start_arrangement,
 					      const sUndirectedGraph                         &environment,
 					      const sMultirobotInstance::MDD_vector          &MDD,
@@ -1799,7 +1808,7 @@ namespace sReloc
 					     sMultirobotSolution                            &computed_solution,
 					     int                                             thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedAnoSolution(Glucose::Solver                                *solver,
+	sResult intract_ComputedAnoSolution(sSATSolver_Type                                *solver,
 					    const sRobotArrangement                        &start_arrangement,
 					    const sUndirectedGraph                         &environment,
 					    const sMultirobotInstance::MDD_vector          &MDD,
@@ -1815,7 +1824,7 @@ namespace sReloc
 					     sMultirobotSolution                            &computed_solution,
 					     int                                             thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedGAnoSolution(Glucose::Solver                                *solver,
+	sResult intract_ComputedGAnoSolution(sSATSolver_Type                                *solver,
 					     const sRobotArrangement                        &start_arrangement,
 					     const sUndirectedGraph                         &environment,
 					     const sMultirobotInstance::MDD_vector          &MDD,
@@ -1831,7 +1840,7 @@ namespace sReloc
 						 sMultirobotSolution                            &computed_solution,
 						 int                                             thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedWaterMddSolution(Glucose::Solver                                *solver,
+	sResult intract_ComputedWaterMddSolution(sSATSolver_Type                                *solver,
 						 const sRobotArrangement                        &start_arrangement,
 						 const sUndirectedGraph                         &environment,
 						 const sMultirobotInstance::MDD_vector          &MDD,
@@ -1879,7 +1888,7 @@ namespace sReloc
 								  sMultirobotSolution                            &computed_solution,
 								  int                                             thread_id = THREAD_ID_UNDEFINED);			
 
-	sResult intract_ComputedRelaxedMddSolution(Glucose::Solver                                *solver,
+	sResult intract_ComputedRelaxedMddSolution(sSATSolver_Type                                *solver,
 						   const sRobotArrangement                        &start_arrangement,
 						   const sUndirectedGraph                         &environment,
 						   const sMultirobotInstance::MDD_vector          &MDD,
@@ -1887,7 +1896,7 @@ namespace sReloc
 						   const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
 						   sMultirobotSolution                            &computed_solution);
 
-	sResult intract_ComputedTokenMddSolution(Glucose::Solver                                *solver,
+	sResult intract_ComputedTokenMddSolution(sSATSolver_Type                                *solver,
 						 const sRobotArrangement                        &start_arrangement,
 						 const sUndirectedGraph                         &environment,
 						 const sMultirobotInstance::MDD_vector          &MDD,
@@ -1895,7 +1904,7 @@ namespace sReloc
 						 const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
 						 sMultirobotSolution                            &computed_solution);
 
-	sResult intract_ComputedTokenEmptyMddSolution(Glucose::Solver                                *solver,
+	sResult intract_ComputedTokenEmptyMddSolution(sSATSolver_Type                                *solver,
 						      const sRobotArrangement                        &start_arrangement,
 						      const sUndirectedGraph                         &environment,
 						      const sMultirobotInstance::MDD_vector          &MDD,
@@ -1903,7 +1912,7 @@ namespace sReloc
 						      const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
 						      sMultirobotSolution                            &computed_solution);	
 
-	sResult intract_ComputedPermutationMddSolution(Glucose::Solver                                *solver,
+	sResult intract_ComputedPermutationMddSolution(sSATSolver_Type                                *solver,
 						       const sRobotArrangement                        &start_arrangement,
 						       const sUndirectedGraph                         &environment,
 						       const sMultirobotInstance::MDD_vector          &MDD,
@@ -1911,7 +1920,7 @@ namespace sReloc
 						       const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
 						       sMultirobotSolution                            &computed_solution);
 
-	sResult intract_ComputedCapacitatedPermutationMddSolution(Glucose::Solver                                *solver,
+	sResult intract_ComputedCapacitatedPermutationMddSolution(sSATSolver_Type                                *solver,
 								  const sRobotArrangement                        &start_arrangement,
 								  const sUndirectedGraph                         &environment,
 								  const sMultirobotInstance::MDD_vector          &MDD,
@@ -1927,7 +1936,7 @@ namespace sReloc
 					     sMultirobotSolution                            &computed_solution,
 					     int                                             thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedMmddSolution(Glucose::Solver                                *solver,
+	sResult intract_ComputedMmddSolution(sSATSolver_Type                                *solver,
 					     const sRobotArrangement                        &start_arrangement,
 					     const sUndirectedGraph                         &environment,
 					     const sMultirobotInstance::MDD_vector          &MDD,
@@ -1975,7 +1984,7 @@ namespace sReloc
 								   sMultirobotSolution                            &computed_solution,
 								   int                                             thread_id = THREAD_ID_UNDEFINED);			
 
-	sResult intract_ComputedRelaxedMmddSolution(Glucose::Solver                                *solver,
+	sResult intract_ComputedRelaxedMmddSolution(sSATSolver_Type                                *solver,
 						    const sRobotArrangement                        &start_arrangement,
 						    const sUndirectedGraph                         &environment,
 						    const sMultirobotInstance::MDD_vector          &MDD,
@@ -1983,7 +1992,7 @@ namespace sReloc
 						    const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
 						    sMultirobotSolution                            &computed_solution);
 
-	sResult intract_ComputedTokenMmddSolution(Glucose::Solver                                *solver,
+	sResult intract_ComputedTokenMmddSolution(sSATSolver_Type                                *solver,
 						  const sRobotArrangement                        &start_arrangement,
 						  const sUndirectedGraph                         &environment,
 						  const sMultirobotInstance::MDD_vector          &MDD,
@@ -1991,7 +2000,7 @@ namespace sReloc
 						  const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
 						  sMultirobotSolution                            &computed_solution);
 
-	sResult intract_ComputedTokenEmptyMmddSolution(Glucose::Solver                                *solver,
+	sResult intract_ComputedTokenEmptyMmddSolution(sSATSolver_Type                                *solver,
 						       const sRobotArrangement                        &start_arrangement,
 						       const sUndirectedGraph                         &environment,
 						       const sMultirobotInstance::MDD_vector          &MDD,
@@ -1999,7 +2008,7 @@ namespace sReloc
 						       const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
 						       sMultirobotSolution                            &computed_solution);	
 
-	sResult intract_ComputedPermutationMmddSolution(Glucose::Solver                                *solver,
+	sResult intract_ComputedPermutationMmddSolution(sSATSolver_Type                                *solver,
 							const sRobotArrangement                        &start_arrangement,
 							const sUndirectedGraph                         &environment,
 							const sMultirobotInstance::MDD_vector          &MDD,
@@ -2007,7 +2016,7 @@ namespace sReloc
 							const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
 							sMultirobotSolution                            &computed_solution);
 
-	sResult intract_ComputedCapacitatedPermutationMmddSolution(Glucose::Solver                                *solver,
+	sResult intract_ComputedCapacitatedPermutationMmddSolution(sSATSolver_Type                                *solver,
 								   const sRobotArrangement                        &start_arrangement,
 								   const sUndirectedGraph                         &environment,
 								   const sMultirobotInstance::MDD_vector          &MDD,
@@ -2023,7 +2032,7 @@ namespace sReloc
 						sMultirobotSolution                            &computed_solution,
 						int                                             thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedMddPlusSolution(Glucose::Solver                                *solver,
+	sResult intract_ComputedMddPlusSolution(sSATSolver_Type                                *solver,
 						const sRobotArrangement                        &start_arrangement,
 						const sUndirectedGraph                         &environment,
 						const sMultirobotInstance::MDD_vector          &MDD,
@@ -2056,7 +2065,7 @@ namespace sReloc
 							sMultirobotSolution                            &computed_solution,
 							int                                             thread_id = THREAD_ID_UNDEFINED);	
 
-	sResult intract_ComputedMddPlusPlusSolution(Glucose::Solver                                *solver,
+	sResult intract_ComputedMddPlusPlusSolution(sSATSolver_Type                                *solver,
 						    const sRobotArrangement                        &start_arrangement,
 						    const sUndirectedGraph                         &environment,
 						    const sMultirobotInstance::MDD_vector          &MDD,
@@ -2064,7 +2073,7 @@ namespace sReloc
 						    const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
 						    sMultirobotSolution                            &computed_solution);
 
-	sResult intract_ComputedMddPlusPlusMutexSolution(Glucose::Solver                                *solver,
+	sResult intract_ComputedMddPlusPlusMutexSolution(sSATSolver_Type                                *solver,
 							 const sRobotArrangement                        &start_arrangement,
 							 const sUndirectedGraph                         &environment,
 							 const sMultirobotInstance::MDD_vector          &MDD,
@@ -2072,7 +2081,7 @@ namespace sReloc
 							 const sMultirobotEncodingContext_CNFsat        &final_encoding_context,
 							 sMultirobotSolution                            &computed_solution);	
 
-	sResult intract_ComputedMddPlusPlusFuelSolution(Glucose::Solver                                *solver,
+	sResult intract_ComputedMddPlusPlusFuelSolution(sSATSolver_Type                                *solver,
 							const sRobotArrangement                        &start_arrangement,
 							const sUndirectedGraph                         &environment,
 							const sMultirobotInstance::MDD_vector          &MDD,
@@ -2089,7 +2098,7 @@ namespace sReloc
 						     sMultirobotSolution                            &computed_solution,
 						     int                                             thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedLMddPlusPlusSolution(Glucose::Solver                                *solver,
+	sResult intract_ComputedLMddPlusPlusSolution(sSATSolver_Type                                *solver,
 						     const sRobotArrangement                        &start_arrangement,
 						     const sUndirectedGraph                         &environment,
 						     const sMultirobotInstance::MDD_vector          &MDD,
@@ -2105,7 +2114,7 @@ namespace sReloc
 						sMultirobotSolution                            &computed_solution,
 						int                                             thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedMddStarSolution(Glucose::Solver                                *solver,
+	sResult intract_ComputedMddStarSolution(sSATSolver_Type                                *solver,
 						const sRobotArrangement                        &start_arrangement,
 						const sUndirectedGraph                         &environment,
 						const sMultirobotInstance::MDD_vector          &MDD,
@@ -2121,7 +2130,7 @@ namespace sReloc
 						 sMultirobotSolution                            &computed_solution,
 						 int                                             thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedMmddPlusSolution(Glucose::Solver                                *solver,
+	sResult intract_ComputedMmddPlusSolution(sSATSolver_Type                                *solver,
 						 const sRobotArrangement                        &start_arrangement,
 						 const sUndirectedGraph                         &environment,
 						 const sMultirobotInstance::MDD_vector          &MDD,
@@ -2137,7 +2146,7 @@ namespace sReloc
 						     sMultirobotSolution                            &computed_solution,
 						     int                                             thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedMmddPlusPlusSolution(Glucose::Solver                                *solver,
+	sResult intract_ComputedMmddPlusPlusSolution(sSATSolver_Type                                *solver,
 						     const sRobotArrangement                        &start_arrangement,
 						     const sUndirectedGraph                         &environment,
 						     const sMultirobotInstance::MDD_vector          &MDD,
@@ -2153,7 +2162,7 @@ namespace sReloc
 					      sMultirobotSolution                            &computed_solution,
 					      int                                             thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedRXMddSolution(Glucose::Solver                                *solver,
+	sResult intract_ComputedRXMddSolution(sSATSolver_Type                                *solver,
 					      const sRobotArrangement                        &start_arrangement,
 					      const sUndirectedGraph                         &environment,
 					      const sMultirobotInstance::MDD_vector          &MDD,
@@ -2169,7 +2178,7 @@ namespace sReloc
 					      sMultirobotSolution                            &computed_solution,
 					      int                                             thread_id = THREAD_ID_UNDEFINED);	
 
-	sResult intract_ComputedNoMddSolution(Glucose::Solver                                *solver,
+	sResult intract_ComputedNoMddSolution(sSATSolver_Type                                *solver,
 					      const sRobotArrangement                        &start_arrangement,
 					      const sUndirectedGraph                         &environment,
 					      const sMultirobotInstance::MDD_vector          &MDD,
@@ -2185,7 +2194,7 @@ namespace sReloc
 						sMultirobotSolution                            &computed_solution,
 						int                                             thread_id = THREAD_ID_UNDEFINED);
 
-	sResult intract_ComputedRXNoMddSolution(Glucose::Solver                                *solver,
+	sResult intract_ComputedRXNoMddSolution(sSATSolver_Type                                *solver,
 						const sRobotArrangement                        &start_arrangement,
 						const sUndirectedGraph                         &environment,
 						const sMultirobotInstance::MDD_vector          &MDD,

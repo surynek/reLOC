@@ -4,11 +4,11 @@
 /*                              reLOC 0.21-robik                              */
 /*                                                                            */
 /*                  (C) Copyright 2011 - 2021 Pavel Surynek                   */
-/*                http://www.surynek.com | <pavel@surynek.com>                */
+/*                http://www.surynek.net | <pavel@surynek.net>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* cnf_test.h / 0.21-robik_058                                                */
+/* cnf_test.h / 0.21-robik_064                                                */
 /*----------------------------------------------------------------------------*/
 //
 // Dimacs CNF production tools - testing program.

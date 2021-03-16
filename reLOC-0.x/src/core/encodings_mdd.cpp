@@ -4,11 +4,11 @@
 /*                              reLOC 0.21-robik                              */
 /*                                                                            */
 /*                  (C) Copyright 2011 - 2021 Pavel Surynek                   */
-/*                http://www.surynek.com | <pavel@surynek.com>                */
+/*                http://www.surynek.net | <pavel@surynek.net>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* encodings_mdd.cpp / 0.21-robik_058                                         */
+/* encodings_mdd.cpp / 0.21-robik_064                                         */
 /*----------------------------------------------------------------------------*/
 //
 // Multi-robot path-finding encodings based on
@@ -881,7 +881,7 @@ namespace sReloc
     }        
 
 
-    void sMultirobotInstance::to_Memory_MddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    void sMultirobotInstance::to_Memory_MddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
 	int extra_cost;
 
@@ -901,7 +901,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_MddUmtexCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    void sMultirobotInstance::to_Memory_MddUmtexCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
 	int extra_cost;
 
@@ -921,7 +921,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_MddMutexCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    void sMultirobotInstance::to_Memory_MddMutexCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
 	int extra_cost;
 
@@ -941,7 +941,7 @@ namespace sReloc
     }    
 
 
-    void sMultirobotInstance::to_Memory_GMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    void sMultirobotInstance::to_Memory_GMddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
 	int extra_cost;
 
@@ -961,7 +961,7 @@ namespace sReloc
     }
 
     
-    void sMultirobotInstance::to_Memory_GEMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    void sMultirobotInstance::to_Memory_GEMddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
 	int extra_cost;
 
@@ -1085,7 +1085,7 @@ namespace sReloc
         
     
 
-    void sMultirobotInstance::to_Memory_RelaxedMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    void sMultirobotInstance::to_Memory_RelaxedMddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
 	int extra_cost;
 
@@ -1105,7 +1105,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_TokenMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    void sMultirobotInstance::to_Memory_TokenMddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
 	int extra_cost;
 
@@ -1125,7 +1125,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_TokenEmptyMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    void sMultirobotInstance::to_Memory_TokenEmptyMddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
 	int extra_cost;
 
@@ -1145,7 +1145,7 @@ namespace sReloc
     }    
 
 
-    void sMultirobotInstance::to_Memory_PermutationMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    void sMultirobotInstance::to_Memory_PermutationMddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
 	int extra_cost;
 
@@ -1165,7 +1165,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_CapacitatedPermutationMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    void sMultirobotInstance::to_Memory_CapacitatedPermutationMddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
 	int extra_cost;
 
@@ -1212,7 +1212,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotInstance::to_Memory_MddCNFsat_avoid(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent, bool verbose)
+    sResult sMultirobotInstance::to_Memory_MddCNFsat_avoid(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent, bool verbose)
     {
 	int extra_cost;
 
@@ -1266,7 +1266,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotInstance::to_Memory_MddPlusCNFsat_avoid(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent, bool verbose)
+    sResult sMultirobotInstance::to_Memory_MddPlusCNFsat_avoid(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent, bool verbose)
     {
 	int extra_cost;
 
@@ -1320,7 +1320,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotInstance::to_Memory_MddPlusPlusCNFsat_avoid(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent, bool verbose)
+    sResult sMultirobotInstance::to_Memory_MddPlusPlusCNFsat_avoid(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent, bool verbose)
     {
 	int extra_cost;
 	
@@ -1359,7 +1359,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_MmddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    void sMultirobotInstance::to_Memory_MmddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
 	//	s_GlobalPhaseStatistics.enter_Phase("MDD build");
 	--encoding_context.m_N_Layers;
@@ -1431,7 +1431,7 @@ namespace sReloc
     }            
 
     
-    void sMultirobotInstance::to_Memory_RelaxedMmddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    void sMultirobotInstance::to_Memory_RelaxedMmddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
 	//	s_GlobalPhaseStatistics.enter_Phase("MDD build");
 	--encoding_context.m_N_Layers;
@@ -1443,7 +1443,7 @@ namespace sReloc
     }        
 
     
-    void sMultirobotInstance::to_Memory_TokenMmddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    void sMultirobotInstance::to_Memory_TokenMmddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
 	//	s_GlobalPhaseStatistics.enter_Phase("MDD build");
 	--encoding_context.m_N_Layers;
@@ -1455,7 +1455,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_TokenEmptyMmddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    void sMultirobotInstance::to_Memory_TokenEmptyMmddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
 	//	s_GlobalPhaseStatistics.enter_Phase("MDD build");
 	--encoding_context.m_N_Layers;
@@ -1467,7 +1467,7 @@ namespace sReloc
     }            
     
 
-    void sMultirobotInstance::to_Memory_PermutationMmddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    void sMultirobotInstance::to_Memory_PermutationMmddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
 	//	s_GlobalPhaseStatistics.enter_Phase("MDD build");
 	--encoding_context.m_N_Layers;
@@ -1479,7 +1479,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_CapacitatedPermutationMmddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    void sMultirobotInstance::to_Memory_CapacitatedPermutationMmddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
 	//	s_GlobalPhaseStatistics.enter_Phase("MDD build");
 	--encoding_context.m_N_Layers;
@@ -1508,7 +1508,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotInstance::to_Memory_MmddCNFsat_avoid(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent, bool verbose)
+    sResult sMultirobotInstance::to_Memory_MmddCNFsat_avoid(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent, bool verbose)
     {
 	--encoding_context.m_N_Layers;
 	construct_MakespanMDD(encoding_context.m_N_Layers, m_the_MDD);
@@ -1542,7 +1542,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotInstance::to_Memory_MmddPlusCNFsat_avoid(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent, bool verbose)
+    sResult sMultirobotInstance::to_Memory_MmddPlusCNFsat_avoid(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent, bool verbose)
     {
 	--encoding_context.m_N_Layers;
 	construct_MakespanMDD(encoding_context.m_N_Layers, m_the_MDD);
@@ -1576,7 +1576,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotInstance::to_Memory_MmddPlusPlusCNFsat_avoid(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent, bool verbose)
+    sResult sMultirobotInstance::to_Memory_MmddPlusPlusCNFsat_avoid(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent, bool verbose)
     {
 	--encoding_context.m_N_Layers;
 	construct_MakespanMDD(encoding_context.m_N_Layers, m_the_MDD);
@@ -1605,7 +1605,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_RXMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    void sMultirobotInstance::to_Memory_RXMddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
 	int extra_cost;
 
@@ -1635,7 +1635,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_NoMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    void sMultirobotInstance::to_Memory_NoMddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
 	int extra_cost;
 
@@ -1665,7 +1665,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_RXNoMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    void sMultirobotInstance::to_Memory_RXNoMddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
 	int extra_cost;
 
@@ -5840,7 +5840,7 @@ namespace sReloc
     }        
 
 
-    void sMultirobotInstance::to_Memory_MddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_MddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();
 
@@ -6156,7 +6156,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_MddUmtexCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_MddUmtexCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();
 
@@ -6881,7 +6881,7 @@ namespace sReloc
     }    
 
 
-    void sMultirobotInstance::to_Memory_MddMutexCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_MddMutexCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();
 
@@ -7613,7 +7613,7 @@ namespace sReloc
     }    
     
 
-    void sMultirobotInstance::to_Memory_GMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_GMddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();
 
@@ -7973,7 +7973,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_GEMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const RobotMDD_vector &unified_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_GEMddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const RobotMDD_vector &unified_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();
 
@@ -11905,7 +11905,7 @@ namespace sReloc
     }            
     
 
-    void sMultirobotInstance::to_Memory_RelaxedMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_RelaxedMddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();	
 
@@ -12188,7 +12188,7 @@ namespace sReloc
     }    
 
 
-    void sMultirobotInstance::to_Memory_TokenMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_TokenMddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();	
 
@@ -12576,7 +12576,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_TokenEmptyMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_TokenEmptyMddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();	
 
@@ -12978,7 +12978,7 @@ namespace sReloc
     }        
 
 
-    void sMultirobotInstance::to_Memory_PermutationMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_PermutationMddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();	
 
@@ -13367,7 +13367,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_CapacitatedPermutationMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_CapacitatedPermutationMddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();	
 
@@ -14183,7 +14183,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_MmddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const MDD_vector &MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_MmddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const MDD_vector &MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();	
 
@@ -17194,7 +17194,7 @@ namespace sReloc
     }        
     
     
-    void sMultirobotInstance::to_Memory_RelaxedMmddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const MDD_vector &MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_RelaxedMmddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const MDD_vector &MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();	
 
@@ -17419,7 +17419,7 @@ namespace sReloc
     }    
 
 
-    void sMultirobotInstance::to_Memory_TokenMmddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const MDD_vector &MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_TokenMmddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const MDD_vector &MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();	
 
@@ -17714,7 +17714,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_TokenEmptyMmddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const MDD_vector &MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_TokenEmptyMmddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const MDD_vector &MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();	
 
@@ -18023,7 +18023,7 @@ namespace sReloc
     }        
 
 
-    void sMultirobotInstance::to_Memory_PermutationMmddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const MDD_vector &MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_PermutationMmddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const MDD_vector &MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();	
 
@@ -18312,7 +18312,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_CapacitatedPermutationMmddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const MDD_vector &MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_CapacitatedPermutationMmddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const MDD_vector &MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();	
 
@@ -19154,7 +19154,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_RXMddCNFsat(Glucose::Solver                   *solver,
+    void sMultirobotInstance::to_Memory_RXMddCNFsat(sSATSolver_Type                   *solver,
 						    sMultirobotEncodingContext_CNFsat &encoding_context,
 						    int                                sUNUSED(extra_cost),
 						    int                                mdd_depth,
@@ -19457,7 +19457,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_MddPlusCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    void sMultirobotInstance::to_Memory_MddPlusCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
 	int extra_cost;
 	int mdd_depth = construct_MDD(encoding_context.m_max_total_cost, m_the_MDD, extra_cost, m_the_extra_MDD);
@@ -19486,7 +19486,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_MmddPlusCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    void sMultirobotInstance::to_Memory_MmddPlusCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
 	//	s_GlobalPhaseStatistics.enter_Phase("MDD build");
 	--encoding_context.m_N_Layers;
@@ -19575,7 +19575,7 @@ namespace sReloc
     }    
 
 
-    void sMultirobotInstance::to_Memory_MddPlusPlusCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    void sMultirobotInstance::to_Memory_MddPlusPlusCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
 	int extra_cost;
 	//	s_GlobalPhaseStatistics.enter_Phase("MDD build");
@@ -19594,7 +19594,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_MddPlusPlusMutexCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    void sMultirobotInstance::to_Memory_MddPlusPlusMutexCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
 	int extra_cost;
 	//	s_GlobalPhaseStatistics.enter_Phase("MDD build");
@@ -19613,7 +19613,7 @@ namespace sReloc
     }    
 
 
-    void sMultirobotInstance::to_Memory_MddPlusPlusFuelCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    void sMultirobotInstance::to_Memory_MddPlusPlusFuelCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
 	int extra_fuel;
 	//	s_GlobalPhaseStatistics.enter_Phase("MDD build");
@@ -19632,7 +19632,7 @@ namespace sReloc
     }    
 
 
-    void sMultirobotInstance::to_Memory_LMddPlusPlusCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    void sMultirobotInstance::to_Memory_LMddPlusPlusCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
 	int extra_cost;
 	//	s_GlobalPhaseStatistics.enter_Phase("MDD build");
@@ -19664,7 +19664,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_MmddPlusPlusCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    void sMultirobotInstance::to_Memory_MmddPlusPlusCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
 	//	s_GlobalPhaseStatistics.enter_Phase("MDD build");
 	--encoding_context.m_N_Layers;
@@ -20216,7 +20216,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_MddPlusCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_MddPlusCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();	
 
@@ -20921,7 +20921,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_MmddPlusCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const MDD_vector &MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_MmddPlusCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const MDD_vector &MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();	
 
@@ -24060,7 +24060,7 @@ namespace sReloc
     }
     
 
-    void sMultirobotInstance::to_Memory_MddPlusPlusCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_MddPlusPlusCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();	
 
@@ -24089,7 +24089,7 @@ namespace sReloc
 	    {
 		bound = false;
 	    }
-	}	
+	}
 
 	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
 	{
@@ -24185,10 +24185,10 @@ namespace sReloc
 			}
 		    }
 		    mutex_vertex_Identifiers.push_back(sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer], sIntegerIndex(u)));
-	    
+
 		    encoding_context.m_bit_generator->cast_MultiImplication(solver,
 									    sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[robot_id][layer],
-												    sIntegerIndex(u)),
+												    sIntegerIndex(u)),									    
 									    outgo_target_Identifiers);
 		}
 		encoding_context.m_bit_generator->cast_AdaptiveAllMutexConstraint(solver,
@@ -24378,7 +24378,7 @@ namespace sReloc
     }
 
     
-    void sMultirobotInstance::to_Memory_MddPlusPlusMutexCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_MddPlusPlusMutexCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();	
 
@@ -25195,7 +25195,7 @@ namespace sReloc
     }    
 
 
-    void sMultirobotInstance::to_Memory_MddPlusPlusFuelCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int sUNUSED(extra_fuel), int mdd_depth, const MDD_vector &MDD, const MDD_vector &sUNUSED(extra_MDD), const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_MddPlusPlusFuelCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int sUNUSED(extra_fuel), int mdd_depth, const MDD_vector &MDD, const MDD_vector &sUNUSED(extra_MDD), const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();	
 
@@ -25473,7 +25473,7 @@ namespace sReloc
     }        
 
 
-    void sMultirobotInstance::to_Memory_LMddPlusPlusCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &LMDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_LMddPlusPlusCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &LMDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();	
 
@@ -26232,7 +26232,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_MmddPlusPlusCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const MDD_vector &MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_MmddPlusPlusCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const MDD_vector &MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();	
 

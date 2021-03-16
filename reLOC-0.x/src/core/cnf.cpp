@@ -4,11 +4,11 @@
 /*                              reLOC 0.21-robik                              */
 /*                                                                            */
 /*                  (C) Copyright 2011 - 2021 Pavel Surynek                   */
-/*                http://www.surynek.com | <pavel@surynek.com>                */
+/*                http://www.surynek.net | <pavel@surynek.net>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* cnf.cpp / 0.21-robik_058                                                   */
+/* cnf.cpp / 0.21-robik_064                                                   */
 /*----------------------------------------------------------------------------*/
 //
 // Dimacs CNF formula production tools.
@@ -454,7 +454,7 @@ namespace sReloc
     }
 
 
-    void sBinaryTree::cast_TreeDisequalities(Glucose::Solver *solver, const sSpecifiedStateIdentifier &spec_identifier, int weight)
+    void sBinaryTree::cast_TreeDisequalities(sSATSolver_Type *solver, const sSpecifiedStateIdentifier &spec_identifier, int weight)
     {
 	Bits_list prefix;
 
@@ -553,7 +553,7 @@ namespace sReloc
     }
 
 
-    void sBinaryTree::cast_TreeDisequalities(const sBinaryTreeNode *tree_node, const Bits_list &prefix, Glucose::Solver *solver, const sSpecifiedStateIdentifier &spec_identifier, int weight)
+    void sBinaryTree::cast_TreeDisequalities(const sBinaryTreeNode *tree_node, const Bits_list &prefix, sSATSolver_Type *solver, const sSpecifiedStateIdentifier &spec_identifier, int weight)
     {
 	int N_Bits = spec_identifier.get_StateIdentifier()->get_Log2_StateCount();
 
@@ -644,7 +644,7 @@ namespace sReloc
 
 /*----------------------------------------------------------------------------*/
     
-    void sBinaryTree::cast_Clause(Glucose::Solver *solver, int lit_1)
+    void sBinaryTree::cast_Clause(sSATSolver_Type *solver, int lit_1)
     {
 	vector<int> Lits;
 	Lits.push_back(lit_1);
@@ -653,7 +653,7 @@ namespace sReloc
     }
 
     
-    void sBinaryTree::cast_Clause(Glucose::Solver *solver, int lit_1, int lit_2)
+    void sBinaryTree::cast_Clause(sSATSolver_Type *solver, int lit_1, int lit_2)
     {
 	vector<int> Lits;
 	Lits.push_back(lit_1);
@@ -663,7 +663,7 @@ namespace sReloc
     }
 
     
-    void sBinaryTree::cast_Clause(Glucose::Solver *solver, int lit_1, int lit_2, int lit_3)
+    void sBinaryTree::cast_Clause(sSATSolver_Type *solver, int lit_1, int lit_2, int lit_3)
     {
 	vector<int> Lits;
 	Lits.push_back(lit_1);
@@ -673,8 +673,9 @@ namespace sReloc
 	cast_Clause(solver, Lits);
     }
 
-    
-    void sBinaryTree::cast_Clause(Glucose::Solver *solver, vector<int> &Lits)
+
+#ifdef sUSE_GLUCOSE 
+    void sBinaryTree::cast_Clause(sSATSolver_Type *solver, vector<int> &Lits)
     {
 	Glucose::vec<Glucose::Lit> glu_Lits;
 	
@@ -689,8 +690,26 @@ namespace sReloc
 	}
 	solver->addClause(glu_Lits);
     }
-    
+#endif
 
+#ifdef sUSE_MAPLE 
+    void sBinaryTree::cast_Clause(sSATSolver_Type *solver, vector<int> &Lits)
+    {
+	Maple::vec<Maple::Lit> glu_Lits;
+	
+	for (vector<int>::const_iterator lit = Lits.begin(); lit != Lits.end(); ++lit)
+	{
+	    int glu_var = sABS(*lit) - 1;
+	    while (glu_var >= solver->nVars())
+	    {
+		solver->newVar();
+	    }
+	    glu_Lits.push((*lit > 0) ? Maple::mkLit(glu_var, false) : ~Maple::mkLit(glu_var, false));
+	}
+	solver->addClause(glu_Lits);
+    }
+#endif    
+    
     void sBinaryTree::to_Screen(const sString &indent) const
     {
 	if (m_root_node != NULL)
@@ -2083,7 +2102,7 @@ namespace sReloc
     }
 
 
-    void sStateClauseGenerator::cast_Alignment(Glucose::Solver *solver, const sSpecifiedStateIdentifier &spec_identifier, int sUNUSED(weight))
+    void sStateClauseGenerator::cast_Alignment(sSATSolver_Type *solver, const sSpecifiedStateIdentifier &spec_identifier, int sUNUSED(weight))
     {
 	int N_Bits = spec_identifier.get_StateIdentifier()->get_Log2_StateCount();
 
@@ -2167,7 +2186,7 @@ namespace sReloc
     }
 
 
-    void sStateClauseGenerator::cast_Equality(Glucose::Solver *solver, const sSpecifiedStateIdentifier &spec_identifier, int state, int sUNUSED(weight))
+    void sStateClauseGenerator::cast_Equality(sSATSolver_Type *solver, const sSpecifiedStateIdentifier &spec_identifier, int state, int sUNUSED(weight))
     {
 	int N_Bits = spec_identifier.get_StateIdentifier()->get_Log2_StateCount();
 
@@ -2248,7 +2267,7 @@ namespace sReloc
     }
 
 
-    void sStateClauseGenerator::cast_Disequality(Glucose::Solver *solver, const sSpecifiedStateIdentifier &spec_identifier, int state, int sUNUSED(weight))
+    void sStateClauseGenerator::cast_Disequality(sSATSolver_Type *solver, const sSpecifiedStateIdentifier &spec_identifier, int state, int sUNUSED(weight))
     {
 	int N_Bits = spec_identifier.get_StateIdentifier()->get_Log2_StateCount();
 
@@ -2302,7 +2321,7 @@ namespace sReloc
     }
 
 
-    void sStateClauseGenerator::cast_Disequalities(Glucose::Solver *solver, const sSpecifiedStateIdentifier &spec_identifier, const States_vector &States, int weight)
+    void sStateClauseGenerator::cast_Disequalities(sSATSolver_Type *solver, const sSpecifiedStateIdentifier &spec_identifier, const States_vector &States, int weight)
     {
 	for (States_vector::const_iterator state = States.begin(); state != States.end(); ++state)
 	{
@@ -2410,7 +2429,7 @@ namespace sReloc
     }
 
 
-    void sStateClauseGenerator::cast_DisjunctiveDisequality(Glucose::Solver                 *solver,
+    void sStateClauseGenerator::cast_DisjunctiveDisequality(sSATSolver_Type                 *solver,
 							    const sSpecifiedStateIdentifier &spec_identifier_A,
 							    int                              state_A,
 							    const sSpecifiedStateIdentifier &spec_identifier_B,
@@ -2502,7 +2521,7 @@ namespace sReloc
     }
 
 
-    void sStateClauseGenerator::cast_Equality(Glucose::Solver *solver, const sSpecifiedStateIdentifier &spec_identifier_A, const sSpecifiedStateIdentifier &spec_identifier_B, int sUNUSED(weight))
+    void sStateClauseGenerator::cast_Equality(sSATSolver_Type *solver, const sSpecifiedStateIdentifier &spec_identifier_A, const sSpecifiedStateIdentifier &spec_identifier_B, int sUNUSED(weight))
     {
 	sASSERT(spec_identifier_A.get_StateIdentifier()->get_Log2_StateCount() == spec_identifier_B.get_StateIdentifier()->get_Log2_StateCount());
 
@@ -2632,7 +2651,7 @@ namespace sReloc
     }
 
     
-    void sStateClauseGenerator::cast_ConditionalEquality(Glucose::Solver                 *solver,
+    void sStateClauseGenerator::cast_ConditionalEquality(sSATSolver_Type                 *solver,
 							 const sSpecifiedStateIdentifier &spec_identifier_IF_A,
 							 const sSpecifiedStateIdentifier &spec_identifier_IF_B,
 							 const sSpecifiedStateIdentifier &spec_identifier_THEN_A,
@@ -2786,7 +2805,7 @@ namespace sReloc
     }
 
 
-    void sStateClauseGenerator::cast_ConditionalEquality(Glucose::Solver                 *solver,
+    void sStateClauseGenerator::cast_ConditionalEquality(sSATSolver_Type                 *solver,
 							 const sSpecifiedStateIdentifier &spec_identifier_IF_A,
 							 int                              state_IF_B,
 							 const sSpecifiedStateIdentifier &spec_identifier_THEN_A,
@@ -2930,7 +2949,7 @@ namespace sReloc
     }
 
 
-    void sStateClauseGenerator::cast_ConditionalEquality(Glucose::Solver                 *solver,
+    void sStateClauseGenerator::cast_ConditionalEquality(sSATSolver_Type                 *solver,
 							 const sSpecifiedStateIdentifier &spec_identifier_IF_A,
 							 int                              state_IF_B,
 							 const sSpecifiedStateIdentifier &spec_identifier_THEN_A,
@@ -3149,7 +3168,7 @@ namespace sReloc
     }
 
 
-    void sStateClauseGenerator::cast_ConditionalEquality(Glucose::Solver                 *solver,
+    void sStateClauseGenerator::cast_ConditionalEquality(sSATSolver_Type                 *solver,
 							 const sSpecifiedStateIdentifier &spec_identifier_IF_A,
 							 const sSpecifiedStateIdentifier &spec_identifier_IF_B,
 							 const sSpecifiedStateIdentifier &spec_identifier_THEN_A_1,
@@ -3399,7 +3418,7 @@ namespace sReloc
     }
 
 
-    void sStateClauseGenerator::cast_ConditionalEquality(Glucose::Solver                 *solver,
+    void sStateClauseGenerator::cast_ConditionalEquality(sSATSolver_Type                 *solver,
 							 const sSpecifiedStateIdentifier &spec_identifier_IF_A,
 							 int                              state_IF_B,
 							 const sSpecifiedStateIdentifier &spec_identifier_THEN_A_1,
@@ -3633,7 +3652,7 @@ namespace sReloc
     }
 
 
-    void sStateClauseGenerator::cast_ConditionalEquality(Glucose::Solver                 *solver,
+    void sStateClauseGenerator::cast_ConditionalEquality(sSATSolver_Type                 *solver,
 							 const sSpecifiedStateIdentifier &spec_identifier_IF_A,
 							 int                              state_IF_B,
 							 const sSpecifiedStateIdentifier &spec_identifier_THEN_A_1,
@@ -3943,7 +3962,7 @@ namespace sReloc
     }
 
 
-    void sStateClauseGenerator::cast_ConditionalEquality(Glucose::Solver                 *solver,
+    void sStateClauseGenerator::cast_ConditionalEquality(sSATSolver_Type                 *solver,
 							 const sSpecifiedStateIdentifier &spec_identifier_IF_A,
 							 int                              state_IF_B,
 							 const sSpecifiedStateIdentifier &spec_identifier_THEN_A_1,
@@ -4334,7 +4353,7 @@ namespace sReloc
     }
 
 
-    void sStateClauseGenerator::cast_ConditionalEquality(Glucose::Solver                 *solver,
+    void sStateClauseGenerator::cast_ConditionalEquality(sSATSolver_Type                 *solver,
 							 const sSpecifiedStateIdentifier &spec_identifier_IF_A,
 							 int                              state_IF_B,
 							 const sSpecifiedStateIdentifier &spec_identifier_THEN_A_1,
@@ -4546,7 +4565,7 @@ namespace sReloc
 
 
 
-    void sStateClauseGenerator::cast_DifferenceConstraint(Glucose::Solver                  *solver,
+    void sStateClauseGenerator::cast_DifferenceConstraint(sSATSolver_Type                  *solver,
 							  const sSpecifiedStateIdentifier  &spec_identifier_A,
 							  SpecifiedStateIdentifiers_vector &spec_Identifiers_B,
 							  int                               sUNUSED(weight))
@@ -4630,7 +4649,7 @@ namespace sReloc
     }
 
 
-    void sStateClauseGenerator::cast_AllDifferenceConstraint(Glucose::Solver                  *solver,
+    void sStateClauseGenerator::cast_AllDifferenceConstraint(sSATSolver_Type                  *solver,
 							     SpecifiedStateIdentifiers_vector &spec_Identifiers,
 							     int                               weight)
     {
@@ -4785,7 +4804,7 @@ namespace sReloc
     }
 
 
-    void sStateClauseGenerator::cast_CaseSplitting(Glucose::Solver                  *solver,
+    void sStateClauseGenerator::cast_CaseSplitting(sSATSolver_Type                  *solver,
 						   SpecifiedStateIdentifiers_vector &split_Identifiers,
 						   States_vector                    &split_States,
 						   int                               sUNUSED(weight))
@@ -4935,7 +4954,7 @@ namespace sReloc
     }
 
 
-    void sStateClauseGenerator::cast_DisjunctiveEquality(Glucose::Solver                  *solver,
+    void sStateClauseGenerator::cast_DisjunctiveEquality(sSATSolver_Type                  *solver,
 							 SpecifiedStateIdentifiers_vector &disj_Identifiers,
 							 States_vector                    &disj_States,
 							 int                               sUNUSED(weight))
@@ -4996,7 +5015,7 @@ namespace sReloc
     }
 
 
-    void sStateClauseGenerator::cast_LargeConditionalEquality(Glucose::Solver                  *sUNUSED(solver),
+    void sStateClauseGenerator::cast_LargeConditionalEquality(sSATSolver_Type                  *sUNUSED(solver),
 							      const sSpecifiedStateIdentifier  &sUNUSED(spec_identifier_IF_A),
 							      int                               sUNUSED(state_IF_B),
 							      SpecifiedStateIdentifiers_vector &sUNUSED(spec_Identifiers_THEN_A),
@@ -5040,7 +5059,7 @@ namespace sReloc
     }
 
     
-    void sStateClauseGenerator::cast_LargeConditionalEquality(Glucose::Solver                  *sUNUSED(solver),
+    void sStateClauseGenerator::cast_LargeConditionalEquality(sSATSolver_Type                  *sUNUSED(solver),
 							      const sSpecifiedStateIdentifier  &sUNUSED(spec_identifier_IF_A),
 							      int                               sUNUSED(state_IF_B),
 							      const sSpecifiedStateIdentifier  &sUNUSED(spec_identifier_THEN_A_1),
@@ -5164,7 +5183,7 @@ namespace sReloc
     }
 
 
-    void sStateClauseGenerator::cast_LEXLess_Constraint(Glucose::Solver                 *solver,
+    void sStateClauseGenerator::cast_LEXLess_Constraint(sSATSolver_Type                 *solver,
 							const sSpecifiedStateIdentifier &spec_identifier_A,
 							const sSpecifiedStateIdentifier &spec_identifier_B,
 							int                              sUNUSED(sUNUSED(weight)))
@@ -5210,7 +5229,7 @@ namespace sReloc
 
 /*----------------------------------------------------------------------------*/
     
-    void sStateClauseGenerator::cast_Clause(Glucose::Solver *solver, int lit_1)
+    void sStateClauseGenerator::cast_Clause(sSATSolver_Type *solver, int lit_1)
     {
 	vector<int> Lits;
 	Lits.push_back(lit_1);
@@ -5219,7 +5238,7 @@ namespace sReloc
     }
 
     
-    void sStateClauseGenerator::cast_Clause(Glucose::Solver *solver, int lit_1, int lit_2)
+    void sStateClauseGenerator::cast_Clause(sSATSolver_Type *solver, int lit_1, int lit_2)
     {
 	vector<int> Lits;
 	Lits.push_back(lit_1);
@@ -5229,7 +5248,7 @@ namespace sReloc
     }
 
     
-    void sStateClauseGenerator::cast_Clause(Glucose::Solver *solver, int lit_1, int lit_2, int lit_3)
+    void sStateClauseGenerator::cast_Clause(sSATSolver_Type *solver, int lit_1, int lit_2, int lit_3)
     {
 	vector<int> Lits;
 	Lits.push_back(lit_1);
@@ -5239,8 +5258,9 @@ namespace sReloc
 	cast_Clause(solver, Lits);
     }
 
-    
-    void sStateClauseGenerator::cast_Clause(Glucose::Solver *solver, vector<int> &Lits)
+
+#ifdef sUSE_GLUCOSE    
+    void sStateClauseGenerator::cast_Clause(sSATSolver_Type *solver, vector<int> &Lits)
     {
 	Glucose::vec<Glucose::Lit> glu_Lits;
 	
@@ -5255,6 +5275,25 @@ namespace sReloc
 	}
 	solver->addClause(glu_Lits);
     }
+#endif
+
+#ifdef sUSE_MAPLE    
+    void sStateClauseGenerator::cast_Clause(sSATSolver_Type *solver, vector<int> &Lits)
+    {
+	Maple::vec<Maple::Lit> glu_Lits;
+	
+	for (vector<int>::const_iterator lit = Lits.begin(); lit != Lits.end(); ++lit)
+	{
+	    int glu_var = sABS(*lit) - 1;
+	    while (glu_var >= solver->nVars())
+	    {
+		solver->newVar();
+	    }
+	    glu_Lits.push((*lit > 0) ? Maple::mkLit(glu_var, false) : ~Maple::mkLit(glu_var, false));
+	}
+	solver->addClause(glu_Lits);
+    }
+#endif    
      
 
 
@@ -5377,7 +5416,7 @@ namespace sReloc
     }
 
 
-    void sAdvancedClauseGenerator::cast_ConditionalEquality(Glucose::Solver                 *solver,
+    void sAdvancedClauseGenerator::cast_ConditionalEquality(sSATSolver_Type                 *solver,
 							    const sSpecifiedStateIdentifier &spec_identifier_IF_A,
 							    int                              state_IF_B,
 							    const sSpecifiedStateIdentifier &spec_identifier_THEN_A,
@@ -5531,7 +5570,7 @@ namespace sReloc
     }
 
 
-    void sAdvancedClauseGenerator::cast_ConditionalEquality(Glucose::Solver                 *solver,
+    void sAdvancedClauseGenerator::cast_ConditionalEquality(sSATSolver_Type                 *solver,
 							    const sSpecifiedStateIdentifier &spec_identifier_IF_A,
 							    int                              state_IF_B,
 							    const sSpecifiedStateIdentifier &spec_identifier_THEN_A,
@@ -5712,7 +5751,7 @@ namespace sReloc
     }
 
 
-    void sAdvancedClauseGenerator::cast_ConditionalEquality(Glucose::Solver                 *solver,
+    void sAdvancedClauseGenerator::cast_ConditionalEquality(sSATSolver_Type                 *solver,
 							    const sSpecifiedStateIdentifier &spec_identifier_IF_A,
 							    int                              state_IF_B,
 							    const sSpecifiedStateIdentifier &spec_identifier_THEN_A_1,
@@ -5971,7 +6010,7 @@ namespace sReloc
     }
 
 
-    void sAdvancedClauseGenerator::cast_ConditionalEquality(Glucose::Solver                 *solver,
+    void sAdvancedClauseGenerator::cast_ConditionalEquality(sSATSolver_Type                 *solver,
 							    const sSpecifiedStateIdentifier &spec_identifier_IF_A,
 							    int                              state_IF_B,
 							    const sSpecifiedStateIdentifier &spec_identifier_THEN_A_1,
@@ -6173,7 +6212,7 @@ namespace sReloc
     }
 
     
-    void sAdvancedClauseGenerator::cast_LargeConditionalEquality(Glucose::Solver                  *solver,
+    void sAdvancedClauseGenerator::cast_LargeConditionalEquality(sSATSolver_Type                  *solver,
 								 const sSpecifiedStateIdentifier  &spec_identifier_IF_A,
 								 int                               state_IF_B,
 								 SpecifiedStateIdentifiers_vector &spec_Identifiers_THEN_A,
@@ -6401,7 +6440,7 @@ namespace sReloc
     }
 
 
-    void sAdvancedClauseGenerator::cast_LargeConditionalEquality(Glucose::Solver                  *solver,
+    void sAdvancedClauseGenerator::cast_LargeConditionalEquality(sSATSolver_Type                  *solver,
 								 const sSpecifiedStateIdentifier  &spec_identifier_IF_A,
 								 int                               state_IF_B,
 								 const sSpecifiedStateIdentifier  &spec_identifier_THEN_A_1,
@@ -6567,7 +6606,7 @@ namespace sReloc
     }
 
 
-    void sAdvancedClauseGenerator::cast_AllDifferenceConstraint(Glucose::Solver                  *solver,
+    void sAdvancedClauseGenerator::cast_AllDifferenceConstraint(sSATSolver_Type                  *solver,
 								SpecifiedStateIdentifiers_vector &spec_Identifiers,
 								int                               weight)
     {
@@ -6724,7 +6763,7 @@ namespace sReloc
     }
 
 
-    void sBitwiseClauseGenerator::cast_Alignment(Glucose::Solver *solver, const sSpecifiedStateIdentifier &spec_identifier, int sUNUSED(weight))
+    void sBitwiseClauseGenerator::cast_Alignment(sSATSolver_Type *solver, const sSpecifiedStateIdentifier &spec_identifier, int sUNUSED(weight))
     {
 	int Clause_cnt = 0;
 	int N_Bits = spec_identifier.get_StateIdentifier()->get_Log2_StateCount();
@@ -6826,7 +6865,7 @@ namespace sReloc
     }
 
 
-    void sBitwiseClauseGenerator::cast_Disequalities(Glucose::Solver *solver, const sSpecifiedStateIdentifier &spec_identifier, const States_vector &States, int weight)
+    void sBitwiseClauseGenerator::cast_Disequalities(sSATSolver_Type *solver, const sSpecifiedStateIdentifier &spec_identifier, const States_vector &States, int weight)
     {
 	int N_Bits = spec_identifier.get_StateIdentifier()->get_Log2_StateCount();
 	sBinaryTree state_binary_tree;
@@ -6941,7 +6980,7 @@ namespace sReloc
     }
 
 
-    void sBitClauseGenerator::cast_Equality(Glucose::Solver *solver, const sSpecifiedStateIdentifier &spec_identifier, int state, int sUNUSED(weight))
+    void sBitClauseGenerator::cast_Equality(sSATSolver_Type *solver, const sSpecifiedStateIdentifier &spec_identifier, int state, int sUNUSED(weight))
     {
 	int N_Bits = spec_identifier.get_StateIdentifier()->get_Log2_StateCount();
 
@@ -7021,7 +7060,7 @@ namespace sReloc
     }
 
 
-    void sBitClauseGenerator::cast_AllMutexConstraint(Glucose::Solver                *solver,
+    void sBitClauseGenerator::cast_AllMutexConstraint(sSATSolver_Type                *solver,
 						      SpecifiedBitIdentifiers_vector &spec_Identifiers,
 						      int                             sUNUSED(weight))
     {
@@ -7154,7 +7193,7 @@ namespace sReloc
     }
 
 
-    void sBitClauseGenerator::cast_LinearAllMutexConstraint(Glucose::Solver                *solver,
+    void sBitClauseGenerator::cast_LinearAllMutexConstraint(sSATSolver_Type                *solver,
 							    SpecifiedBitIdentifiers_vector &spec_Identifiers,
 							    int                             sUNUSED(weight))
     {
@@ -7248,7 +7287,7 @@ namespace sReloc
     }
 
 
-    void sBitClauseGenerator::cast_AdaptiveAllMutexConstraint(Glucose::Solver                *solver,
+    void sBitClauseGenerator::cast_AdaptiveAllMutexConstraint(sSATSolver_Type                *solver,
 							      SpecifiedBitIdentifiers_vector &spec_Identifiers,
 							      int                             weight)
     {
@@ -7305,7 +7344,7 @@ namespace sReloc
     }
 
 
-    void sBitClauseGenerator::cast_Disjunction(Glucose::Solver                *solver,
+    void sBitClauseGenerator::cast_Disjunction(sSATSolver_Type                *solver,
 					       SpecifiedBitIdentifiers_vector &spec_Identifiers,
 					       int                             sUNUSED(weight))
     {
@@ -7373,7 +7412,7 @@ namespace sReloc
     }
 
 
-    void sBitClauseGenerator::cast_ConditionalAllMutexConstraint(Glucose::Solver                *solver,
+    void sBitClauseGenerator::cast_ConditionalAllMutexConstraint(sSATSolver_Type                *solver,
 								 const sSpecifiedBitIdentifier  &spec_condition,
 								 SpecifiedBitIdentifiers_vector &spec_Identifiers,
 								 int                             sUNUSED(weight))
@@ -7428,7 +7467,7 @@ namespace sReloc
     }
 
 
-    void sBitClauseGenerator::cast_BitSet(Glucose::Solver *solver, const sSpecifiedBitIdentifier &spec_identifier, int sUNUSED(weight))
+    void sBitClauseGenerator::cast_BitSet(sSATSolver_Type *solver, const sSpecifiedBitIdentifier &spec_identifier, int sUNUSED(weight))
     {
 	cast_Clause(solver, spec_identifier.calc_CNF());
 	
@@ -7469,7 +7508,7 @@ namespace sReloc
     }
 
 
-    void sBitClauseGenerator::cast_BitUnset(Glucose::Solver *solver, const sSpecifiedBitIdentifier &spec_identifier, int sUNUSED(weight))
+    void sBitClauseGenerator::cast_BitUnset(sSATSolver_Type *solver, const sSpecifiedBitIdentifier &spec_identifier, int sUNUSED(weight))
     {
 	cast_Clause(solver, -spec_identifier.calc_CNF());
 
@@ -7519,7 +7558,7 @@ namespace sReloc
     }
 
 
-    void sBitClauseGenerator::cast_TriangleMutex(Glucose::Solver               *solver,
+    void sBitClauseGenerator::cast_TriangleMutex(sSATSolver_Type               *solver,
 						 const sSpecifiedBitIdentifier &spec_identifier_A,
 						 const sSpecifiedBitIdentifier &spec_identifier_B,
 						 const sSpecifiedBitIdentifier &spec_identifier_C,
@@ -7571,7 +7610,7 @@ namespace sReloc
     }
 
 
-    void sBitClauseGenerator::cast_Mutex(Glucose::Solver               *solver,
+    void sBitClauseGenerator::cast_Mutex(sSATSolver_Type               *solver,
 					 const sSpecifiedBitIdentifier &spec_identifier_A,
 					 const sSpecifiedBitIdentifier &spec_identifier_B,
 					 int                            sUNUSED(weight))
@@ -7627,7 +7666,7 @@ namespace sReloc
     }
 
 
-    void sBitClauseGenerator::cast_MultiTriangleMutex(Glucose::Solver                *solver,
+    void sBitClauseGenerator::cast_MultiTriangleMutex(sSATSolver_Type                *solver,
 						      const sSpecifiedBitIdentifier  &spec_identifier_A,
 						      const sSpecifiedBitIdentifier  &spec_identifier_B,
 						      SpecifiedBitIdentifiers_vector &spec_Identifiers_C,
@@ -7682,7 +7721,7 @@ namespace sReloc
     }
 
 
-    void sBitClauseGenerator::cast_BiangleMutex(Glucose::Solver               *solver,
+    void sBitClauseGenerator::cast_BiangleMutex(sSATSolver_Type               *solver,
 						const sSpecifiedBitIdentifier &spec_identifier_A,
 						const sSpecifiedBitIdentifier &spec_identifier_B,
 						int                            sUNUSED(weight))
@@ -7736,7 +7775,7 @@ namespace sReloc
     }
 
 
-    void sBitClauseGenerator::cast_MultiBiangleMutex(Glucose::Solver                *solver,
+    void sBitClauseGenerator::cast_MultiBiangleMutex(sSATSolver_Type                *solver,
 						     const sSpecifiedBitIdentifier  &spec_identifier_A,
 						     SpecifiedBitIdentifiers_vector &spec_Identifiers_B,
 						     int                             sUNUSED(weight))
@@ -7792,7 +7831,7 @@ namespace sReloc
     }
 
 
-    void sBitClauseGenerator::cast_Implication(Glucose::Solver               *solver,
+    void sBitClauseGenerator::cast_Implication(sSATSolver_Type               *solver,
 					       const sSpecifiedBitIdentifier &spec_identifier_PREC,
 					       const sSpecifiedBitIdentifier &spec_identifier_POST,
 					       int                            sUNUSED(weight))
@@ -7846,7 +7885,7 @@ namespace sReloc
     }
 
 
-    void sBitClauseGenerator::cast_Bimplication(Glucose::Solver               *solver,
+    void sBitClauseGenerator::cast_Bimplication(sSATSolver_Type               *solver,
 						const sSpecifiedBitIdentifier &spec_identifier_PREC_A,
 						const sSpecifiedBitIdentifier &spec_identifier_PREC_B,						
 						const sSpecifiedBitIdentifier &spec_identifier_POST,
@@ -7903,7 +7942,7 @@ namespace sReloc
     }
 
 
-    void sBitClauseGenerator::cast_Implication(Glucose::Solver               *solver,
+    void sBitClauseGenerator::cast_Implication(sSATSolver_Type               *solver,
 					       const sSpecifiedBitIdentifier &spec_identifier_PREC,
 					       const sSpecifiedBitIdentifier &spec_identifier_POST_A,
 					       const sSpecifiedBitIdentifier &spec_identifier_POST_B,
@@ -7964,7 +8003,7 @@ namespace sReloc
     }
 
     
-    void sBitClauseGenerator::cast_NonzeroImplication(Glucose::Solver                 *solver,
+    void sBitClauseGenerator::cast_NonzeroImplication(sSATSolver_Type                 *solver,
 						      const sSpecifiedStateIdentifier &spec_identifier_PREC,
 						      const sSpecifiedBitIdentifier   &spec_identifier_POST,
 						      int                              sUNUSED(weight))
@@ -8028,7 +8067,7 @@ namespace sReloc
     }
 
 
-    void sBitClauseGenerator::cast_ZeroImplication(Glucose::Solver                 *solver,
+    void sBitClauseGenerator::cast_ZeroImplication(sSATSolver_Type                 *solver,
 						   const sSpecifiedBitIdentifier   &spec_identifier_PREC,
 						   const sSpecifiedStateIdentifier &spec_identifier_POST,
 						   int                              sUNUSED(weight))
@@ -8086,7 +8125,7 @@ namespace sReloc
     }
 
 
-    void sBitClauseGenerator::cast_Effect(Glucose::Solver               *solver,
+    void sBitClauseGenerator::cast_Effect(sSATSolver_Type               *solver,
 					  const sSpecifiedBitIdentifier &spec_identifier_PREC_A,
 					  const sSpecifiedBitIdentifier &spec_identifier_PREC_B,
 					  const sSpecifiedBitIdentifier &spec_identifier_POST,
@@ -8152,7 +8191,7 @@ namespace sReloc
     }
 
 
-    void sBitClauseGenerator::cast_MultiImplication(Glucose::Solver                *solver,
+    void sBitClauseGenerator::cast_MultiImplication(sSATSolver_Type                *solver,
 						    const sSpecifiedBitIdentifier  &spec_identifier_PREC,
 						    SpecifiedBitIdentifiers_vector &spec_Identifiers_POST,
 						    int                             sUNUSED(weight))
@@ -8161,8 +8200,7 @@ namespace sReloc
 	Literals.push_back(-spec_identifier_PREC.calc_CNF());
 
 	for (SpecifiedBitIdentifiers_vector::const_iterator spec_identifier_POST = spec_Identifiers_POST.begin(); spec_identifier_POST != spec_Identifiers_POST.end(); ++spec_identifier_POST)
-	{
-	    
+	{	    
 	    Literals.push_back(spec_identifier_POST->calc_CNF());
 	}
 	cast_Clause(solver, Literals);
@@ -8220,7 +8258,7 @@ namespace sReloc
     }
 
 
-    void sBitClauseGenerator::cast_MultiImpliedImplication(Glucose::Solver                *solver,
+    void sBitClauseGenerator::cast_MultiImpliedImplication(sSATSolver_Type                *solver,
 							   const sSpecifiedBitIdentifier  &spec_identifier_PREC,
 							   SpecifiedBitIdentifiers_vector &spec_Identifiers_MIDDLE,							   
 							   SpecifiedBitIdentifiers_vector &spec_Identifiers_POST,
@@ -8286,7 +8324,7 @@ namespace sReloc
     }
 
 
-    void sBitClauseGenerator::cast_MultiConjunctiveImplication(Glucose::Solver                *solver,
+    void sBitClauseGenerator::cast_MultiConjunctiveImplication(sSATSolver_Type                *solver,
 							       const sSpecifiedBitIdentifier  &spec_identifier_PREC,
 							       SpecifiedBitIdentifiers_vector &spec_Identifiers_POST,
 							       int                             sUNUSED(weight))
@@ -8343,7 +8381,7 @@ namespace sReloc
     }
 
 
-    void sBitClauseGenerator::cast_MultiNegation(Glucose::Solver                *solver,
+    void sBitClauseGenerator::cast_MultiNegation(sSATSolver_Type                *solver,
 						 SpecifiedBitIdentifiers_vector &spec_Identifiers,
 						 int                             sUNUSED(weight))
     {
@@ -8403,7 +8441,7 @@ namespace sReloc
     }
 
 
-    void sBitClauseGenerator::cast_MultiNegativeImplication(Glucose::Solver                *solver,
+    void sBitClauseGenerator::cast_MultiNegativeImplication(sSATSolver_Type                *solver,
 							    const sSpecifiedBitIdentifier  &spec_identifier_PREC,
 							    SpecifiedBitIdentifiers_vector &spec_Identifiers_POST,
 							    int                             sUNUSED(weight))
@@ -8462,7 +8500,7 @@ namespace sReloc
     }
 
 
-    void sBitClauseGenerator::cast_MultiExclusiveImplication(Glucose::Solver                *solver,
+    void sBitClauseGenerator::cast_MultiExclusiveImplication(sSATSolver_Type                *solver,
 							     const sSpecifiedBitIdentifier  &spec_identifier_PREC,
 							     SpecifiedBitIdentifiers_vector &spec_Identifiers_POST,
 							     int                             sUNUSED(weight))
@@ -8530,7 +8568,7 @@ namespace sReloc
     }
 
     
-    void sBitClauseGenerator::cast_ConditionalEquality(Glucose::Solver                 *solver,
+    void sBitClauseGenerator::cast_ConditionalEquality(sSATSolver_Type                 *solver,
 						       const sSpecifiedBitIdentifier   &spec_identifier_PREC,
 						       const sSpecifiedStateIdentifier &spec_identifier_THEN_A,
 						       const sSpecifiedStateIdentifier &spec_identifier_THEN_B,
@@ -8596,7 +8634,7 @@ namespace sReloc
     }
 
 
-    void sBitClauseGenerator::cast_SwapConstraint(Glucose::Solver               *solver,
+    void sBitClauseGenerator::cast_SwapConstraint(sSATSolver_Type               *solver,
 						  const sSpecifiedBitIdentifier &spec_identifier_PREC_A,
 						  const sSpecifiedBitIdentifier &spec_identifier_PREC_B,
 						  const sSpecifiedBitIdentifier &spec_identifier_POST_A,
@@ -8656,7 +8694,7 @@ namespace sReloc
     }
 
     
-    void sBitClauseGenerator::cast_NegativeSwapConstraint(Glucose::Solver               *solver,
+    void sBitClauseGenerator::cast_NegativeSwapConstraint(sSATSolver_Type               *solver,
 							  const sSpecifiedBitIdentifier &spec_identifier_PREC_A,
 							  const sSpecifiedBitIdentifier &spec_identifier_PREC_B,
 							  const sSpecifiedBitIdentifier &spec_identifier_POST_A,
@@ -8718,7 +8756,7 @@ namespace sReloc
     }
 
 
-    void sBitClauseGenerator::cast_SwapConstraint(Glucose::Solver                *solver,
+    void sBitClauseGenerator::cast_SwapConstraint(sSATSolver_Type                *solver,
 						  const sSpecifiedBitIdentifier  &spec_identifier_PREC_A,
 						  const sSpecifiedBitIdentifier  &spec_identifier_PREC_B,
 						  SpecifiedBitIdentifiers_vector &spec_Identifiers_POST,
@@ -8907,7 +8945,7 @@ namespace sReloc
      }
 
 
-    void sBitClauseGenerator::cast_Cardinality(Glucose::Solver                *solver,
+    void sBitClauseGenerator::cast_Cardinality(sSATSolver_Type                *solver,
 					       SpecifiedBitIdentifiers_vector &spec_Identifiers,
 					       int                             cardinality,
 					       int                             sUNUSED(weight))
@@ -8962,7 +9000,7 @@ namespace sReloc
 
 /*----------------------------------------------------------------------------*/
     
-    void sBitClauseGenerator::cast_Clause(Glucose::Solver *solver, int lit_1)
+    void sBitClauseGenerator::cast_Clause(sSATSolver_Type *solver, int lit_1)
     {
 	vector<int> Lits;
 	Lits.push_back(lit_1);
@@ -8971,7 +9009,7 @@ namespace sReloc
     }
 
     
-    void sBitClauseGenerator::cast_Clause(Glucose::Solver *solver, int lit_1, int lit_2)
+    void sBitClauseGenerator::cast_Clause(sSATSolver_Type *solver, int lit_1, int lit_2)
     {
 	vector<int> Lits;
 	Lits.push_back(lit_1);
@@ -8981,7 +9019,7 @@ namespace sReloc
     }
 
     
-    void sBitClauseGenerator::cast_Clause(Glucose::Solver *solver, int lit_1, int lit_2, int lit_3)
+    void sBitClauseGenerator::cast_Clause(sSATSolver_Type *solver, int lit_1, int lit_2, int lit_3)
     {
 	vector<int> Lits;
 	Lits.push_back(lit_1);
@@ -8991,11 +9029,12 @@ namespace sReloc
 	cast_Clause(solver, Lits);
     }
 
-    
-    void sBitClauseGenerator::cast_Clause(Glucose::Solver *solver, vector<int> &Lits)
+
+#ifdef sUSE_GLUCOSE    
+    void sBitClauseGenerator::cast_Clause(sSATSolver_Type *solver, vector<int> &Lits)
     {
 	Glucose::vec<Glucose::Lit> glu_Lits;
-	
+
 	for (vector<int>::const_iterator lit = Lits.begin(); lit != Lits.end(); ++lit)
 	{
 	    int glu_var = sABS(*lit) - 1;
@@ -9007,6 +9046,26 @@ namespace sReloc
 	}
 	solver->addClause(glu_Lits);
     }
+#endif
+
+
+#ifdef sUSE_MAPLE    
+    void sBitClauseGenerator::cast_Clause(sSATSolver_Type *solver, vector<int> &Lits)
+    {
+	Maple::vec<Maple::Lit> glu_Lits;
+
+	for (vector<int>::const_iterator lit = Lits.begin(); lit != Lits.end(); ++lit)
+	{
+	    int glu_var = sABS(*lit) - 1;
+	    while (glu_var >= solver->nVars())
+	    {
+		solver->newVar();
+	    }
+	    glu_Lits.push((*lit > 0) ? Maple::mkLit(glu_var, false) : ~Maple::mkLit(glu_var, false));
+	}
+	solver->addClause(glu_Lits);
+    }
+#endif    
 
     
 /*----------------------------------------------------------------------------*/

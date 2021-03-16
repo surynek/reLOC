@@ -4,11 +4,11 @@
 /*                              reLOC 0.21-robik                              */
 /*                                                                            */
 /*                  (C) Copyright 2011 - 2021 Pavel Surynek                   */
-/*                http://www.surynek.com | <pavel@surynek.com>                */
+/*                http://www.surynek.net | <pavel@surynek.net>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* encodings_direct.cpp / 0.21-robik_058                                      */
+/* encodings_direct.cpp / 0.21-robik_064                                      */
 /*----------------------------------------------------------------------------*/
 //
 // Multi-robot path-finding encodings based on
@@ -778,7 +778,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_MatchingCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &sUNUSED(indent), bool sUNUSED(verbose)) const
+    void sMultirobotInstance::to_Memory_MatchingCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &sUNUSED(indent), bool sUNUSED(verbose)) const
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();
 
@@ -1651,7 +1651,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_HeuristicMatchingCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_HeuristicMatchingCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();
 
@@ -2547,7 +2547,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_DirectCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &sUNUSED(indent), bool sUNUSED(verbose)) const
+    void sMultirobotInstance::to_Memory_DirectCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &sUNUSED(indent), bool sUNUSED(verbose)) const
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();
 
@@ -3700,7 +3700,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_HeuristicDirectCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_HeuristicDirectCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();
 
@@ -4716,7 +4716,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_SimplicialCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &sUNUSED(indent), bool sUNUSED(verbose)) const
+    void sMultirobotInstance::to_Memory_SimplicialCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &sUNUSED(indent), bool sUNUSED(verbose)) const
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();
 
@@ -5822,7 +5822,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_HeuristicSimplicialCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_HeuristicSimplicialCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();
 
@@ -6667,7 +6667,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_SingularCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &sUNUSED(indent), bool sUNUSED(verbose)) const
+    void sMultirobotInstance::to_Memory_SingularCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &sUNUSED(indent), bool sUNUSED(verbose)) const
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();
 
@@ -7926,7 +7926,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_PluralCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &sUNUSED(indent), bool sUNUSED(verbose)) const
+    void sMultirobotInstance::to_Memory_PluralCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &sUNUSED(indent), bool sUNUSED(verbose)) const
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();
 
@@ -9680,7 +9680,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_Plural2CNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_Plural2CNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();	
 
@@ -11300,7 +11300,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_HeightedCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_HeightedCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();	
 	build_HeightedEnvironments_(encoding_context.m_max_total_cost);
