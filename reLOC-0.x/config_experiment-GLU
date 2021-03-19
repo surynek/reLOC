@@ -1,6 +1,6 @@
 ./mkversion
 python makegen.py release.mds
 ./version.sh > src/version.h
-./config-GLU_opt.sh > src/compile.h
+./config-GLU_exp.sh > src/compile.h
 python augment.py
 make clean
