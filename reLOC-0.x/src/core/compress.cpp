@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* compress.cpp / 0.22-robik_071                                              */
+/* compress.cpp / 0.22-robik_074                                              */
 /*----------------------------------------------------------------------------*/
 //
 // Compression tools for relocation problem solutions.
@@ -7586,6 +7586,13 @@ namespace sReloc
 	{
             #ifdef sSTATISTICS
 	    {
+		s_GlobalPhaseStatistics.get_CurrentPhase().m_max_makespan_tested = max_individual_cost;
+		s_GlobalPhaseStatistics.get_CurrentPhase().m_max_total_cost_tested = total_cost;
+	    }
+            #endif
+	    
+            #ifdef sSTATISTICS
+	    {
 		s_GlobalPhaseStatistics.enter_MicroPhase(total_cost);
 	    }
 	    #endif
@@ -7691,6 +7698,7 @@ namespace sReloc
 	    }
 
 	    total_cost += 1;
+	    max_individual_cost += 1;
 	    
 	    if (total_cost > max_total_cost)
 	    {

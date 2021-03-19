@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* encodings_mdd.cpp / 0.22-robik_071                                         */
+/* encodings_mdd.cpp / 0.22-robik_074                                         */
 /*----------------------------------------------------------------------------*/
 //
 // Multi-robot path-finding encodings based on
@@ -8926,7 +8926,11 @@ namespace sReloc
 	    {
 		bound = false;
 	    }
-	}			
+	}
+	if (m_ratio < 0.0)
+	{
+	    bound = false;	    
+	}		
 
 	//	s_GlobalPhaseStatistics.enter_Phase("Counting");
 
@@ -9669,6 +9673,10 @@ namespace sReloc
 	    {
 		bound = false;
 	    }
+	}
+	if (m_ratio < 0.0)
+	{
+	    bound = false;	    
 	}			
 
 	//	s_GlobalPhaseStatistics.enter_Phase("Counting");
@@ -10431,7 +10439,11 @@ namespace sReloc
 	    {
 		bound = false;
 	    }
-	}	
+	}
+	if (m_ratio < 0.0)
+	{
+	    bound = false;	    
+	}			
 
 	if (bound)
 	{
@@ -12215,6 +12227,10 @@ namespace sReloc
 	    {
 		bound = false;
 	    }
+	}
+	if (m_ratio < 0.0)
+	{
+	    bound = false;	    
 	}			
 
 	//	s_GlobalPhaseStatistics.enter_Phase("Counting");
@@ -12603,6 +12619,10 @@ namespace sReloc
 	    {
 		bound = false;
 	    }
+	}
+	if (m_ratio < 0.0)
+	{
+	    bound = false;	    
 	}			
 
 	//	s_GlobalPhaseStatistics.enter_Phase("Counting");
@@ -13005,7 +13025,11 @@ namespace sReloc
 	    {
 		bound = false;
 	    }
-	}		
+	}
+	if (m_ratio < 0.0)
+	{
+	    bound = false;	    
+	}	
 
 	//	s_GlobalPhaseStatistics.enter_Phase("Counting");
 
@@ -21175,7 +21199,11 @@ namespace sReloc
 	    {
 		bound = false;
 	    }
-	}				
+	}
+	if (m_ratio < 0.0)
+	{
+	    bound = false;	    
+	}		
 
 	//	s_GlobalPhaseStatistics.enter_Phase("Counting");
 
@@ -24090,6 +24118,10 @@ namespace sReloc
 		bound = false;
 	    }
 	}
+	if (m_ratio < 0.0)
+	{
+	    bound = false;	    
+	}		
 
 	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
 	{

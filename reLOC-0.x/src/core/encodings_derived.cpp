@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* encodings_derived.cpp / 0.22-robik_071                                     */
+/* encodings_derived.cpp / 0.22-robik_074                                     */
 /*----------------------------------------------------------------------------*/
 //
 // Multi-robot path-finding encodings derived from the standard MDD encoding.
@@ -2749,6 +2749,10 @@ namespace sReloc
 		bound = true;
 	    }
 	}
+	if (m_ratio < 0.0)
+	{
+	    bound = false;	    
+	}			
 	
 	/*
 	printf("Bound:%d (%d x %d)\n", bound, encoding_context.m_max_total_cost + extra_cost, mdd_depth * N_Robots);
@@ -3113,6 +3117,10 @@ namespace sReloc
 		bound = true;
 	    }
 	}
+	if (m_ratio < 0.0)
+	{
+	    bound = false;	    
+	}			
 	
 	if (bound)
 	{

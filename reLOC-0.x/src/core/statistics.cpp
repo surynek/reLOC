@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* statistics.cpp / 0.22-robik_071                                            */
+/* statistics.cpp / 0.22-robik_074                                            */
 /*----------------------------------------------------------------------------*/
 //
 // Statistical data collection and analytical tools.
@@ -55,6 +55,8 @@ namespace sReloc
 	, m_move_Executions(0)
 	, m_produced_cnf_Variables(0)
 	, m_produced_cnf_Clauses(0)
+	, m_max_makespan_tested(0)
+	, m_max_total_cost_tested(0)
 	, m_search_Steps(0)
 	, m_parent_phase(parent_phase)
     {
@@ -253,6 +255,8 @@ namespace sReloc
 	fprintf(fw, "%s%s%sMove executions                   = %ld\n", indent.c_str(), sRELOC_INDENT.c_str(), sRELOC_INDENT.c_str(), phase.m_move_Executions);
 	fprintf(fw, "%s%s%sProduced CNF variables            = %ld\n", indent.c_str(), sRELOC_INDENT.c_str(), sRELOC_INDENT.c_str(), phase.m_produced_cnf_Variables);
 	fprintf(fw, "%s%s%sProduced CNF clauses              = %ld\n", indent.c_str(), sRELOC_INDENT.c_str(), sRELOC_INDENT.c_str(), phase.m_produced_cnf_Clauses);
+	fprintf(fw, "%s%s%sMaximum makespan tested           = %d\n", indent.c_str(), sRELOC_INDENT.c_str(), sRELOC_INDENT.c_str(), phase.m_max_makespan_tested);
+	fprintf(fw, "%s%s%sMaximum cost tested               = %d\n", indent.c_str(), sRELOC_INDENT.c_str(), sRELOC_INDENT.c_str(), phase.m_max_total_cost_tested);
 	fprintf(fw, "%s%s%sSearch steps                      = %ld\n", indent.c_str(), sRELOC_INDENT.c_str(), sRELOC_INDENT.c_str(), phase.m_search_Steps);
 	fprintf(fw, "%s%s%sWall clock TIME (seconds)         = %.3f\n", indent.c_str(), sRELOC_INDENT.c_str(), sRELOC_INDENT.c_str(), phase.m_WC_Seconds);
 	fprintf(fw, "%s%s%sCPU/machine TIME (seconds)        = %.3f\n", indent.c_str(), sRELOC_INDENT.c_str(), sRELOC_INDENT.c_str(), phase.m_CPU_Seconds);

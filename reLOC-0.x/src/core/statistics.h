@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* statistics.h / 0.22-robik_071                                              */
+/* statistics.h / 0.22-robik_074                                              */
 /*----------------------------------------------------------------------------*/
 //
 // Statistical data collection and analytical tools.
@@ -95,6 +95,9 @@ namespace sReloc
 
 	    long m_produced_cnf_Variables;
 	    long m_produced_cnf_Clauses;
+
+	    int m_max_makespan_tested;
+	    int m_max_total_cost_tested;
 
 	    long m_search_Steps;
 
