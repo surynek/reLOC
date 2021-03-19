@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* compress.cpp / 0.22-robik_067                                              */
+/* compress.cpp / 0.22-robik_069                                              */
 /*----------------------------------------------------------------------------*/
 //
 // Compression tools for relocation problem solutions.
@@ -7553,6 +7553,12 @@ namespace sReloc
     }
 
 
+#ifdef sEXPERIMENTAL_OVERCOST_STEPS   
+    const int overcost_max_steps = sEXPERIMENTAL_OVERCOST_STEPS;
+#else
+    const int overcost_max_steps = 0;    
+#endif
+    
     sResult sMultirobotSolutionCompressor::incompute_OptimalCost(sSATSolver_Type                   **solver,
 								 sMultirobotInstance               &instance,
 								 int                                max_total_cost,
@@ -7572,6 +7578,9 @@ namespace sReloc
 	double finish_seconds = sGet_CPU_Seconds();
 
 	expansion_count = 0;
+	
+	bool overcost_phase = false;
+	int overcost_steps = 0;
 
 	while (true)
 	{
@@ -7610,14 +7619,34 @@ namespace sReloc
 	    {
 	    case sMULTIROBOT_SOLUTION_COMPRESSOR_SAT_INFO:
 	    {
-		optimal_cost = total_cost;
-                #ifdef sSTATISTICS
+		if (overcost_phase)
 		{
-		    s_GlobalPhaseStatistics.leave_MicroPhase();
+		    if (overcost_steps++ >= overcost_max_steps)
+		    {
+                        #ifdef sSTATISTICS
+			{
+			    s_GlobalPhaseStatistics.leave_MicroPhase();
+			}
+	                #endif						
+			return sRESULT_SUCCESS;
+		    }
 		}
-	        #endif	    
-		
-		return sRESULT_SUCCESS;
+		else		    
+		{
+		    optimal_cost = total_cost;
+		    overcost_phase = true;
+
+		    if (overcost_steps++ >= overcost_max_steps)
+		    {
+                        #ifdef sSTATISTICS
+			{
+			    s_GlobalPhaseStatistics.leave_MicroPhase();
+			}
+	                #endif			
+			return sRESULT_SUCCESS;
+		    }		    
+		}
+		break;
 	    }
 	    case sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO:
 	    {
@@ -7625,14 +7654,34 @@ namespace sReloc
 	    }
 	    case sMULTIROBOT_SOLUTION_COMPRESSOR_INDET_INFO:
 	    {
-		optimal_cost = MAKESPAN_UNDEFINED;
-                #ifdef sSTATISTICS
-		{
-		    s_GlobalPhaseStatistics.leave_MicroPhase();
+		if (overcost_phase)
+		{				
+		    if (overcost_steps++ >= overcost_max_steps)
+		    {
+                        #ifdef sSTATISTICS
+			{
+			    s_GlobalPhaseStatistics.leave_MicroPhase();
+			}
+	                #endif						
+			return result;
+		    }
 		}
-	        #endif	    
-		
-		return result;
+		else
+		{
+		    optimal_cost = MAKESPAN_UNDEFINED;
+		    overcost_phase = true;
+
+		    if (overcost_steps++ >= overcost_max_steps)
+		    {
+                        #ifdef sSTATISTICS
+			{
+			    s_GlobalPhaseStatistics.leave_MicroPhase();
+			}
+	                #endif			
+			return result;
+		    }		    
+		}
+		break;
 	    }
 	    default:
 	    {

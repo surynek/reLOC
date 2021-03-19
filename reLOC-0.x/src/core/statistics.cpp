@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* statistics.cpp / 0.22-robik_067                                            */
+/* statistics.cpp / 0.22-robik_069                                            */
 /*----------------------------------------------------------------------------*/
 //
 // Statistical data collection and analytical tools.
@@ -182,6 +182,7 @@ namespace sReloc
     void sPhaseStatistics::restart_CurrentMicroPhase(void)
     {
 	sASSERT(m_curr_micro_key != -1);
+	
 	MicroPhase &micro_phase = m_current_phase->m_micro_Phases[m_curr_micro_key];
 	micro_phase.m_key = m_curr_micro_key;
 	

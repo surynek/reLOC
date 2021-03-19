@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* statistics.h / 0.22-robik_067                                              */
+/* statistics.h / 0.22-robik_069                                              */
 /*----------------------------------------------------------------------------*/
 //
 // Statistical data collection and analytical tools.
@@ -53,10 +53,14 @@ namespace sReloc
 	{
 	    MicroPhase()
 	    : m_key(-1)
+	    , m_WC_Seconds(0.0)
+	    , m_CPU_Seconds(0.0)
 	    { /* nothing */ }
 	    
 	    MicroPhase(sInt_32 key)
 	    : m_key(key)
+	    , m_WC_Seconds(0.0)
+	    , m_CPU_Seconds(0.0)	      
 	    { /* nothing */ }
 
 	    sInt_32 m_key;
