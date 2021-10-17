@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* encodings_mdd.cpp / 0.21-robik_054                                         */
+/* encodings_mdd.cpp / 0.21-robik_056                                         */
 /*----------------------------------------------------------------------------*/
 //
 // Multi-robot path-finding encodings based on
@@ -24046,7 +24046,13 @@ namespace sReloc
 
 	//	s_GlobalPhaseStatistics.enter_Phase("Counting");
 
+	#define TEST_UNBOUNDED 1
+	
+	#ifdef TEST_UNDOUNDED
 	bool bound = false;
+	#else
+	bool bound = true;	
+	#endif
 
 	if (m_ratio > 0.0)
 	{
@@ -24501,6 +24507,10 @@ namespace sReloc
 	    }
 	}
 
+        #define TEST_MUTEX 1
+        #ifdef TEST_MUTEX
+	{
+	    
 	ScheduledMTXs_list scheduled_Mutexes;
 
 	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
@@ -25015,9 +25025,13 @@ namespace sReloc
 		}
 	    }
 	}
-	printf("Mutexes found in total: %d\n", N_mutexes);
 	*/
+	printf("Mutexes found in total: %d\n", N_mutexes);
+	}
 	
+        #endif /* TEST_MUTEX */
+	
+		
 	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
 	{
 	    for (int layer = 0; layer < N_Layers; ++layer)
