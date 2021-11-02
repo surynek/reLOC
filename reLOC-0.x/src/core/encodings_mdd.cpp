@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* encodings_mdd.cpp / 0.22-robik_075                                         */
+/* encodings_mdd.cpp / 0.22-robik_091                                         */
 /*----------------------------------------------------------------------------*/
 //
 // Multi-robot path-finding encodings based on
@@ -21959,6 +21959,9 @@ namespace sReloc
 	    }
 	}
 
+        #define TEST_MUTEX 1
+        #ifdef TEST_MUTEX
+	{	
 
 	ScheduledMTXs_list scheduled_Mutexes;
 
@@ -22256,8 +22259,8 @@ namespace sReloc
 		}
 	    }
 	}
-	printf("Mutexes found in total: %d\n", N_mutexes);		
-
+	printf("Mutexes found in total: %d\n", N_mutexes);
+	
 	/*
 	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
 	{
@@ -22441,8 +22444,12 @@ namespace sReloc
 		}
 	    }
 	}
+	*/
 	printf("Mutexes found in total: %d\n", N_mutexes);
-*/
+
+	}	
+        #endif /* TEST_MUTEX */	
+	
 
 	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
 	{
@@ -22728,7 +22735,7 @@ namespace sReloc
 	    }
 	}
 
-	N_mutexes = 0;
+	int N_mutexes = 0;
 	
 	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
 	{	    
@@ -24102,26 +24109,33 @@ namespace sReloc
 
 	//	s_GlobalPhaseStatistics.enter_Phase("Counting");
 
-	bool bound = true;
-
-	if (m_ratio > 0.0)
+        //#define TEST_UNBOUNDED 1
+	
+	#ifdef TEST_UNBOUNDED
+	bool bound = true;	
 	{
-	    int add_up = floor(encoding_context.m_max_total_cost * (m_ratio - 1.0));
-	    extra_cost += add_up;
-
-	    if (encoding_context.m_max_total_cost + extra_cost < mdd_depth * N_Robots)
+	    if (m_ratio > 0.0)
 	    {
-		bound = true;
+		int add_up = floor(encoding_context.m_max_total_cost * (m_ratio - 1.0));
+		extra_cost += add_up;
+		
+		if (encoding_context.m_max_total_cost + extra_cost < mdd_depth * N_Robots)
+		{
+		    bound = true;
+		}
+		else
+		{
+		    bound = false;
+		}
 	    }
-	    else
+	    if (m_ratio < 0.0)
 	    {
-		bound = false;
+		bound = false;	    
 	    }
 	}
-	if (m_ratio < 0.0)
-	{
-	    bound = false;	    
-	}		
+	#else
+	bool bound = true;	
+	#endif	
 
 	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
 	{
@@ -24565,6 +24579,11 @@ namespace sReloc
 	    }
 	}
 
+        #define TEST_MUTEX 1
+        #ifdef TEST_MUTEX
+	{
+	    //s_GlobalPhaseStatistics.enter_Phase("Mutex");
+	
 	ScheduledMTXs_list scheduled_Mutexes;
 
 	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
@@ -25081,6 +25100,11 @@ namespace sReloc
 	}
 	printf("Mutexes found in total: %d\n", N_mutexes);
 	*/
+	//s_GlobalPhaseStatistics.leave_Phase();	
+	printf("Mutexes found in total: %d\n", N_mutexes);
+	}
+
+        #endif /* TEST_MUTEX */	
 	
 	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
 	{
