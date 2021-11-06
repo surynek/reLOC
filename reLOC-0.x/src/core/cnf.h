@@ -1,14 +1,14 @@
 /*============================================================================*/
 /*                                                                            */
 /*                                                                            */
-/*                              reLOC 0.21-robik                              */
+/*                              reLOC 0.22-robik                              */
 /*                                                                            */
 /*                  (C) Copyright 2011 - 2021 Pavel Surynek                   */
-/*                http://www.surynek.com | <pavel@surynek.com>                */
+/*                http://www.surynek.net | <pavel@surynek.net>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* cnf.h / 0.21-robik_056                                                     */
+/* cnf.h / 0.22-robik_095                                                     */
 /*----------------------------------------------------------------------------*/
 //
 // Dimacs CNF formula production tools.
@@ -31,12 +31,41 @@
 #include "defs.h"
 #include "result.h"
 
-#include "glucose/System.h"
-#include "glucose/ParseUtils.h"
-#include "glucose/Options.h"
-#include "glucose/Dimacs.h"
+#ifdef sUSE_GLUCOSE
+    #include "glucose/System.h"
+    #include "glucose/ParseUtils.h"
+    #include "glucose/Options.h"
+    #include "glucose/Dimacs.h"
 
-#include "glucose/Solver.h"
+    #include "glucose/Solver.h"
+
+    #define sSATSolver_Type Glucose::Solver
+#endif
+
+
+#ifdef sUSE_MAPLE
+    #include "maple/System.h"
+    #include "maple/ParseUtils.h"
+    #include "maple/Options.h"
+    #include "maple/Dimacs.h"
+
+    #include "maple/Solver.h"
+
+    #define sSATSolver_Type Maple::Solver
+#endif
+
+
+#ifdef sUSE_COMSPS
+    #include "comsps/System.h"
+    #include "comsps/ParseUtils.h"
+    #include "comsps/Options.h"
+    #include "comsps/Dimacs.h"
+
+    #include "comsps/Solver.h"
+
+    #define sSATSolver_Type Comsps::Solver
+#endif
+
 
 
 using namespace sReloc;
@@ -288,18 +317,18 @@ namespace sReloc
 
 	int count_TreeDisequalities(int &aux_Variable_cnt, int &total_Literal_cnt, const sSpecifiedStateIdentifier &spec_identifier) const;
 	int generate_TreeDisequalities(FILE *fw, const sSpecifiedStateIdentifier &spec_identifier, bool string = false, int weight = 0) const;
-	void cast_TreeDisequalities(Glucose::Solver *solver, const sSpecifiedStateIdentifier &spec_identifier, int weight = 0);	
+	void cast_TreeDisequalities(sSATSolver_Type *solver, const sSpecifiedStateIdentifier &spec_identifier, int weight = 0);	
 
 	int count_TreeDisequalities(const sBinaryTreeNode *tree_node, const Bits_list &prefix, int &aux_Variable_cnt, int &total_Literal_cnt, const sSpecifiedStateIdentifier &spec_identifier) const;
 	int generate_TreeDisequalities(const sBinaryTreeNode *tree_node, const Bits_list &prefix, FILE *fw, const sSpecifiedStateIdentifier &spec_identifier, bool string = false, int weight = 0) const;
-	void cast_TreeDisequalities(const sBinaryTreeNode *tree_node, const Bits_list &prefix, Glucose::Solver *solver, const sSpecifiedStateIdentifier &spec_identifier, int weight = 0);
+	void cast_TreeDisequalities(const sBinaryTreeNode *tree_node, const Bits_list &prefix, sSATSolver_Type *solver, const sSpecifiedStateIdentifier &spec_identifier, int weight = 0);
 
 	/*----------------------------------------------------------------*/
 	
-	void cast_Clause(Glucose::Solver *solver, int lit_1);
-	void cast_Clause(Glucose::Solver *solver, int lit_1, int lit_2);
-	void cast_Clause(Glucose::Solver *solver, int lit_1, int lit_2, int lit_3);
-	void cast_Clause(Glucose::Solver *solver, std::vector<int> &Lits);
+	void cast_Clause(sSATSolver_Type *solver, int lit_1);
+	void cast_Clause(sSATSolver_Type *solver, int lit_1, int lit_2);
+	void cast_Clause(sSATSolver_Type *solver, int lit_1, int lit_2, int lit_3);
+	void cast_Clause(sSATSolver_Type *solver, std::vector<int> &Lits);
 
 	virtual void to_Screen(const sString &indent = "") const;
 
@@ -800,19 +829,19 @@ namespace sReloc
 
 	virtual int count_Alignment(int &aux_Variable_cnt, int &total_Literal_cnt, const sSpecifiedStateIdentifier &spec_identifier) const;
 	virtual int generate_Alignment(FILE *fw, const sSpecifiedStateIdentifier &spec_identifier, bool string = false, int weight = 0);
-	virtual void cast_Alignment(Glucose::Solver *solver, const sSpecifiedStateIdentifier &spec_identifier, int weight = 0);	
+	virtual void cast_Alignment(sSATSolver_Type *solver, const sSpecifiedStateIdentifier &spec_identifier, int weight = 0);	
 
 	virtual int count_Equality(int &aux_Variable_cnt, int &total_Literal_cnt, const sSpecifiedStateIdentifier &spec_identifier, int state) const;
 	virtual int generate_Equality(FILE *fw, const sSpecifiedStateIdentifier &spec_identifier, int state, bool string = false, int weight = 0);
-	virtual void cast_Equality(Glucose::Solver *solver, const sSpecifiedStateIdentifier &spec_identifier, int state, int weight = 0);	
+	virtual void cast_Equality(sSATSolver_Type *solver, const sSpecifiedStateIdentifier &spec_identifier, int state, int weight = 0);	
 
 	virtual int count_Disequality(int &aux_Variable_cnt, int &total_Literal_cnt, const sSpecifiedStateIdentifier &spec_identifier, int state) const;
 	virtual int generate_Disequality(FILE *fw, const sSpecifiedStateIdentifier &spec_identifier, int state, bool string = false, int weight = 0);
-	virtual void cast_Disequality(Glucose::Solver *solver, const sSpecifiedStateIdentifier &spec_identifier, int state, int weight = 0);	
+	virtual void cast_Disequality(sSATSolver_Type *solver, const sSpecifiedStateIdentifier &spec_identifier, int state, int weight = 0);	
 
 	virtual int count_Disequalities(int &aux_Variable_cnt, int &total_Literal_cnt, const sSpecifiedStateIdentifier &spec_identifier, const States_vector &States) const;
 	virtual int generate_Disequalities(FILE *fw, const sSpecifiedStateIdentifier &spec_identifier, const States_vector &States, bool string = false, int weight = 0);
-	virtual void cast_Disequalities(Glucose::Solver *solver, const sSpecifiedStateIdentifier &spec_identifier, const States_vector &States, int weight = 0);	
+	virtual void cast_Disequalities(sSATSolver_Type *solver, const sSpecifiedStateIdentifier &spec_identifier, const States_vector &States, int weight = 0);	
 
 	virtual int count_DisjunctiveDisequality(int                             &aux_Variable_cnt,
 						 int                             &total_Literal_cnt,
@@ -827,7 +856,7 @@ namespace sReloc
 						    int                              state_B,
 						    bool                             string = false,
 						    int                              weight = 0);
-	virtual void cast_DisjunctiveDisequality(Glucose::Solver                 *solver,
+	virtual void cast_DisjunctiveDisequality(sSATSolver_Type                 *solver,
 						 const sSpecifiedStateIdentifier &spec_identifier_A,
 						 int                              state_A,
 						 const sSpecifiedStateIdentifier &spec_identifier_B,
@@ -836,7 +865,7 @@ namespace sReloc
 
 	virtual int count_Equality(int &aux_Variable_cnt, int &total_Literal_cnt, const sSpecifiedStateIdentifier &spec_identifier_A, const sSpecifiedStateIdentifier &spec_identifier_B) const;
 	virtual int generate_Equality(FILE *fw, const sSpecifiedStateIdentifier &spec_identifier_A, const sSpecifiedStateIdentifier &spec_identifier_B, bool string = false, int weight = 0);
-	virtual void cast_Equality(Glucose::Solver *solver, const sSpecifiedStateIdentifier &spec_identifier_A, const sSpecifiedStateIdentifier &spec_identifier_B, int weight = 0);	
+	virtual void cast_Equality(sSATSolver_Type *solver, const sSpecifiedStateIdentifier &spec_identifier_A, const sSpecifiedStateIdentifier &spec_identifier_B, int weight = 0);	
 
 	virtual int count_ConditionalEquality(int                             &aux_Variable_cnt,
 					      int                             &total_Literal_cnt,
@@ -851,7 +880,7 @@ namespace sReloc
 						 const sSpecifiedStateIdentifier &spec_identifier_THEN_B,
 						 bool                             string = false,
 						 int                              weight = 0);
-	virtual void cast_ConditionalEquality(Glucose::Solver                 *solver,
+	virtual void cast_ConditionalEquality(sSATSolver_Type                 *solver,
 					      const sSpecifiedStateIdentifier &spec_identifier_IF_A,
 					      const sSpecifiedStateIdentifier &spec_identifier_IF_B,
 					      const sSpecifiedStateIdentifier &spec_identifier_THEN_A,
@@ -872,7 +901,7 @@ namespace sReloc
 						 const sSpecifiedStateIdentifier &spec_identifier_THEN_B,
 						 bool                             string = false,
 						 int                              weight = 0);
-	virtual void cast_ConditionalEquality(Glucose::Solver                 *solver,
+	virtual void cast_ConditionalEquality(sSATSolver_Type                 *solver,
 					      const sSpecifiedStateIdentifier &spec_identifier_IF_A,
 					      int                              state_IF_B,
 					      const sSpecifiedStateIdentifier &spec_identifier_THEN_A,
@@ -892,7 +921,7 @@ namespace sReloc
 						 int                              state_THEN_B,
 						 bool                             string = false,
 						 int                              weight = 0);
-	virtual void cast_ConditionalEquality(Glucose::Solver                 *solver,
+	virtual void cast_ConditionalEquality(sSATSolver_Type                 *solver,
 					      const sSpecifiedStateIdentifier &spec_identifier_IF_A,
 					      int                              state_IF_B,
 					      const sSpecifiedStateIdentifier &spec_identifier_THEN_A,
@@ -916,7 +945,7 @@ namespace sReloc
 						 const sSpecifiedStateIdentifier &spec_identifier_THEN_B_2,
 						 bool                             string = false,
 						 int                              weight = 0);
-	virtual void cast_ConditionalEquality(Glucose::Solver                 *solver,
+	virtual void cast_ConditionalEquality(sSATSolver_Type                 *solver,
 					      const sSpecifiedStateIdentifier &spec_identifier_IF_A,
 					      const sSpecifiedStateIdentifier &spec_identifier_IF_B,
 					      const sSpecifiedStateIdentifier &spec_identifier_THEN_A_1,
@@ -942,7 +971,7 @@ namespace sReloc
 						 int                              state_THEN_B_2,
 						 bool                             string = false,
 						 int                              weight = 0);
-	virtual void cast_ConditionalEquality(Glucose::Solver                 *solver,
+	virtual void cast_ConditionalEquality(sSATSolver_Type                 *solver,
 					      const sSpecifiedStateIdentifier &spec_identifier_IF_A,
 					      int                              state_IF_B,
 					      const sSpecifiedStateIdentifier &spec_identifier_THEN_A_1,
@@ -968,7 +997,7 @@ namespace sReloc
 						 const sSpecifiedStateIdentifier &spec_identifier_THEN_B_2,
 						 bool                             string = false,
 						 int                              weight = 0);
-	virtual void cast_ConditionalEquality(Glucose::Solver                 *solver,
+	virtual void cast_ConditionalEquality(sSATSolver_Type                 *solver,
 					      const sSpecifiedStateIdentifier &spec_identifier_IF_A,
 					      int                              state_IF_B,
 					      const sSpecifiedStateIdentifier &spec_identifier_THEN_A_1,
@@ -998,7 +1027,7 @@ namespace sReloc
 						 const sSpecifiedStateIdentifier &spec_identifier_THEN_B_3,
 						 bool                             string = false,
 						 int                              weight = 0);
-	virtual void cast_ConditionalEquality(Glucose::Solver                 *solver,
+	virtual void cast_ConditionalEquality(sSATSolver_Type                 *solver,
 					      const sSpecifiedStateIdentifier &spec_identifier_IF_A,
 					      int                              state_IF_B,
 					      const sSpecifiedStateIdentifier &spec_identifier_THEN_A_1,
@@ -1034,7 +1063,7 @@ namespace sReloc
 						 const sSpecifiedStateIdentifier &spec_identifier_THEN_B_4,
 						 bool                             string = false,
 						 int                              weight = 0);
-	virtual void cast_ConditionalEquality(Glucose::Solver                 *solver,
+	virtual void cast_ConditionalEquality(sSATSolver_Type                 *solver,
 					      const sSpecifiedStateIdentifier &spec_identifier_IF_A,
 					      int                              state_IF_B,
 					      const sSpecifiedStateIdentifier &spec_identifier_THEN_A_1,
@@ -1056,7 +1085,7 @@ namespace sReloc
 						  SpecifiedStateIdentifiers_vector &spec_Identifiers_B,
 						  bool                              string = false,
 						  int                               weight = 0);
-	virtual void cast_DifferenceConstraint(Glucose::Solver                  *solver,
+	virtual void cast_DifferenceConstraint(sSATSolver_Type                  *solver,
 					       const sSpecifiedStateIdentifier  &spec_identifier_A,
 					       SpecifiedStateIdentifiers_vector &spec_Identifiers_B,
 					       int                               weight = 0);	
@@ -1068,7 +1097,7 @@ namespace sReloc
 						     SpecifiedStateIdentifiers_vector &spec_Identifiers,
 						     bool                              string = false,
 						     int                               weight = 0);
-	virtual void cast_AllDifferenceConstraint(Glucose::Solver                  *solver,
+	virtual void cast_AllDifferenceConstraint(sSATSolver_Type                  *solver,
 						  SpecifiedStateIdentifiers_vector &spec_Identifiers,
 						  int                               weight = 0);	
 
@@ -1081,7 +1110,7 @@ namespace sReloc
 					   States_vector                    &split_States,
 					   bool                              string = false,
 					   int                               weight = 0);
-	virtual void cast_CaseSplitting(Glucose::Solver                  *solver,
+	virtual void cast_CaseSplitting(sSATSolver_Type                  *solver,
 					SpecifiedStateIdentifiers_vector &split_Identifiers,
 					States_vector                    &split_States,
 					int                               weight = 0);	
@@ -1095,7 +1124,7 @@ namespace sReloc
 						 States_vector                    &disj_States,
 						 bool                              string = false,
 						 int                               weight = 0);
-	virtual void cast_DisjunctiveEquality(Glucose::Solver                  *solver,
+	virtual void cast_DisjunctiveEquality(sSATSolver_Type                  *solver,
 					      SpecifiedStateIdentifiers_vector &disj_Identifiers,
 					      States_vector                    &disj_States,
 					      int                               weight = 0);	
@@ -1113,7 +1142,7 @@ namespace sReloc
 						      SpecifiedStateIdentifiers_vector &spec_Identifiers_THEN_B,
 						      bool                              string = false,
 						      int                               weight = 0);
-	virtual void cast_LargeConditionalEquality(Glucose::Solver                  *solver,
+	virtual void cast_LargeConditionalEquality(sSATSolver_Type                  *solver,
 						   const sSpecifiedStateIdentifier  &spec_identifier_IF_A,
 						   int                               state_IF_B,
 						   SpecifiedStateIdentifiers_vector &spec_Identifiers_THEN_A,
@@ -1141,7 +1170,7 @@ namespace sReloc
 						      SpecifiedStateIdentifiers_vector &spec_Identifiers_THEN_B_3,
 						      bool                              string = false,
 						      int                               weight = 0);
-	virtual void cast_LargeConditionalEquality(Glucose::Solver                  *solver,
+	virtual void cast_LargeConditionalEquality(sSATSolver_Type                  *solver,
 						   const sSpecifiedStateIdentifier  &spec_identifier_IF_A,
 						   int                               state_IF_B,
 						   const sSpecifiedStateIdentifier  &spec_identifier_THEN_A_1,
@@ -1161,7 +1190,7 @@ namespace sReloc
 						const sSpecifiedStateIdentifier &spec_identifier_B,
 						bool                             string = false,
 						int                              weight = 0);
-	virtual void cast_LEXLess_Constraint(Glucose::Solver                 *solver,
+	virtual void cast_LEXLess_Constraint(sSATSolver_Type                 *solver,
 					     const sSpecifiedStateIdentifier &spec_identifier_A,
 					     const sSpecifiedStateIdentifier &spec_identifier_B,
 					     int                              weight = 0);	
@@ -1172,10 +1201,10 @@ namespace sReloc
 
 	/*----------------------------------------------------------------*/
 	
-	void cast_Clause(Glucose::Solver *solver, int lit_1);
-	void cast_Clause(Glucose::Solver *solver, int lit_1, int lit_2);
-	void cast_Clause(Glucose::Solver *solver, int lit_1, int lit_2, int lit_3);
-	void cast_Clause(Glucose::Solver *solver, std::vector<int> &Lits);	
+	void cast_Clause(sSATSolver_Type *solver, int lit_1);
+	void cast_Clause(sSATSolver_Type *solver, int lit_1, int lit_2);
+	void cast_Clause(sSATSolver_Type *solver, int lit_1, int lit_2, int lit_3);
+	void cast_Clause(sSATSolver_Type *solver, std::vector<int> &Lits);	
 
     protected:
 	sVariableStore_CNF *m_variable_store;
@@ -1209,7 +1238,7 @@ namespace sReloc
 						 const sSpecifiedStateIdentifier &spec_identifier_THEN_B,
 						 bool                             string = false,
 						 int                              weight = 0);
-	virtual void cast_ConditionalEquality(Glucose::Solver                 *solver,
+	virtual void cast_ConditionalEquality(sSATSolver_Type                 *solver,
 					      const sSpecifiedStateIdentifier &spec_identifier_IF_A,
 					      int                              state_IF_B,
 					      const sSpecifiedStateIdentifier &spec_identifier_THEN_A,
@@ -1229,7 +1258,7 @@ namespace sReloc
 						 int                              state_THEN_B_1,
 						 bool                             string = false,
 						 int                              weight = 0);
-	virtual void cast_ConditionalEquality(Glucose::Solver                 *solver,
+	virtual void cast_ConditionalEquality(sSATSolver_Type                 *solver,
 					      const sSpecifiedStateIdentifier &spec_identifier_IF_A,
 					      int                              state_IF_B,
 					      const sSpecifiedStateIdentifier &spec_identifier_THEN_A_1,
@@ -1253,7 +1282,7 @@ namespace sReloc
 						 const sSpecifiedStateIdentifier &spec_identifier_THEN_B_2,
 						 bool                             string = false,
 						 int                              weight = 0);
-	virtual void cast_ConditionalEquality(Glucose::Solver                 *solver,
+	virtual void cast_ConditionalEquality(sSATSolver_Type                 *solver,
 					      const sSpecifiedStateIdentifier &spec_identifier_IF_A,
 					      int                              state_IF_B,
 					      const sSpecifiedStateIdentifier &spec_identifier_THEN_A_1,
@@ -1287,7 +1316,7 @@ namespace sReloc
 						 const sSpecifiedStateIdentifier &spec_identifier_THEN_B_4,
 						 bool                             string = false,
 						 int                              weight = 0);
-	virtual void cast_ConditionalEquality(Glucose::Solver                 *solver,
+	virtual void cast_ConditionalEquality(sSATSolver_Type                 *solver,
 					      const sSpecifiedStateIdentifier &spec_identifier_IF_A,
 					      int                              state_IF_B,
 					      const sSpecifiedStateIdentifier &spec_identifier_THEN_A_1,
@@ -1313,7 +1342,7 @@ namespace sReloc
 						      SpecifiedStateIdentifiers_vector &spec_Identifiers_THEN_B,
 						      bool                              string = false,
 						      int                               weight = 0);
-	virtual void cast_LargeConditionalEquality(Glucose::Solver                  *solver,
+	virtual void cast_LargeConditionalEquality(sSATSolver_Type                  *solver,
 						   const sSpecifiedStateIdentifier  &spec_identifier_IF_A,
 						   int                               state_IF_B,
 						   SpecifiedStateIdentifiers_vector &spec_Identifiers_THEN_A,
@@ -1342,7 +1371,7 @@ namespace sReloc
 						      SpecifiedStateIdentifiers_vector &spec_Identifiers_THEN_B_3,
 						      bool                              string = false,
 						      int                               weight = 0);
-	virtual void cast_LargeConditionalEquality(Glucose::Solver                  *solver,
+	virtual void cast_LargeConditionalEquality(sSATSolver_Type                  *solver,
 						   const sSpecifiedStateIdentifier  &spec_identifier_IF_A,
 						   int                               state_IF_B,
 						   const sSpecifiedStateIdentifier  &spec_identifier_THEN_A_1,
@@ -1360,7 +1389,7 @@ namespace sReloc
 						     SpecifiedStateIdentifiers_vector &spec_Identifiers,
 						     bool                              string = false,
 						     int                               weight = 0);
-	virtual void cast_AllDifferenceConstraint(Glucose::Solver                  *solver,
+	virtual void cast_AllDifferenceConstraint(sSATSolver_Type                  *solver,
 						  SpecifiedStateIdentifiers_vector &spec_Identifiers,
 						  int                               weight = 0);	
     };
@@ -1379,11 +1408,11 @@ namespace sReloc
 
 	virtual int count_Alignment(int &aux_Variable_cnt, int &total_Literal_cnt, const sSpecifiedStateIdentifier &spec_identifier) const;
 	virtual int generate_Alignment(FILE *fw, const sSpecifiedStateIdentifier &spec_identifier, bool string = false, int weight = 0);
-	virtual void cast_Alignment(Glucose::Solver *solver, const sSpecifiedStateIdentifier &spec_identifier, int weight = 0);	
+	virtual void cast_Alignment(sSATSolver_Type *solver, const sSpecifiedStateIdentifier &spec_identifier, int weight = 0);	
 
 	virtual int count_Disequalities(int &aux_Variable_cnt, int &total_Literal_cnt, const sSpecifiedStateIdentifier &spec_identifier, const States_vector &States) const;
 	virtual int generate_Disequalities(FILE *fw, const sSpecifiedStateIdentifier &spec_identifier, const States_vector &States, bool string = false, int weight = 0);
-	virtual void cast_Disequalities(Glucose::Solver *solver, const sSpecifiedStateIdentifier &spec_identifier, const States_vector &States, int weight = 0);	
+	virtual void cast_Disequalities(sSATSolver_Type *solver, const sSpecifiedStateIdentifier &spec_identifier, const States_vector &States, int weight = 0);	
     };
 
 
@@ -1405,7 +1434,7 @@ namespace sReloc
 
 	virtual int count_Equality(int &aux_Variable_cnt, int &total_Literal_cnt, const sSpecifiedStateIdentifier &spec_identifier, int state) const;
 	virtual int generate_Equality(FILE *fw, const sSpecifiedStateIdentifier &spec_identifier, int state, bool string = false, int weight = 0);
-	virtual void cast_Equality(Glucose::Solver *solver, const sSpecifiedStateIdentifier &spec_identifier, int state, int weight = 0);
+	virtual void cast_Equality(sSATSolver_Type *solver, const sSpecifiedStateIdentifier &spec_identifier, int state, int weight = 0);
 
 	virtual int count_AllMutexConstraint(int                            &aux_Variable_cnt,
 					     int                            &total_Literal_cnt,
@@ -1414,7 +1443,7 @@ namespace sReloc
 						SpecifiedBitIdentifiers_vector &spec_Identifiers,
 						bool                            string = false,
 						int                             weight = 0);
-	virtual void cast_AllMutexConstraint(Glucose::Solver                *solver,
+	virtual void cast_AllMutexConstraint(sSATSolver_Type                *solver,
 					    SpecifiedBitIdentifiers_vector &spec_Identifiers,
 					    int                             weight = 0);	
 
@@ -1425,7 +1454,7 @@ namespace sReloc
 						      SpecifiedBitIdentifiers_vector &spec_Identifiers,
 						      bool                            string = false,
 						      int                             weight = 0);
-	virtual void cast_LinearAllMutexConstraint(Glucose::Solver                *solver,
+	virtual void cast_LinearAllMutexConstraint(sSATSolver_Type                *solver,
 						  SpecifiedBitIdentifiers_vector &spec_Identifiers,
 						  int                             weight = 0);	
 
@@ -1436,7 +1465,7 @@ namespace sReloc
 							SpecifiedBitIdentifiers_vector &spec_Identifiers,
 							bool                            string = false,
 							int                             weight = 0);
-	virtual void cast_AdaptiveAllMutexConstraint(Glucose::Solver                *solver,
+	virtual void cast_AdaptiveAllMutexConstraint(sSATSolver_Type                *solver,
 						    SpecifiedBitIdentifiers_vector &spec_Identifiers,
 						    int                             weight = 0);	
 
@@ -1447,7 +1476,7 @@ namespace sReloc
 					 SpecifiedBitIdentifiers_vector &spec_Identifiers,
 					 bool                            string = false,
 					 int                             weight = 0);
-	virtual void cast_Disjunction(Glucose::Solver                *solver,
+	virtual void cast_Disjunction(sSATSolver_Type                *solver,
 				     SpecifiedBitIdentifiers_vector &spec_Identifiers,
 				     int                             weight = 0);	
 
@@ -1460,18 +1489,18 @@ namespace sReloc
 							   SpecifiedBitIdentifiers_vector &spec_Identifiers,
 							   bool                            string = false,
 							   int                             weight = 0);
-	virtual void cast_ConditionalAllMutexConstraint(Glucose::Solver                *solver,
+	virtual void cast_ConditionalAllMutexConstraint(sSATSolver_Type                *solver,
 						       const sSpecifiedBitIdentifier  &spec_condition,
 						       SpecifiedBitIdentifiers_vector &spec_Identifiers,
 						       int                             weight = 0);	
 
 	virtual int count_BitSet(int &aux_Variable_cnt, int &total_Literal_cnt, const sSpecifiedBitIdentifier &spec_identifier) const;
 	virtual int generate_BitSet(FILE *fw, const sSpecifiedBitIdentifier &spec_identifier, bool string = false, int weight = 0);
-	virtual void cast_BitSet(Glucose::Solver *solver, const sSpecifiedBitIdentifier &spec_identifier, int weight = 0);	
+	virtual void cast_BitSet(sSATSolver_Type *solver, const sSpecifiedBitIdentifier &spec_identifier, int weight = 0);	
 
 	virtual int count_BitUnset(int &aux_Variable_cnt, int &total_Literal_cnt, const sSpecifiedBitIdentifier &spec_identifier) const;
 	virtual int generate_BitUnset(FILE *fw, const sSpecifiedBitIdentifier &spec_identifier, bool string = false, int weight = 0);
-	virtual void cast_BitUnset(Glucose::Solver *solver, const sSpecifiedBitIdentifier &spec_identifier, int weight = 0);
+	virtual void cast_BitUnset(sSATSolver_Type *solver, const sSpecifiedBitIdentifier &spec_identifier, int weight = 0);
 
 	virtual int count_Mutex(int                           &aux_Variable_cnt,
 				int                           &total_Literal_cnt,
@@ -1482,7 +1511,7 @@ namespace sReloc
 				   const sSpecifiedBitIdentifier &spec_identifier_B,
 				   bool                           string = false,
 				   int                            weight = 0);
-	virtual void cast_Mutex(Glucose::Solver               *solver,
+	virtual void cast_Mutex(sSATSolver_Type               *solver,
 				const sSpecifiedBitIdentifier &spec_identifier_A,
 				const sSpecifiedBitIdentifier &spec_identifier_B,
 				int                            weight = 0);	
@@ -1498,7 +1527,7 @@ namespace sReloc
 					   const sSpecifiedBitIdentifier &spec_identifier_C,
 					   bool                           string = false,
 					   int                            weight = 0);
-	virtual void cast_TriangleMutex(Glucose::Solver               *solver,
+	virtual void cast_TriangleMutex(sSATSolver_Type               *solver,
 					const sSpecifiedBitIdentifier &spec_identifier_A,
 					const sSpecifiedBitIdentifier &spec_identifier_B,
 					const sSpecifiedBitIdentifier &spec_identifier_C,
@@ -1515,7 +1544,7 @@ namespace sReloc
 						SpecifiedBitIdentifiers_vector &spec_Identifiers_C,
 						bool                            string = false,
 						int                             weight = 0);
-	virtual void cast_MultiTriangleMutex(Glucose::Solver                *solver,
+	virtual void cast_MultiTriangleMutex(sSATSolver_Type                *solver,
 					     const sSpecifiedBitIdentifier  &spec_identifier_A,
 					     const sSpecifiedBitIdentifier  &spec_identifier_B,
 					     SpecifiedBitIdentifiers_vector &spec_Identifiers_C,
@@ -1530,7 +1559,7 @@ namespace sReloc
 					  const sSpecifiedBitIdentifier &spec_identifier_B,
 					  bool                           string = false,
 					  int                            weight = 0);
-	virtual void cast_BiangleMutex(Glucose::Solver               *solver,
+	virtual void cast_BiangleMutex(sSATSolver_Type               *solver,
 				       const sSpecifiedBitIdentifier &spec_identifier_A,
 				       const sSpecifiedBitIdentifier &spec_identifier_B,
 				       int                            weight = 0);
@@ -1544,7 +1573,7 @@ namespace sReloc
 					       SpecifiedBitIdentifiers_vector &spec_Identifiers_B,
 					       bool                            string = false,
 					       int                             weight = 0);
-	virtual void cast_MultiBiangleMutex(Glucose::Solver                *solver,
+	virtual void cast_MultiBiangleMutex(sSATSolver_Type                *solver,
 					    const sSpecifiedBitIdentifier  &spec_identifier_A,
 					    SpecifiedBitIdentifiers_vector &spec_Identifiers_B,
 					    int                             weight = 0);		
@@ -1558,7 +1587,7 @@ namespace sReloc
 					 const sSpecifiedBitIdentifier &spec_identifier_POST,
 					 bool                           string = false,
 					 int                            weight = 0);
-	virtual void cast_Implication(Glucose::Solver               *solver,
+	virtual void cast_Implication(sSATSolver_Type               *solver,
 				      const sSpecifiedBitIdentifier &spec_identifier_PREC,
 				      const sSpecifiedBitIdentifier &spec_identifier_POST,
 				      int                            weight = 0);
@@ -1574,7 +1603,7 @@ namespace sReloc
 					  const sSpecifiedBitIdentifier &spec_identifier_POST,
 					  bool                           string = false,
 					  int                            weight = 0);
-	virtual void cast_Bimplication(Glucose::Solver               *solver,
+	virtual void cast_Bimplication(sSATSolver_Type               *solver,
 				       const sSpecifiedBitIdentifier &spec_identifier_PREC_A,
 				       const sSpecifiedBitIdentifier &spec_identifier_PREC_B,				       
 				       const sSpecifiedBitIdentifier &spec_identifier_POST,
@@ -1591,7 +1620,7 @@ namespace sReloc
 					 const sSpecifiedBitIdentifier &spec_identifier_POST_B,
 					 bool                           string = false,
 					 int                            weight = 0);
-	virtual void cast_Implication(Glucose::Solver               *solver,
+	virtual void cast_Implication(sSATSolver_Type               *solver,
 				      const sSpecifiedBitIdentifier &spec_identifier_PREC,
 				      const sSpecifiedBitIdentifier &spec_identifier_POST_A,
 				      const sSpecifiedBitIdentifier &spec_identifier_POST_B,
@@ -1606,7 +1635,7 @@ namespace sReloc
 						const sSpecifiedBitIdentifier   &spec_identifier_POST,
 						bool                             string = false,
 						int                              weight = 0);
-	virtual void cast_NonzeroImplication(Glucose::Solver                 *solver,
+	virtual void cast_NonzeroImplication(sSATSolver_Type                 *solver,
 					     const sSpecifiedStateIdentifier &spec_identifier_PREC,
 					     const sSpecifiedBitIdentifier   &spec_identifier_POST,
 					     int                              weight = 0);	
@@ -1620,7 +1649,7 @@ namespace sReloc
 					     const sSpecifiedStateIdentifier &spec_identifier_POST,
 					     bool                             string = false,
 					     int                              weight = 0);
-	virtual void cast_ZeroImplication(Glucose::Solver                 *solver,
+	virtual void cast_ZeroImplication(sSATSolver_Type                 *solver,
 					  const sSpecifiedBitIdentifier   &spec_identifier_PREC,
 					  const sSpecifiedStateIdentifier &spec_identifier_POST,
 					  int                              weight = 0);	
@@ -1636,7 +1665,7 @@ namespace sReloc
 				    const sSpecifiedBitIdentifier &spec_identifier_POST,
 				    bool                           string = false,
 				    int                            weight = 0);
-	virtual void cast_Effect(Glucose::Solver               *solver,
+	virtual void cast_Effect(sSATSolver_Type               *solver,
 				 const sSpecifiedBitIdentifier &spec_identifier_PREC_A,
 				 const sSpecifiedBitIdentifier &spec_identifier_PREC_B,
 				 const sSpecifiedBitIdentifier &spec_identifier_POST,
@@ -1651,7 +1680,7 @@ namespace sReloc
 					      SpecifiedBitIdentifiers_vector &spec_Identifiers_POST,
 					      bool                            string = false,
 					      int                             weight = 0);
-	virtual void cast_MultiImplication(Glucose::Solver                *solver,
+	virtual void cast_MultiImplication(sSATSolver_Type                *solver,
 					   const sSpecifiedBitIdentifier  &spec_identifier_PREC,
 					   SpecifiedBitIdentifiers_vector &spec_Identifiers_POST,
 					   int                             weight = 0);
@@ -1667,7 +1696,7 @@ namespace sReloc
 						     SpecifiedBitIdentifiers_vector &spec_Identifiers_POST,
 						     bool                            string = false,
 						     int                             weight = 0);
-	virtual void cast_MultiImpliedImplication(Glucose::Solver                *solver,
+	virtual void cast_MultiImpliedImplication(sSATSolver_Type                *solver,
 						  const sSpecifiedBitIdentifier  &spec_identifier_PREC,
 						  SpecifiedBitIdentifiers_vector &spec_Identifiers_MIDDLE,
 						  SpecifiedBitIdentifiers_vector &spec_Identifiers_POST,
@@ -1682,7 +1711,7 @@ namespace sReloc
 							 SpecifiedBitIdentifiers_vector &spec_Identifiers_POST,
 							 bool                            string = false,
 							 int                             weight = 0);
-	virtual void cast_MultiConjunctiveImplication(Glucose::Solver                *solver,
+	virtual void cast_MultiConjunctiveImplication(sSATSolver_Type                *solver,
 						      const sSpecifiedBitIdentifier  &spec_identifier_PREC,
 						      SpecifiedBitIdentifiers_vector &spec_Identifiers_POST,
 						      int                             weight = 0);		
@@ -1694,7 +1723,7 @@ namespace sReloc
 					   SpecifiedBitIdentifiers_vector &spec_Identifiers,
 					   bool                            string = false,
 					   int                             weight = 0);
-	virtual void cast_MultiNegation(Glucose::Solver                *solver,
+	virtual void cast_MultiNegation(sSATSolver_Type                *solver,
 					SpecifiedBitIdentifiers_vector &spec_Identifiers,
 					int                             weight = 0);	
 
@@ -1707,7 +1736,7 @@ namespace sReloc
 						      SpecifiedBitIdentifiers_vector &spec_Identifiers_POST,
 						      bool                            string = false,
 						      int                             weight = 0);
-	virtual void cast_MultiNegativeImplication(Glucose::Solver                *solver,
+	virtual void cast_MultiNegativeImplication(sSATSolver_Type                *solver,
 						   const sSpecifiedBitIdentifier  &spec_identifier_PREC,
 						   SpecifiedBitIdentifiers_vector &spec_Identifiers_POST,
 						   int                             weight = 0);	
@@ -1721,7 +1750,7 @@ namespace sReloc
 						       SpecifiedBitIdentifiers_vector &spec_Identifiers_POST,
 						       bool                            string = false,
 						       int                             weight = 0);
-	virtual void cast_MultiExclusiveImplication(Glucose::Solver                *solver,
+	virtual void cast_MultiExclusiveImplication(sSATSolver_Type                *solver,
 						    const sSpecifiedBitIdentifier  &spec_identifier_PREC,
 						    SpecifiedBitIdentifiers_vector &spec_Identifiers_POST,
 						    int                             weight = 0);	
@@ -1737,7 +1766,7 @@ namespace sReloc
 						 const sSpecifiedStateIdentifier &spec_identifier_THEN_B,
 						 bool                             string = false,
 						 int                              weight = 0);
-	virtual void cast_ConditionalEquality(Glucose::Solver                 *solver,
+	virtual void cast_ConditionalEquality(sSATSolver_Type                 *solver,
 					      const sSpecifiedBitIdentifier   &spec_identifier_PREC,
 					      const sSpecifiedStateIdentifier &spec_identifier_THEN_A,
 					      const sSpecifiedStateIdentifier &spec_identifier_THEN_B,
@@ -1756,7 +1785,7 @@ namespace sReloc
 					    const sSpecifiedBitIdentifier &spec_identifier_POST_B,
 					    bool                           string = false,
 					    int                            weight = 0);
-	virtual void cast_SwapConstraint(Glucose::Solver               *solver,
+	virtual void cast_SwapConstraint(sSATSolver_Type               *solver,
 					 const sSpecifiedBitIdentifier &spec_identifier_PREC_A,
 					 const sSpecifiedBitIdentifier &spec_identifier_PREC_B,
 					 const sSpecifiedBitIdentifier &spec_identifier_POST_A,
@@ -1776,7 +1805,7 @@ namespace sReloc
 						    const sSpecifiedBitIdentifier &spec_identifier_POST_B,
 						    bool                           string = false,
 						    int                            weight = 0);
-	virtual void cast_NegativeSwapConstraint(Glucose::Solver               *solver,
+	virtual void cast_NegativeSwapConstraint(sSATSolver_Type               *solver,
 						 const sSpecifiedBitIdentifier &spec_identifier_PREC_A,
 						 const sSpecifiedBitIdentifier &spec_identifier_PREC_B,
 						 const sSpecifiedBitIdentifier &spec_identifier_POST_A,
@@ -1794,7 +1823,7 @@ namespace sReloc
 					    SpecifiedBitIdentifiers_vector &spec_Identifiers_POST,
 					    bool                            string = false,
 					    int                             weight = 0);
-	virtual void cast_SwapConstraint(Glucose::Solver                *solver,
+	virtual void cast_SwapConstraint(sSATSolver_Type                *solver,
 					 const sSpecifiedBitIdentifier  &spec_identifier_PREC_A,
 					 const sSpecifiedBitIdentifier  &spec_identifier_PREC_B,
 					 SpecifiedBitIdentifiers_vector &spec_Identifiers_POST,
@@ -1809,17 +1838,17 @@ namespace sReloc
 					 int                             cardinality,
 					 bool                            string = false,
 					 int                             weight = 0);
-	virtual void cast_Cardinality(Glucose::Solver                *solver,
+	virtual void cast_Cardinality(sSATSolver_Type                *solver,
 				      SpecifiedBitIdentifiers_vector &spec_Identifiers,
 				      int                             cardinality,
 				      int                             weight = 0);
 
 	/*----------------------------------------------------------------*/
 	
-	void cast_Clause(Glucose::Solver *solver, int lit_1);
-	void cast_Clause(Glucose::Solver *solver, int lit_1, int lit_2);
-	void cast_Clause(Glucose::Solver *solver, int lit_1, int lit_2, int lit_3);
-	void cast_Clause(Glucose::Solver *solver, std::vector<int> &Lits);	
+	void cast_Clause(sSATSolver_Type *solver, int lit_1);
+	void cast_Clause(sSATSolver_Type *solver, int lit_1, int lit_2);
+	void cast_Clause(sSATSolver_Type *solver, int lit_1, int lit_2, int lit_3);
+	void cast_Clause(sSATSolver_Type *solver, std::vector<int> &Lits);	
 
     protected:
 	sVariableStore_CNF *m_variable_store;

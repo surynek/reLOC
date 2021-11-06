@@ -1,14 +1,14 @@
 /*============================================================================*/
 /*                                                                            */
 /*                                                                            */
-/*                              reLOC 0.21-robik                              */
+/*                              reLOC 0.22-robik                              */
 /*                                                                            */
 /*                  (C) Copyright 2011 - 2021 Pavel Surynek                   */
-/*                http://www.surynek.com | <pavel@surynek.com>                */
+/*                http://www.surynek.net | <pavel@surynek.net>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* compile.h / 0.21-robik_056                                                 */
+/* compile.h / 0.22-robik_095                                                 */
 /*----------------------------------------------------------------------------*/
 //
 //
@@ -26,9 +26,10 @@
 namespace sReloc
 {
 
-#define sDEBUG      1
-#define sVERBOSE    1
-#define sSTATISTICS 1
+#define sDEBUG       1
+#define sVERBOSE     1
+#define sSTATISTICS  1
+#define sUSE_GLUCOSE 1
 
 
 /*----------------------------------------------------------------------------*/

@@ -1,14 +1,14 @@
 /*============================================================================*/
 /*                                                                            */
 /*                                                                            */
-/*                              reLOC 0.21-robik                              */
+/*                              reLOC 0.22-robik                              */
 /*                                                                            */
 /*                  (C) Copyright 2011 - 2021 Pavel Surynek                   */
-/*                http://www.surynek.com | <pavel@surynek.com>                */
+/*                http://www.surynek.net | <pavel@surynek.net>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* reloc_test.cpp / 0.21-robik_056                                            */
+/* reloc_test.cpp / 0.22-robik_095                                            */
 /*----------------------------------------------------------------------------*/
 //
 // Relocation problem solving package - testing program.

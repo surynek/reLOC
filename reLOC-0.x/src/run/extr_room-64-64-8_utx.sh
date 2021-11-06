@@ -11,6 +11,10 @@ do
     for SCENARIO in $SCENARIOS_LIST;
     do
 	echo 'Extracting '$PREFIX' scenario '$SCENARIO' MAPF instance with '$ROBOTS' agents ...'
-	grep "machine TIME" 'out-utx_'$PREFIX'-'$SCENARIO'_a'$ROBOTS'.txt'
+        LINE_OUTPUT=`grep -s "machine TIME " 'out-utx_'$PREFIX'-'$SCENARIO'_a'$ROBOTS'.txt'`
+	if [ -z "$LINE_OUTPUT" ]
+          then echo "CPU/machine TIME (seconds) = 1024.0"
+          else echo $LINE_OUTPUT
+        fi
     done
 done

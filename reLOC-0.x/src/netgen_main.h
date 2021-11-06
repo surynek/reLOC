@@ -1,14 +1,14 @@
 /*============================================================================*/
 /*                                                                            */
 /*                                                                            */
-/*                              reLOC 0.21-robik                              */
+/*                              reLOC 0.22-robik                              */
 /*                                                                            */
 /*                  (C) Copyright 2011 - 2021 Pavel Surynek                   */
-/*                http://www.surynek.com | <pavel@surynek.com>                */
+/*                http://www.surynek.net | <pavel@surynek.net>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* netgen_main.h / 0.21-robik_056                                             */
+/* netgen_main.h / 0.22-robik_095                                             */
 /*----------------------------------------------------------------------------*/
 //
 // Network Instance Generator - main program.

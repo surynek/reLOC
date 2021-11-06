@@ -1,14 +1,14 @@
 /*============================================================================*/
 /*                                                                            */
 /*                                                                            */
-/*                              reLOC 0.21-robik                              */
+/*                              reLOC 0.22-robik                              */
 /*                                                                            */
 /*                  (C) Copyright 2011 - 2021 Pavel Surynek                   */
-/*                http://www.surynek.com | <pavel@surynek.com>                */
+/*                http://www.surynek.net | <pavel@surynek.net>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* encodings_extract.cpp / 0.21-robik_056                                     */
+/* encodings_extract.cpp / 0.22-robik_095                                     */
 /*----------------------------------------------------------------------------*/
 //
 // Multi-robot path-finding encodings related
@@ -36,6 +36,18 @@
 
 
 using namespace sReloc;
+
+#ifdef sUSE_GLUCOSE
+      using namespace Glucose;
+#endif
+
+#ifdef sUSE_MAPLE
+      using namespace Maple;
+#endif
+
+#ifdef sUSE_COMSPS
+      using namespace Comsps;
+#endif
 
 
 /*----------------------------------------------------------------------------*/
@@ -159,7 +171,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedInverseSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedInverseSolution(sSATSolver_Type                         *solver,
 									   const sRobotArrangement                 &start_arrangement,
 									   const sUndirectedGraph                  &environment,
 									   int                                      computed_makespan,
@@ -280,7 +292,9 @@ namespace sReloc
 		
 	int robot_location_vertex_id = 0;
 	std::vector<int> robot_Locations;
-	robot_Locations.resize(start_arrangement.get_RobotCount() + 1, (const int)sRobotArrangement::UNDEFINED_LOCATION);
+
+	int undefined_location = sRobotArrangement::UNDEFINED_LOCATION;
+	robot_Locations.resize(start_arrangement.get_RobotCount() + 1, undefined_location);
 	
 	while (!feof(fr))
 	{
@@ -337,7 +351,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedDifferentialSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedDifferentialSolution(sSATSolver_Type                         *solver,
 										const sRobotArrangement                 &start_arrangement,
 										const sUndirectedGraph                  &sUNUSED(environment),
 										int                                      sUNUSED(computed_makespan),
@@ -348,7 +362,9 @@ namespace sReloc
 		
 	int robot_location_vertex_id = 0;
 	std::vector<int> robot_Locations;
-	robot_Locations.resize(start_arrangement.get_RobotCount() + 1, (const int)sRobotArrangement::UNDEFINED_LOCATION);
+
+	int undefined_location = sRobotArrangement::UNDEFINED_LOCATION;	
+	robot_Locations.resize(start_arrangement.get_RobotCount() + 1, undefined_location);
 
 	for (int i = 0; i < solver->nVars(); i++)
 	{
@@ -513,7 +529,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedAdvancedSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedAdvancedSolution(sSATSolver_Type                         *solver,
 									    const sRobotArrangement                 &start_arrangement,
 									    const sUndirectedGraph                  &environment,
 									    int                                      computed_makespan,
@@ -634,7 +650,9 @@ namespace sReloc
 		
 	int robot_location_vertex_id = 0;
 	std::vector<int> robot_Locations;
-	robot_Locations.resize(start_arrangement.get_RobotCount() + 1, (const int)sRobotArrangement::UNDEFINED_LOCATION);
+
+	int undefined_location = sRobotArrangement::UNDEFINED_LOCATION;		
+	robot_Locations.resize(start_arrangement.get_RobotCount() + 1, undefined_location);
 	
 	while (!feof(fr))
 	{
@@ -690,7 +708,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedBijectionSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedBijectionSolution(sSATSolver_Type                         *solver,
 									     const sRobotArrangement                 &start_arrangement,
 									     const sUndirectedGraph                  &sUNUSED(environment),
 									     int                                      sUNUSED(computed_makespan),
@@ -701,7 +719,9 @@ namespace sReloc
 		
 	int robot_location_vertex_id = 0;
 	std::vector<int> robot_Locations;
-	robot_Locations.resize(start_arrangement.get_RobotCount() + 1, (const int)sRobotArrangement::UNDEFINED_LOCATION);
+
+	int undefined_location = sRobotArrangement::UNDEFINED_LOCATION;
+	robot_Locations.resize(start_arrangement.get_RobotCount() + 1, undefined_location);
 
 	for (int i = 0; i < solver->nVars(); i++)
 	{
@@ -866,7 +886,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedHeuristicAdvancedSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedHeuristicAdvancedSolution(sSATSolver_Type                         *solver,
 										     const sRobotArrangement                 &start_arrangement,
 										     const sUndirectedGraph                  &environment,
 										     int                                      computed_makespan,
@@ -986,7 +1006,9 @@ namespace sReloc
 		
 	int robot_location_vertex_id = 0;
 	std::vector<int> robot_Locations;
-	robot_Locations.resize(start_arrangement.get_RobotCount() + 1, (const int)sRobotArrangement::UNDEFINED_LOCATION);
+
+	int undefined_location = sRobotArrangement::UNDEFINED_LOCATION;
+	robot_Locations.resize(start_arrangement.get_RobotCount() + 1, undefined_location);
 	
 	while (!feof(fr))
 	{
@@ -1043,7 +1065,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedHeuristicDifferentialSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedHeuristicDifferentialSolution(sSATSolver_Type                         *solver,
 											 const sRobotArrangement                 &start_arrangement,
 											 const sUndirectedGraph                  &sUNUSED(environment),
 											 int                                      sUNUSED(computed_makespan),
@@ -1054,7 +1076,9 @@ namespace sReloc
 		
 	int robot_location_vertex_id = 0;
 	std::vector<int> robot_Locations;
-	robot_Locations.resize(start_arrangement.get_RobotCount() + 1, (const int)sRobotArrangement::UNDEFINED_LOCATION);
+
+	int undefined_location = sRobotArrangement::UNDEFINED_LOCATION;
+	robot_Locations.resize(start_arrangement.get_RobotCount() + 1, undefined_location);
 
 	for (int i = 0; i < solver->nVars(); i++)
 	{
@@ -1140,7 +1164,9 @@ namespace sReloc
 		
 	int robot_location_vertex_id = 0;
 	std::vector<int> robot_Locations;
-	robot_Locations.resize(start_arrangement.get_RobotCount() + 1, (const int)sRobotArrangement::UNDEFINED_LOCATION);
+
+	int undefined_location = sRobotArrangement::UNDEFINED_LOCATION;
+	robot_Locations.resize(start_arrangement.get_RobotCount() + 1, undefined_location);
 	
 	while (!feof(fr))
 	{
@@ -1197,7 +1223,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedHeuristicBijectionSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedHeuristicBijectionSolution(sSATSolver_Type                         *solver,
 										      const sRobotArrangement                 &start_arrangement,
 										      const sUndirectedGraph                  &sUNUSED(environment),
 										      int                                      sUNUSED(computed_makespan),
@@ -1208,7 +1234,9 @@ namespace sReloc
 		
 	int robot_location_vertex_id = 0;
 	std::vector<int> robot_Locations;
-	robot_Locations.resize(start_arrangement.get_RobotCount() + 1, (const int)sRobotArrangement::UNDEFINED_LOCATION);
+
+	int undefined_location = sRobotArrangement::UNDEFINED_LOCATION;
+	robot_Locations.resize(start_arrangement.get_RobotCount() + 1, undefined_location);
 
 	for (int i = 0; i < solver->nVars(); i++)
 	{
@@ -1373,7 +1401,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedBitwiseSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedBitwiseSolution(sSATSolver_Type                         *solver,
 									   const sRobotArrangement                 &start_arrangement,
 									   const sUndirectedGraph                  &environment,
 									   int                                      computed_makespan, 
@@ -1503,7 +1531,8 @@ namespace sReloc
 	robot_Locations.resize(computed_makespan + 1);
 	for (int layer = 0; layer <= computed_makespan; ++layer)
 	{
-	    robot_Locations[layer].resize(start_arrangement.get_RobotCount() + 1, (const int)sRobotArrangement::UNDEFINED_LOCATION);
+	    int undefined_location = sRobotArrangement::UNDEFINED_LOCATION;
+	    robot_Locations[layer].resize(start_arrangement.get_RobotCount() + 1, undefined_location);
 	}
 	
 	while (!feof(fr))
@@ -1570,7 +1599,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedFlowSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedFlowSolution(sSATSolver_Type                         *solver,
 									const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG									
 									const sUndirectedGraph                  &environment,
@@ -1591,7 +1620,8 @@ namespace sReloc
 	robot_Locations.resize(computed_makespan + 1);
 	for (int layer = 0; layer <= computed_makespan; ++layer)
 	{
-	    robot_Locations[layer].resize(start_arrangement.get_RobotCount() + 1, (const int)sRobotArrangement::UNDEFINED_LOCATION);
+	    int undefined_location = sRobotArrangement::UNDEFINED_LOCATION;
+	    robot_Locations[layer].resize(start_arrangement.get_RobotCount() + 1, undefined_location);
 	}
 
 	for (int i = 0; i < solver->nVars(); i++)
@@ -1699,7 +1729,8 @@ namespace sReloc
 	robot_Locations.resize(computed_makespan + 1);
 	for (int layer = 0; layer <= computed_makespan; ++layer)
 	{
-	    robot_Locations[layer].resize(start_arrangement.get_RobotCount() + 1, (const int)sRobotArrangement::UNDEFINED_LOCATION);
+	    int undefined_location = sRobotArrangement::UNDEFINED_LOCATION;
+	    robot_Locations[layer].resize(start_arrangement.get_RobotCount() + 1, undefined_location);
 	}
 	
 
@@ -1776,7 +1807,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedMatchingSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedMatchingSolution(sSATSolver_Type                         *solver,
 									    const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG									
 									    const sUndirectedGraph                  &environment,
@@ -1797,7 +1828,8 @@ namespace sReloc
 	robot_Locations.resize(computed_makespan + 1);
 	for (int layer = 0; layer <= computed_makespan; ++layer)
 	{
-	    robot_Locations[layer].resize(start_arrangement.get_RobotCount() + 1, (const int)sRobotArrangement::UNDEFINED_LOCATION);
+	    int undefined_location = sRobotArrangement::UNDEFINED_LOCATION;
+	    robot_Locations[layer].resize(start_arrangement.get_RobotCount() + 1, undefined_location);
 	}
 
 	int occupying_robot_id = -1;
@@ -1912,7 +1944,8 @@ namespace sReloc
 	robot_Locations.resize(computed_makespan + 1);
 	for (int layer = 0; layer <= computed_makespan; ++layer)
 	{
-	    robot_Locations[layer].resize(start_arrangement.get_RobotCount() + 1, (const int)sRobotArrangement::UNDEFINED_LOCATION);
+	    int undefined_location = sRobotArrangement::UNDEFINED_LOCATION;
+	    robot_Locations[layer].resize(start_arrangement.get_RobotCount() + 1, undefined_location);
 	}
 	
 
@@ -1941,7 +1974,7 @@ namespace sReloc
 			{
 			    if (occupying_robot_id >= 1)
 			    {
-				sASSERT(robot_Locations[occupy_layer][occupying_robot_id] == (const int)sRobotArrangement::UNDEFINED_LOCATION);
+				sASSERT(robot_Locations[occupy_layer][occupying_robot_id] == sRobotArrangement::UNDEFINED_LOCATION);
 				robot_Locations[occupy_layer][occupying_robot_id] = occupy_vertex_id;
 			    }
 			    occupying_robot_id = 0;
@@ -1989,7 +2022,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedHeuristicMatchingSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedHeuristicMatchingSolution(sSATSolver_Type                         *solver,
 										     const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 										     const sUndirectedGraph                  &environment,
@@ -2010,7 +2043,8 @@ namespace sReloc
 	robot_Locations.resize(computed_makespan + 1);
 	for (int layer = 0; layer <= computed_makespan; ++layer)
 	{
-	    robot_Locations[layer].resize(start_arrangement.get_RobotCount() + 1, (const int)sRobotArrangement::UNDEFINED_LOCATION);
+	    int undefined_location = sRobotArrangement::UNDEFINED_LOCATION;
+	    robot_Locations[layer].resize(start_arrangement.get_RobotCount() + 1, undefined_location);
 	}
 
 	int occupying_robot_id = -1;
@@ -2046,7 +2080,7 @@ namespace sReloc
 			{
 			    if (occupying_robot_id >= 1)
 			    {
-				sASSERT(robot_Locations[occupy_layer][occupying_robot_id] == (const int)sRobotArrangement::UNDEFINED_LOCATION);
+				sASSERT(robot_Locations[occupy_layer][occupying_robot_id] == sRobotArrangement::UNDEFINED_LOCATION);
 				robot_Locations[occupy_layer][occupying_robot_id] = occupy_vertex_id;
 			    }
 			    occupying_robot_id = 0;
@@ -2125,7 +2159,8 @@ namespace sReloc
 	robot_Locations.resize(computed_makespan + 1);
 	for (int layer = 0; layer <= computed_makespan; ++layer)
 	{
-	    robot_Locations[layer].resize(start_arrangement.get_RobotCount() + 1, (const int)sRobotArrangement::UNDEFINED_LOCATION);
+	    int undefined_location = sRobotArrangement::UNDEFINED_LOCATION;
+	    robot_Locations[layer].resize(start_arrangement.get_RobotCount() + 1, undefined_location);
 	}
 	
 
@@ -2148,7 +2183,7 @@ namespace sReloc
 			int vertex_id = *specified_identifier.get_ScopeIndexes()[1] - *(specified_identifier.get_IndexableIdentifier()->get_IndexScopes()[1]->get_Begin());
 			int layer_id = *specified_identifier.get_ScopeIndexes()[2] - *(specified_identifier.get_IndexableIdentifier()->get_IndexScopes()[2]->get_Begin());
 
-			sASSERT(robot_Locations[layer_id][robot_id] == (const int)sRobotArrangement::UNDEFINED_LOCATION);
+			sASSERT(robot_Locations[layer_id][robot_id] == sRobotArrangement::UNDEFINED_LOCATION);
 			robot_Locations[layer_id][robot_id] = vertex_id;
 		    }
 		}
@@ -2186,7 +2221,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedDirectSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedDirectSolution(sSATSolver_Type                         *solver,
 									  const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 									  const sUndirectedGraph                  &environment,
@@ -2207,7 +2242,8 @@ namespace sReloc
 	robot_Locations.resize(computed_makespan + 1);
 	for (int layer = 0; layer <= computed_makespan; ++layer)
 	{
-	    robot_Locations[layer].resize(start_arrangement.get_RobotCount() + 1, (const int)sRobotArrangement::UNDEFINED_LOCATION);
+	    int undefined_location = sRobotArrangement::UNDEFINED_LOCATION;
+	    robot_Locations[layer].resize(start_arrangement.get_RobotCount() + 1, undefined_location);
 	}
 
 	for (int i = 0; i < solver->nVars(); i++)
@@ -2237,7 +2273,7 @@ namespace sReloc
 			int vertex_id = *specified_identifier.get_ScopeIndexes()[1] - *(specified_identifier.get_IndexableIdentifier()->get_IndexScopes()[1]->get_Begin());
 			int layer_id = *specified_identifier.get_ScopeIndexes()[2] - *(specified_identifier.get_IndexableIdentifier()->get_IndexScopes()[2]->get_Begin());
 
-			sASSERT(robot_Locations[layer_id][robot_id] == (const int)sRobotArrangement::UNDEFINED_LOCATION);
+			sASSERT(robot_Locations[layer_id][robot_id] == sRobotArrangement::UNDEFINED_LOCATION);
 			robot_Locations[layer_id][robot_id] = vertex_id;
 		    }
 		}
@@ -2306,7 +2342,8 @@ namespace sReloc
 	robot_Locations.resize(computed_makespan + 1);
 	for (int layer = 0; layer <= computed_makespan; ++layer)
 	{
-	    robot_Locations[layer].resize(start_arrangement.get_RobotCount() + 1, (const int)sRobotArrangement::UNDEFINED_LOCATION);
+	    int undefined_location = sRobotArrangement::UNDEFINED_LOCATION;
+	    robot_Locations[layer].resize(start_arrangement.get_RobotCount() + 1, undefined_location);
 	}
 	
 
@@ -2329,7 +2366,7 @@ namespace sReloc
 			int vertex_id = *specified_identifier.get_ScopeIndexes()[1] - *(specified_identifier.get_IndexableIdentifier()->get_IndexScopes()[1]->get_Begin());
 			int layer_id = *specified_identifier.get_ScopeIndexes()[2] - *(specified_identifier.get_IndexableIdentifier()->get_IndexScopes()[2]->get_Begin());
 
-			sASSERT(robot_Locations[layer_id][robot_id] == (const int)sRobotArrangement::UNDEFINED_LOCATION);
+			sASSERT(robot_Locations[layer_id][robot_id] == sRobotArrangement::UNDEFINED_LOCATION);
 			robot_Locations[layer_id][robot_id] = vertex_id;
 		    }
 		}
@@ -2367,7 +2404,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedHeuristicDirectSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedHeuristicDirectSolution(sSATSolver_Type                         *solver,
 										   const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 										   const sUndirectedGraph                  &environment,
@@ -2388,7 +2425,8 @@ namespace sReloc
 	robot_Locations.resize(computed_makespan + 1);
 	for (int layer = 0; layer <= computed_makespan; ++layer)
 	{
-	    robot_Locations[layer].resize(start_arrangement.get_RobotCount() + 1, (const int)sRobotArrangement::UNDEFINED_LOCATION);
+	    int undefined_location = sRobotArrangement::UNDEFINED_LOCATION;
+	    robot_Locations[layer].resize(start_arrangement.get_RobotCount() + 1, undefined_location);
 	}
 	
 	for (int i = 0; i < solver->nVars(); i++)
@@ -2418,7 +2456,7 @@ namespace sReloc
 			int vertex_id = *specified_identifier.get_ScopeIndexes()[1] - *(specified_identifier.get_IndexableIdentifier()->get_IndexScopes()[1]->get_Begin());
 			int layer_id = *specified_identifier.get_ScopeIndexes()[2] - *(specified_identifier.get_IndexableIdentifier()->get_IndexScopes()[2]->get_Begin());
 
-			sASSERT(robot_Locations[layer_id][robot_id] == (const int)sRobotArrangement::UNDEFINED_LOCATION);
+			sASSERT(robot_Locations[layer_id][robot_id] == sRobotArrangement::UNDEFINED_LOCATION);
 			robot_Locations[layer_id][robot_id] = vertex_id;
 		    }
 		}
@@ -2487,7 +2525,8 @@ namespace sReloc
 	robot_Locations.resize(computed_makespan + 1);
 	for (int layer = 0; layer <= computed_makespan; ++layer)
 	{
-	    robot_Locations[layer].resize(start_arrangement.get_RobotCount() + 1, (const int)sRobotArrangement::UNDEFINED_LOCATION);
+	    int undefined_location = sRobotArrangement::UNDEFINED_LOCATION;
+	    robot_Locations[layer].resize(start_arrangement.get_RobotCount() + 1, undefined_location);
 	}
 	
 
@@ -2510,7 +2549,7 @@ namespace sReloc
 			int vertex_id = *specified_identifier.get_ScopeIndexes()[1] - *(specified_identifier.get_IndexableIdentifier()->get_IndexScopes()[1]->get_Begin());
 			int layer_id = *specified_identifier.get_ScopeIndexes()[2] - *(specified_identifier.get_IndexableIdentifier()->get_IndexScopes()[2]->get_Begin());
 
-			sASSERT(robot_Locations[layer_id][robot_id] == (const int)sRobotArrangement::UNDEFINED_LOCATION);
+			sASSERT(robot_Locations[layer_id][robot_id] == sRobotArrangement::UNDEFINED_LOCATION);
 			robot_Locations[layer_id][robot_id] = vertex_id;
 		    }
 		}
@@ -2548,7 +2587,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedSimplicialSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedSimplicialSolution(sSATSolver_Type                         *solver,
 									      const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 									      const sUndirectedGraph                  &environment,
@@ -2569,7 +2608,8 @@ namespace sReloc
 	robot_Locations.resize(computed_makespan + 1);
 	for (int layer = 0; layer <= computed_makespan; ++layer)
 	{
-	    robot_Locations[layer].resize(start_arrangement.get_RobotCount() + 1, (const int)sRobotArrangement::UNDEFINED_LOCATION);
+	    int undefined_location = sRobotArrangement::UNDEFINED_LOCATION;
+	    robot_Locations[layer].resize(start_arrangement.get_RobotCount() + 1, undefined_location);
 	}
 	
 	for (int i = 0; i < solver->nVars(); i++)
@@ -2599,7 +2639,7 @@ namespace sReloc
 			int vertex_id = *specified_identifier.get_ScopeIndexes()[1] - *(specified_identifier.get_IndexableIdentifier()->get_IndexScopes()[1]->get_Begin());
 			int layer_id = *specified_identifier.get_ScopeIndexes()[2] - *(specified_identifier.get_IndexableIdentifier()->get_IndexScopes()[2]->get_Begin());
 
-			sASSERT(robot_Locations[layer_id][robot_id] == (const int)sRobotArrangement::UNDEFINED_LOCATION);
+			sASSERT(robot_Locations[layer_id][robot_id] == sRobotArrangement::UNDEFINED_LOCATION);
 			robot_Locations[layer_id][robot_id] = vertex_id;
 		    }
 		}
@@ -2668,7 +2708,8 @@ namespace sReloc
 	robot_Locations.resize(computed_makespan + 1);
 	for (int layer = 0; layer <= computed_makespan; ++layer)
 	{
-	    robot_Locations[layer].resize(start_arrangement.get_RobotCount() + 1, (const int)sRobotArrangement::UNDEFINED_LOCATION);
+	    int undefined_location = sRobotArrangement::UNDEFINED_LOCATION;
+	    robot_Locations[layer].resize(start_arrangement.get_RobotCount() + 1, undefined_location);
 	}
 	
 
@@ -2691,7 +2732,7 @@ namespace sReloc
 			int vertex_id = *specified_identifier.get_ScopeIndexes()[1] - *(specified_identifier.get_IndexableIdentifier()->get_IndexScopes()[1]->get_Begin());
 			int layer_id = *specified_identifier.get_ScopeIndexes()[2] - *(specified_identifier.get_IndexableIdentifier()->get_IndexScopes()[2]->get_Begin());
 
-			// sASSERT(robot_Locations[layer_id][robot_id] == (const int)sRobotArrangement::UNDEFINED_LOCATION);
+			// sASSERT(robot_Locations[layer_id][robot_id] == sRobotArrangement::UNDEFINED_LOCATION);
 			robot_Locations[layer_id][robot_id] = vertex_id;
 		    }
 		}
@@ -2729,7 +2770,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedHeuristicSimplicialSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedHeuristicSimplicialSolution(sSATSolver_Type                         *solver,
 										       const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 										       const sUndirectedGraph                  &environment,
@@ -2750,7 +2791,8 @@ namespace sReloc
 	robot_Locations.resize(computed_makespan + 1);
 	for (int layer = 0; layer <= computed_makespan; ++layer)
 	{
-	    robot_Locations[layer].resize(start_arrangement.get_RobotCount() + 1, (const int)sRobotArrangement::UNDEFINED_LOCATION);
+	    int undefined_location = sRobotArrangement::UNDEFINED_LOCATION;
+	    robot_Locations[layer].resize(start_arrangement.get_RobotCount() + 1, undefined_location);
 	}
 
 	for (int i = 0; i < solver->nVars(); i++)
@@ -2780,7 +2822,7 @@ namespace sReloc
 			int vertex_id = *specified_identifier.get_ScopeIndexes()[1] - *(specified_identifier.get_IndexableIdentifier()->get_IndexScopes()[1]->get_Begin());
 			int layer_id = *specified_identifier.get_ScopeIndexes()[2] - *(specified_identifier.get_IndexableIdentifier()->get_IndexScopes()[2]->get_Begin());
 
-			// sASSERT(robot_Locations[layer_id][robot_id] == (const int)sRobotArrangement::UNDEFINED_LOCATION);
+			// sASSERT(robot_Locations[layer_id][robot_id] == sRobotArrangement::UNDEFINED_LOCATION);
 			robot_Locations[layer_id][robot_id] = vertex_id;
 		    }
 		}
@@ -2951,7 +2993,7 @@ namespace sReloc
     }
 
     
-    sResult sMultirobotSolutionCompressor::intract_ComputedSingularSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedSingularSolution(sSATSolver_Type                         *solver,
 									    const sRobotArrangement                 &start_arrangement,
 									    const sUndirectedGraph                  &environment,
 									    int                                      sUNUSED(computed_makespan),
@@ -3279,7 +3321,7 @@ namespace sReloc
     }
 
     
-    sResult sMultirobotSolutionCompressor::intract_ComputedPluralSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedPluralSolution(sSATSolver_Type                         *solver,
 									  const sRobotArrangement                 &start_arrangement,
 									  const sUndirectedGraph                  &environment,
 									  int                                      computed_makespan,
@@ -3714,7 +3756,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedPlural2Solution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedPlural2Solution(sSATSolver_Type                         *solver,
 									   const sRobotArrangement                 &start_arrangement,
 									   const sUndirectedGraph                  &environment,
 									   const sUndirectedGraph                  &sparse_environment,
@@ -4154,7 +4196,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedHeightedSolution(Glucose::Solver                                *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedHeightedSolution(sSATSolver_Type                                *solver,
 									    const sRobotArrangement                        &start_arrangement,
 									    const sUndirectedGraph                         &sUNUSED(environment),
 									    int                                            sUNUSED(computed_cost),
@@ -5607,7 +5649,7 @@ namespace sReloc
     }    
     
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedMddSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedMddSolution(sSATSolver_Type                         *solver,
 								       const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 								       const sUndirectedGraph                  &environment,
@@ -5742,7 +5784,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedMddUmtexSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedMddUmtexSolution(sSATSolver_Type                         *solver,
 									    const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 									    const sUndirectedGraph                  &environment,
@@ -5877,7 +5919,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedMddMutexSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedMddMutexSolution(sSATSolver_Type                         *solver,
 									    const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 									    const sUndirectedGraph                  &environment,
@@ -6012,7 +6054,7 @@ namespace sReloc
     }        
     
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedGMddSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedGMddSolution(sSATSolver_Type                         *solver,
 									const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 									const sUndirectedGraph                  &environment,
@@ -6147,7 +6189,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedAnoSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedAnoSolution(sSATSolver_Type                         *solver,
 								       const sRobotArrangement                 &start_arrangement,
 								       const sUndirectedGraph                  &environment,
 								       const sMultirobotInstance::MDD_vector   &MDD,
@@ -6256,7 +6298,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedGAnoSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedGAnoSolution(sSATSolver_Type                         *solver,
 									const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 									const sUndirectedGraph                  &environment,
@@ -6391,7 +6433,7 @@ namespace sReloc
     }        
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedGEMddSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedGEMddSolution(sSATSolver_Type                         *solver,
 									 const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 									 const sUndirectedGraph                  &environment,
@@ -6712,7 +6754,7 @@ namespace sReloc
     }
     
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedWaterMddSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedWaterMddSolution(sSATSolver_Type                         *solver,
 									    const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 									    const sUndirectedGraph                  &environment,
@@ -7856,7 +7898,7 @@ namespace sReloc
     }            
 
     
-    sResult sMultirobotSolutionCompressor::intract_ComputedRelaxedMddSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedRelaxedMddSolution(sSATSolver_Type                         *solver,
 									      const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 									      const sUndirectedGraph                  &environment,
@@ -8017,7 +8059,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedTokenMddSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedTokenMddSolution(sSATSolver_Type                         *solver,
 									      const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 									      const sUndirectedGraph                  &environment,
@@ -8178,7 +8220,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedTokenEmptyMddSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedTokenEmptyMddSolution(sSATSolver_Type                         *solver,
 										 const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 										 const sUndirectedGraph                  &environment,
@@ -8339,7 +8381,7 @@ namespace sReloc
     }    
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedPermutationMddSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedPermutationMddSolution(sSATSolver_Type                         *solver,
 									      const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 									      const sUndirectedGraph                  &environment,
@@ -8500,7 +8542,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedCapacitatedPermutationMddSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedCapacitatedPermutationMddSolution(sSATSolver_Type                         *solver,
 											     const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 											     const sUndirectedGraph                  &environment,
@@ -8847,7 +8889,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedMddPlusSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedMddPlusSolution(sSATSolver_Type                         *solver,
 									   const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 									   const sUndirectedGraph                  &environment,
@@ -9566,7 +9608,7 @@ namespace sReloc
     }    
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedMddPlusPlusSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedMddPlusPlusSolution(sSATSolver_Type                         *solver,
 									       const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 									       const sUndirectedGraph                  &environment,
@@ -9726,7 +9768,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedMddPlusPlusMutexSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedMddPlusPlusMutexSolution(sSATSolver_Type                         *solver,
 										    const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 										    const sUndirectedGraph                  &environment,
@@ -9886,7 +9928,7 @@ namespace sReloc
     }    
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedMddPlusPlusFuelSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedMddPlusPlusFuelSolution(sSATSolver_Type                         *solver,
 										   const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 										   const sUndirectedGraph                  &environment,
@@ -10233,7 +10275,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedLMddPlusPlusSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedLMddPlusPlusSolution(sSATSolver_Type                         *solver,
 										const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 										const sUndirectedGraph                  &environment,
@@ -10579,7 +10621,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedMddStarSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedMddStarSolution(sSATSolver_Type                         *solver,
 									   const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 									   const sUndirectedGraph                  &environment,
@@ -10868,7 +10910,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedMmddSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedMmddSolution(sSATSolver_Type                         *solver,
 									const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 									const sUndirectedGraph                  &environment,
@@ -11605,7 +11647,7 @@ namespace sReloc
     }            
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedRelaxedMmddSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedRelaxedMmddSolution(sSATSolver_Type                         *solver,
 									       const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 									       const sUndirectedGraph                  &environment,
@@ -11702,7 +11744,7 @@ namespace sReloc
     }        
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedTokenMmddSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedTokenMmddSolution(sSATSolver_Type                         *solver,
 									     const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 									     const sUndirectedGraph                  &environment,
@@ -11799,7 +11841,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedTokenEmptyMmddSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedTokenEmptyMmddSolution(sSATSolver_Type                         *solver,
 										  const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 										  const sUndirectedGraph                  &environment,
@@ -11896,7 +11938,7 @@ namespace sReloc
     }    
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedPermutationMmddSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedPermutationMmddSolution(sSATSolver_Type                         *solver,
 									     const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 									     const sUndirectedGraph                  &environment,
@@ -11993,7 +12035,7 @@ namespace sReloc
     }            
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedCapacitatedPermutationMmddSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedCapacitatedPermutationMmddSolution(sSATSolver_Type                         *solver,
 											      const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 											      const sUndirectedGraph                  &environment,
@@ -12213,7 +12255,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedMmddPlusSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedMmddPlusSolution(sSATSolver_Type                         *solver,
 									    const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 									    const sUndirectedGraph                  &environment,
@@ -12435,7 +12477,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedMmddPlusPlusSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedMmddPlusPlusSolution(sSATSolver_Type                         *solver,
 										const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 										const sUndirectedGraph                  &environment,
@@ -12662,7 +12704,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedRXMddSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedRXMddSolution(sSATSolver_Type                         *solver,
 									 const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 									 const sUndirectedGraph                  &environment,
@@ -12883,7 +12925,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::intract_ComputedNoMddSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedNoMddSolution(sSATSolver_Type                         *solver,
 									 const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 									 const sUndirectedGraph                  &environment,
@@ -13107,7 +13149,7 @@ namespace sReloc
     }
 
     
-    sResult sMultirobotSolutionCompressor::intract_ComputedRXNoMddSolution(Glucose::Solver                         *solver,
+    sResult sMultirobotSolutionCompressor::intract_ComputedRXNoMddSolution(sSATSolver_Type                         *solver,
 									   const sRobotArrangement                 &start_arrangement,
 #ifdef sDEBUG
 									   const sUndirectedGraph                  &environment,

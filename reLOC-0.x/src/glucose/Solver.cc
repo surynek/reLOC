@@ -205,7 +205,7 @@ Var Solver::newVar(bool sign, bool dvar)
     //activity .push(0);
     activity .push(rnd_init_act ? drand(random_seed) * 0.00001 : 0);
     seen     .push(0);
-    permDiff  .push(0);
+    permDiff .push(0);
     polarity .push(sign);
     decision .push();
     trail    .capacity(v+1);
@@ -1032,11 +1032,11 @@ bool Solver::simplify()
 |    if the clause set is unsatisfiable. 'l_Undef' if the bound on number of conflicts is reached.
 |________________________________________________________________________________________________@*/
 
-double s__Glucose_end_time, s__Glucose_start_time;
+sDouble s__Glucose_end_time, s__Glucose_start_time;
 
 lbool Solver::search(int /*nof_conflicts*/)
 {
-    double s__Glucose_start_time = sPhaseStatistics::get_CPU_Seconds();
+    s__Glucose_start_time = sPhaseStatistics::get_CPU_Seconds();
 		  
     assert(ok);
     int         backtrack_level;
@@ -1065,6 +1065,7 @@ lbool Solver::search(int /*nof_conflicts*/)
 	      if (s_Glucose_timeout >= 0)
 	      {
 		  s__Glucose_end_time = sPhaseStatistics::get_CPU_Seconds();
+		  
 		  if (s__Glucose_end_time - s__Glucose_start_time > s_Glucose_timeout)
 		  {
 		      return l_Undef;
@@ -1259,7 +1260,7 @@ printf("c ==================================[ Search Statistics (every %6d confl
       printf("c =========================================================================================================\n");
     }
 
-    double s_Glucose_start_time = sPhaseStatistics::get_CPU_Seconds();    
+    s__Glucose_start_time = sPhaseStatistics::get_CPU_Seconds();    
 
     // Search:
     int curr_restarts = 0;
@@ -1271,8 +1272,8 @@ printf("c ==================================[ Search Statistics (every %6d confl
 
 	if (s_Glucose_timeout >= 0)
 	{
-	    double s_Glucose_end_time = sPhaseStatistics::get_CPU_Seconds();
-	    if (s_Glucose_end_time - s_Glucose_start_time > s_Glucose_timeout)
+	    s__Glucose_end_time = sPhaseStatistics::get_CPU_Seconds();
+	    if (s__Glucose_end_time - s__Glucose_start_time > s_Glucose_timeout)
 	    {
 		return l_Undef;
 	    }

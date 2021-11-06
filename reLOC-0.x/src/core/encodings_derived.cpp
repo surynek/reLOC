@@ -1,14 +1,14 @@
 /*============================================================================*/
 /*                                                                            */
 /*                                                                            */
-/*                              reLOC 0.21-robik                              */
+/*                              reLOC 0.22-robik                              */
 /*                                                                            */
 /*                  (C) Copyright 2011 - 2021 Pavel Surynek                   */
-/*                http://www.surynek.com | <pavel@surynek.com>                */
+/*                http://www.surynek.net | <pavel@surynek.net>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* encodings_derived.cpp / 0.21-robik_056                                     */
+/* encodings_derived.cpp / 0.22-robik_095                                     */
 /*----------------------------------------------------------------------------*/
 //
 // Multi-robot path-finding encodings derived from the standard MDD encoding.
@@ -221,7 +221,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_WaterMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    void sMultirobotInstance::to_Memory_WaterMddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
 	int extra_cost;
 	//	s_GlobalPhaseStatistics.enter_Phase("MDD build");
@@ -252,7 +252,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_AnoCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    void sMultirobotInstance::to_Memory_AnoCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
 	--encoding_context.m_N_Layers;	
 	construct_MakespanMDD(encoding_context.m_N_Layers, m_the_MDD);
@@ -276,7 +276,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_GAnoCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    void sMultirobotInstance::to_Memory_GAnoCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
 	--encoding_context.m_N_Layers;	
 	construct_MakespanMDD(encoding_context.m_N_Layers, m_the_MDD);
@@ -314,7 +314,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotInstance::to_Memory_WaterMddCNFsat_avoid(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent, bool verbose)
+    sResult sMultirobotInstance::to_Memory_WaterMddCNFsat_avoid(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent, bool verbose)
     {
 	int extra_cost;
 	//	s_GlobalPhaseStatistics.enter_Phase("MDD build");
@@ -366,7 +366,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotInstance::to_Memory_MddStarCNFsat_avoid(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent, bool verbose)
+    sResult sMultirobotInstance::to_Memory_MddStarCNFsat_avoid(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent, bool verbose)
     {
 	int extra_cost;
 	//	s_GlobalPhaseStatistics.enter_Phase("MDD build");
@@ -1344,7 +1344,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_WaterMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_WaterMddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();	
 
@@ -2031,7 +2031,7 @@ namespace sReloc
     }    
    
 
-    void sMultirobotInstance::to_Memory_AnoCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const MDD_vector &sUNUSED(MDD), const RobotMDD_vector &unified_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_AnoCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const MDD_vector &sUNUSED(MDD), const RobotMDD_vector &unified_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();	
 
@@ -2525,7 +2525,7 @@ namespace sReloc
     }    
    
 
-    void sMultirobotInstance::to_Memory_GAnoCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const MDD_vector &sUNUSED(MDD), const RobotMDD_vector &unified_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_GAnoCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const MDD_vector &sUNUSED(MDD), const RobotMDD_vector &unified_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();	
 
@@ -2702,7 +2702,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_MddStarCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
+    void sMultirobotInstance::to_Memory_MddStarCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent, bool verbose)
     {
 	int extra_cost;
 //	s_GlobalPhaseStatistics.enter_Phase("MDD build");
@@ -2749,6 +2749,10 @@ namespace sReloc
 		bound = true;
 	    }
 	}
+	if (m_ratio < 0.0)
+	{
+	    bound = false;	    
+	}			
 	
 	/*
 	printf("Bound:%d (%d x %d)\n", bound, encoding_context.m_max_total_cost + extra_cost, mdd_depth * N_Robots);
@@ -3085,7 +3089,7 @@ namespace sReloc
     }
 
 
-    void sMultirobotInstance::to_Memory_MddStarCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
+    void sMultirobotInstance::to_Memory_MddStarCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, int extra_cost, int mdd_depth, const MDD_vector &MDD, const MDD_vector &extra_MDD, const sString &sUNUSED(indent), bool sUNUSED(verbose))
     {
 	encoding_context.switchTo_AdvancedGeneratingMode();	
 
@@ -3113,6 +3117,10 @@ namespace sReloc
 		bound = true;
 	    }
 	}
+	if (m_ratio < 0.0)
+	{
+	    bound = false;	    
+	}			
 	
 	if (bound)
 	{

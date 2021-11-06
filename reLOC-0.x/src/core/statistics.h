@@ -1,14 +1,14 @@
 /*============================================================================*/
 /*                                                                            */
 /*                                                                            */
-/*                              reLOC 0.21-robik                              */
+/*                              reLOC 0.22-robik                              */
 /*                                                                            */
 /*                  (C) Copyright 2011 - 2021 Pavel Surynek                   */
-/*                http://www.surynek.com | <pavel@surynek.com>                */
+/*                http://www.surynek.net | <pavel@surynek.net>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* statistics.h / 0.21-robik_056                                              */
+/* statistics.h / 0.22-robik_095                                              */
 /*----------------------------------------------------------------------------*/
 //
 // Statistical data collection and analytical tools.
@@ -53,10 +53,14 @@ namespace sReloc
 	{
 	    MicroPhase()
 	    : m_key(-1)
+	    , m_WC_Seconds(0.0)
+	    , m_CPU_Seconds(0.0)
 	    { /* nothing */ }
 	    
 	    MicroPhase(sInt_32 key)
 	    : m_key(key)
+	    , m_WC_Seconds(0.0)
+	    , m_CPU_Seconds(0.0)	      
 	    { /* nothing */ }
 
 	    sInt_32 m_key;
@@ -91,6 +95,9 @@ namespace sReloc
 
 	    long m_produced_cnf_Variables;
 	    long m_produced_cnf_Clauses;
+
+	    int m_max_makespan_tested;
+	    int m_max_total_cost_tested;
 
 	    long m_search_Steps;
 

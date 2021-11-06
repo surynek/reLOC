@@ -1,14 +1,14 @@
 /*============================================================================*/
 /*                                                                            */
 /*                                                                            */
-/*                              reLOC 0.21-robik                              */
+/*                              reLOC 0.22-robik                              */
 /*                                                                            */
 /*                  (C) Copyright 2011 - 2021 Pavel Surynek                   */
-/*                http://www.surynek.com | <pavel@surynek.com>                */
+/*                http://www.surynek.net | <pavel@surynek.net>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* compress.cpp / 0.21-robik_056                                              */
+/* compress.cpp / 0.22-robik_095                                              */
 /*----------------------------------------------------------------------------*/
 //
 // Compression tools for relocation problem solutions.
@@ -31,6 +31,18 @@
 #include "compress.h"
 #include "statistics.h"
 
+
+#ifdef sUSE_GLUCOSE
+      using namespace Glucose;
+#endif
+
+#ifdef sUSE_MAPLE
+      using namespace Maple;
+#endif
+
+#ifdef sUSE_COMSPS
+      using namespace Comsps;
+#endif
 
 
 /*----------------------------------------------------------------------------*/
@@ -408,7 +420,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_OptimalMakespan(Glucose::Solver         **solver,
+    sResult sMultirobotSolutionCompressor::incompute_OptimalMakespan(sSATSolver_Type         **solver,
 								     const sRobotArrangement &start_arrangement,
 								     const sRobotGoal        &final_arrangement,
 								     const sUndirectedGraph  &environment,
@@ -437,7 +449,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_OptimalMakespan_(Glucose::Solver         **solver,
+    sResult sMultirobotSolutionCompressor::incompute_OptimalMakespan_(sSATSolver_Type         **solver,
 								      const sRobotArrangement &start_arrangement,
 								      const sRobotGoal        &final_arrangement,
 								      const sUndirectedGraph  &environment,
@@ -467,7 +479,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_OptimalMakespan(Glucose::Solver         **solver,
+    sResult sMultirobotSolutionCompressor::incompute_OptimalMakespan(sSATSolver_Type         **solver,
 								     const sRobotArrangement &start_arrangement,
 								     const sRobotGoal        &final_arrangement,
 								     const sUndirectedGraph  &environment,
@@ -494,7 +506,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_OptimalMakespan(Glucose::Solver         **solver,
+    sResult sMultirobotSolutionCompressor::incompute_OptimalMakespan(sSATSolver_Type         **solver,
 								     sMultirobotInstance     &instance,
 								     int                      makespan_upper_bound,
 								     int                     &optimal_makespan,
@@ -517,7 +529,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_OptimalMakespan_(Glucose::Solver         **solver,
+    sResult sMultirobotSolutionCompressor::incompute_OptimalMakespan_(sSATSolver_Type         **solver,
 								      sMultirobotInstance     &instance,
 								      int                      makespan_upper_bound,
 								      int                     &optimal_makespan,
@@ -541,7 +553,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_OptimalMakespan(Glucose::Solver         **solver,
+    sResult sMultirobotSolutionCompressor::incompute_OptimalMakespan(sSATSolver_Type         **solver,
 								     sMultirobotInstance     &instance,
 								     int                      makespan_lower_bound,
 								     int                      makespan_upper_bound,
@@ -575,7 +587,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_OptimalMakespan(Glucose::Solver                   **solver,
+    sResult sMultirobotSolutionCompressor::incompute_OptimalMakespan(sSATSolver_Type                   **solver,
 								     const sRobotArrangement           &start_arrangement,
 								     const sRobotGoal                  &final_arrangement,
 								     const sUndirectedGraph            &environment,
@@ -1350,7 +1362,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_OptimalMakespan(Glucose::Solver                   **solver,
+    sResult sMultirobotSolutionCompressor::incompute_OptimalMakespan(sSATSolver_Type                   **solver,
 								     sMultirobotInstance               &instance,
 								     int                                makespan_upper_bound,
 								     int                               &optimal_makespan,
@@ -1369,7 +1381,7 @@ namespace sReloc
 	    {
 		delete *solver;
 	    }
-	    *solver = new Glucose::Solver;
+	    *solver = new sSATSolver_Type();
 	    
 	    #ifdef sVERBOSE
 	    printf("Solving layer: %d\n", N_Layers);
@@ -1552,10 +1564,10 @@ namespace sReloc
 	    }
 
 	    //Glucose::vec<Glucose::Lit> dummy;
-	    //Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	    //sSATSolverBool_Type ret = (*solver)->solveLimited(dummy);
 
 	    (*solver)->s_Glucose_timeout = m_minisat_timeout;		    
-	    Glucose::lbool ret = (*solver)->solve_();	    
+	    sSATSolverBool_Type ret = (*solver)->solve_();	    
 	    
 	    if (ret == l_True)
 	    {
@@ -1601,7 +1613,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_SpecifiedMakespan(Glucose::Solver                   **solver,
+    sResult sMultirobotSolutionCompressor::incompute_SpecifiedMakespan(sSATSolver_Type                   **solver,
 								       sMultirobotInstance               &instance,
 								       int                               &specified_makespan,
 								       sMultirobotEncodingContext_CNFsat &final_encoding_context,
@@ -1621,7 +1633,7 @@ namespace sReloc
 	{
 	    delete *solver;
 	}
-	*solver = new Glucose::Solver;
+	*solver = new sSATSolver_Type();
 	    
 	#ifdef sVERBOSE
 	{
@@ -1806,10 +1818,10 @@ namespace sReloc
 	}
 
 	//Glucose::vec<Glucose::Lit> dummy;
-	//Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	//sSATSolverBool_Type ret = (*solver)->solveLimited(dummy);
 
 	(*solver)->s_Glucose_timeout = m_minisat_timeout;		    
-	Glucose::lbool ret = (*solver)->solve_();	
+	sSATSolverBool_Type ret = (*solver)->solve_();	
 	
 	if (ret == l_True)
 	{
@@ -1867,7 +1879,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_OptimalMakespan_(Glucose::Solver                   **solver,
+    sResult sMultirobotSolutionCompressor::incompute_OptimalMakespan_(sSATSolver_Type                   **solver,
 								      const sRobotArrangement           &start_arrangement,
 								      const sRobotGoal                  &final_arrangement,
 								      const sUndirectedGraph            &environment,
@@ -3393,7 +3405,7 @@ namespace sReloc
     }
 
     
-    sResult sMultirobotSolutionCompressor::incompute_OptimalMakespan_(Glucose::Solver                   **solver,
+    sResult sMultirobotSolutionCompressor::incompute_OptimalMakespan_(sSATSolver_Type                   **solver,
 								      sMultirobotInstance               &instance,
 								      int                                makespan_upper_bound,
 								      int                               &optimal_makespan,
@@ -3415,7 +3427,7 @@ namespace sReloc
 	    {
 		delete *solver;
 	    }
-	    *solver = new Glucose::Solver;
+	    *solver = new sSATSolver_Type();
 
 	    #ifdef sVERBOSE
 	    printf("Solving layer: %d\n", N_Layers);
@@ -3600,7 +3612,7 @@ namespace sReloc
 	    //Glucose::vec<Glucose::Lit> dummy;
 	    
 	    (*solver)->s_Glucose_timeout = m_minisat_timeout;		    
-	    Glucose::lbool ret = (*solver)->solve_();
+	    sSATSolverBool_Type ret = (*solver)->solve_();
 	    
 	    if (ret == l_True)
 	    {
@@ -3666,7 +3678,7 @@ namespace sReloc
     }    
 
     
-    sResult sMultirobotSolutionCompressor::incompute_OptimalMakespan(Glucose::Solver                   **solver,
+    sResult sMultirobotSolutionCompressor::incompute_OptimalMakespan(sSATSolver_Type                   **solver,
 								     const sRobotArrangement           &start_arrangement,
 								     const sRobotGoal                  &final_arrangement,
 								     const sUndirectedGraph            &environment,
@@ -4473,7 +4485,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_OptimalMakespan(Glucose::Solver                   **solver,
+    sResult sMultirobotSolutionCompressor::incompute_OptimalMakespan(sSATSolver_Type                   **solver,
 								     sMultirobotInstance               &instance,
 								     int                                makespan_lower_bound,
 								     int                                makespan_upper_bound,
@@ -4495,7 +4507,7 @@ namespace sReloc
 	    {
 		delete *solver;
 	    }
-	    *solver = new Glucose::Solver;
+	    *solver = new sSATSolver_Type();
 	    
 	    int makespan_try = last_satisfiable_makespan - (last_satisfiable_makespan - first_unsatisfiable_makespan) / 2;
 	    int N_Layers = makespan_try + 1;
@@ -4682,10 +4694,10 @@ namespace sReloc
 	    }
 
 	    //Glucose::vec<Glucose::Lit> dummy;
-	    //Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	    //sSATSolverBool_Type ret = (*solver)->solveLimited(dummy);
 
 	    (*solver)->s_Glucose_timeout = m_minisat_timeout;		    
-	    Glucose::lbool ret = (*solver)->solve_();	    
+	    sSATSolverBool_Type ret = (*solver)->solve_();	    
 	    
 	    if (ret == l_True)
 	    {
@@ -5309,7 +5321,7 @@ namespace sReloc
     }    
 
     
-    sResult sMultirobotSolutionCompressor::incompute_OptimalSolution(Glucose::Solver         **solver,
+    sResult sMultirobotSolutionCompressor::incompute_OptimalSolution(sSATSolver_Type         **solver,
 								     const sRobotArrangement &start_arrangement,
 								     const sRobotGoal        &final_arrangement,
 								     const sUndirectedGraph  &environment,
@@ -5596,7 +5608,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_SpecifiedSolution(Glucose::Solver         **solver,
+    sResult sMultirobotSolutionCompressor::incompute_SpecifiedSolution(sSATSolver_Type         **solver,
 								       const sRobotArrangement &start_arrangement,
 								       const sRobotGoal        &final_arrangement,
 								       const sUndirectedGraph  &environment,
@@ -6169,7 +6181,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_OptimalSolution_(Glucose::Solver         **solver,
+    sResult sMultirobotSolutionCompressor::incompute_OptimalSolution_(sSATSolver_Type         **solver,
 								      const sRobotArrangement &start_arrangement,
 								      const sRobotGoal        &final_arrangement,
 								      const sUndirectedGraph  &environment,
@@ -6700,7 +6712,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_OptimalSolution(Glucose::Solver         **solver,
+    sResult sMultirobotSolutionCompressor::incompute_OptimalSolution(sSATSolver_Type         **solver,
 								     const sRobotArrangement &start_arrangement,
 								     const sRobotGoal        &final_arrangement,
 								     const sUndirectedGraph  &environment,
@@ -7181,7 +7193,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_OrtoOptimalMakespan(Glucose::Solver                   **solver,
+    sResult sMultirobotSolutionCompressor::incompute_OrtoOptimalMakespan(sSATSolver_Type                   **solver,
 									 const sRobotArrangement           &start_arrangement,
 									 const sRobotGoal                  &final_arrangement,
 									 const sUndirectedGraph            &environment,
@@ -7204,7 +7216,7 @@ namespace sReloc
 	    {
 		delete *solver;
 	    }
-	    *solver = new Glucose::Solver;
+	    *solver = new sSATSolver_Type();
 	    
 	    sMultirobotEncodingContext_CNFsat encoding_context(N_Layers);
 #ifdef sVERBOSE
@@ -7261,10 +7273,10 @@ namespace sReloc
 	    }
 
 	    //Glucose::vec<Glucose::Lit> dummy;
-	    //Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	    //sSATSolverBool_Type ret = (*solver)->solveLimited(dummy);
 
 	    (*solver)->s_Glucose_timeout = m_minisat_timeout;		    
-	    Glucose::lbool ret = (*solver)->solve_();	    
+	    sSATSolverBool_Type ret = (*solver)->solve_();	    
 	    
 	    if (ret == l_True)
 	    {
@@ -7373,7 +7385,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_OrtoOptimalSolution(Glucose::Solver         **solver,
+    sResult sMultirobotSolutionCompressor::incompute_OrtoOptimalSolution(sSATSolver_Type         **solver,
 									 const sRobotArrangement &start_arrangement,
 									 const sRobotGoal        &final_arrangement,
 									 const sUndirectedGraph  &environment,
@@ -7454,7 +7466,7 @@ namespace sReloc
 	expansion_count = 0;
 
 	while (true)
-	{
+	{	    
             #ifdef sSTATISTICS
 	    {
 		s_GlobalPhaseStatistics.enter_MicroPhase(total_cost);
@@ -7541,7 +7553,13 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_OptimalCost(Glucose::Solver                   **solver,
+#ifdef sEXPERIMENTAL_OVERCOST_STEPS   
+    const int overcost_max_steps = sEXPERIMENTAL_OVERCOST_STEPS;
+#else
+    const int overcost_max_steps = 0;    
+#endif
+    
+    sResult sMultirobotSolutionCompressor::incompute_OptimalCost(sSATSolver_Type                   **solver,
 								 sMultirobotInstance               &instance,
 								 int                                max_total_cost,
 								 int                               &optimal_cost,
@@ -7560,24 +7578,34 @@ namespace sReloc
 	double finish_seconds = sGet_CPU_Seconds();
 
 	expansion_count = 0;
+	
+	bool overcost_phase = false;
+	int overcost_steps = 0;
 
 	while (true)
 	{
             #ifdef sSTATISTICS
 	    {
+		s_GlobalPhaseStatistics.get_CurrentPhase().m_max_makespan_tested = max_individual_cost;
+		s_GlobalPhaseStatistics.get_CurrentPhase().m_max_total_cost_tested = total_cost;
+	    }
+            #endif
+	    
+            #ifdef sSTATISTICS
+	    {
 		s_GlobalPhaseStatistics.enter_MicroPhase(total_cost);
 	    }
 	    #endif
-	    
+
 	    if (*solver != NULL)
 	    {
 		delete *solver;
 	    }
-	    *solver = new Glucose::Solver;
+	    *solver = new sSATSolver_Type();
 
 	    sMultirobotEncodingContext_CNFsat encoding_context(0);
 	    encoding_context.m_max_total_cost = total_cost;
-	    encoding_context.m_max_total_fuel = total_cost;	    
+	    encoding_context.m_max_total_fuel = total_cost;
 
 #ifdef sVERBOSE
 	    printf("Solving cost %d (%d) ...\n", total_cost, max_individual_cost);
@@ -7598,14 +7626,34 @@ namespace sReloc
 	    {
 	    case sMULTIROBOT_SOLUTION_COMPRESSOR_SAT_INFO:
 	    {
-		optimal_cost = total_cost;
-                #ifdef sSTATISTICS
+		if (overcost_phase)
 		{
-		    s_GlobalPhaseStatistics.leave_MicroPhase();
+		    if (overcost_steps++ >= overcost_max_steps)
+		    {
+                        #ifdef sSTATISTICS
+			{
+			    s_GlobalPhaseStatistics.leave_MicroPhase();
+			}
+	                #endif						
+			return sRESULT_SUCCESS;
+		    }
 		}
-	        #endif	    
-		
-		return sRESULT_SUCCESS;
+		else		    
+		{
+		    optimal_cost = total_cost;
+		    overcost_phase = true;
+
+		    if (overcost_steps++ >= overcost_max_steps)
+		    {
+                        #ifdef sSTATISTICS
+			{
+			    s_GlobalPhaseStatistics.leave_MicroPhase();
+			}
+	                #endif			
+			return sRESULT_SUCCESS;
+		    }		    
+		}
+		break;
 	    }
 	    case sMULTIROBOT_SOLUTION_COMPRESSOR_UNSAT_INFO:
 	    {
@@ -7613,14 +7661,34 @@ namespace sReloc
 	    }
 	    case sMULTIROBOT_SOLUTION_COMPRESSOR_INDET_INFO:
 	    {
-		optimal_cost = MAKESPAN_UNDEFINED;
-                #ifdef sSTATISTICS
-		{
-		    s_GlobalPhaseStatistics.leave_MicroPhase();
+		if (overcost_phase)
+		{				
+		    if (overcost_steps++ >= overcost_max_steps)
+		    {
+                        #ifdef sSTATISTICS
+			{
+			    s_GlobalPhaseStatistics.leave_MicroPhase();
+			}
+	                #endif						
+			return result;
+		    }
 		}
-	        #endif	    
-		
-		return result;
+		else
+		{
+		    optimal_cost = MAKESPAN_UNDEFINED;
+		    overcost_phase = true;
+
+		    if (overcost_steps++ >= overcost_max_steps)
+		    {
+                        #ifdef sSTATISTICS
+			{
+			    s_GlobalPhaseStatistics.leave_MicroPhase();
+			}
+	                #endif			
+			return result;
+		    }		    
+		}
+		break;
 	    }
 	    default:
 	    {
@@ -7630,6 +7698,7 @@ namespace sReloc
 	    }
 
 	    total_cost += 1;
+	    max_individual_cost += 1;
 	    
 	    if (total_cost > max_total_cost)
 	    {
@@ -7676,7 +7745,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_OptimalCost(Glucose::Solver                   **solver,
+    sResult sMultirobotSolutionCompressor::incompute_OptimalCost(sSATSolver_Type                   **solver,
 								 const sRobotArrangement           &start_arrangement,
 								 const sRobotGoal                  &final_arrangement,
 								 const sUndirectedGraph            &environment,
@@ -7699,7 +7768,7 @@ namespace sReloc
     }    
 
 /*
-    sResult sMultirobotSolutionCompressor::incompute_OptimalCost(Glucose::Solver                   **solver,
+    sResult sMultirobotSolutionCompressor::incompute_OptimalCost(sSATSolver_Type                   **solver,
 								 sMultirobotInstance               &instance,
 								 int                                max_total_cost,
 								 int                               &optimal_cost,
@@ -7725,7 +7794,7 @@ namespace sReloc
 	    {
 		delete *solver;
 	    }
-	    *solver = new Glucose::Solver;
+	    *solver = new sSATSolver_Type;
 	    
 	    sMultirobotEncodingContext_CNFsat encoding_context(0);
 	    encoding_context.m_max_total_cost = total_cost;
@@ -7782,7 +7851,7 @@ namespace sReloc
     }
 
     
-    sResult sMultirobotSolutionCompressor::incompute_OptimalCost(Glucose::Solver                   **solver,
+    sResult sMultirobotSolutionCompressor::incompute_OptimalCost(sSATSolver_Type                   **solver,
 								 const sRobotArrangement           &start_arrangement,
 								 const sRobotGoal                  &final_arrangement,
 								 const sUndirectedGraph            &environment,
@@ -7894,7 +7963,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_OptimalFuel(Glucose::Solver                   **solver,
+    sResult sMultirobotSolutionCompressor::incompute_OptimalFuel(sSATSolver_Type                   **solver,
 								 sMultirobotInstance               &instance,
 								 int                                max_total_fuel,
 								 int                               &optimal_fuel,
@@ -7930,7 +7999,7 @@ namespace sReloc
 		{
 		    delete *solver;
 		}
-		*solver = new Glucose::Solver;
+		*solver = new sSATSolver_Type;
 		
 		encoding_context.m_fuel_makespan = fuel_makespan_;
 
@@ -8010,7 +8079,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_OptimalFuel(Glucose::Solver                   **solver,
+    sResult sMultirobotSolutionCompressor::incompute_OptimalFuel(sSATSolver_Type                   **solver,
 								 const sRobotArrangement           &start_arrangement,
 								 const sRobotGoal                  &final_arrangement,
 								 const sUndirectedGraph            &environment,
@@ -8055,7 +8124,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_OptimalCost_avoid(Glucose::Solver                   **solver,
+    sResult sMultirobotSolutionCompressor::incompute_OptimalCost_avoid(sSATSolver_Type                   **solver,
 								       const sRobotArrangement           &start_arrangement,
 								       const sRobotGoal                  &final_arrangement,
 								       const sUndirectedGraph            &environment,
@@ -8126,7 +8195,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_OptimalCost_avoid(Glucose::Solver                   **solver,
+    sResult sMultirobotSolutionCompressor::incompute_OptimalCost_avoid(sSATSolver_Type                   **solver,
 								       sMultirobotInstance               &instance,
 								       const Arrangements_vector         &blocking_solution,
 								       int                                optimal_cost,
@@ -8197,7 +8266,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_OptimalMakespan_avoid(Glucose::Solver                   **solver,
+    sResult sMultirobotSolutionCompressor::incompute_OptimalMakespan_avoid(sSATSolver_Type                   **solver,
 									   const sRobotArrangement           &start_arrangement,
 									   const sRobotGoal                  &final_arrangement,
 									   const sUndirectedGraph            &environment,
@@ -8265,7 +8334,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_OptimalMakespan_avoid(Glucose::Solver                   **solver,
+    sResult sMultirobotSolutionCompressor::incompute_OptimalMakespan_avoid(sSATSolver_Type                   **solver,
 									   sMultirobotInstance               &instance,
 									   const Arrangements_vector         &blocking_solution,
 									   int                                optimal_makespan,
@@ -8971,7 +9040,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_CostSolvability(Glucose::Solver                   **solver,
+    sResult sMultirobotSolutionCompressor::incompute_CostSolvability(sSATSolver_Type                   **solver,
 								     sMultirobotInstance               &instance,
 								     int                                total_cost,
 								     sMultirobotEncodingContext_CNFsat &final_encoding_context,
@@ -9122,10 +9191,10 @@ namespace sReloc
 	}
 	
 	//Glucose::vec<Glucose::Lit> dummy;
-	//Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	//sSATSolverBool_Type ret = (*solver)->solveLimited(dummy);
 
 	(*solver)->s_Glucose_timeout = m_minisat_timeout;		    
-	Glucose::lbool ret = (*solver)->solve_();	
+	sSATSolverBool_Type ret = (*solver)->solve_();	
 	
 	if (ret == l_True)
 	{
@@ -9324,7 +9393,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_FuelSolvability(Glucose::Solver                   **solver,
+    sResult sMultirobotSolutionCompressor::incompute_FuelSolvability(sSATSolver_Type                   **solver,
 								     sMultirobotInstance               &instance,
 								     int                                total_fuel,
 								     int                                fuel_makespan,
@@ -9359,10 +9428,10 @@ namespace sReloc
 	}
 	
 	//Glucose::vec<Glucose::Lit> dummy;
-	//Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	//sSATSolverBool_Type ret = (*solver)->solveLimited(dummy);
 
 	(*solver)->s_Glucose_timeout = m_minisat_timeout;		    
-	Glucose::lbool ret = (*solver)->solve_();	
+	sSATSolverBool_Type ret = (*solver)->solve_();	
 	
 	if (ret == l_True)
 	{
@@ -9688,7 +9757,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_CostSolvability_avoid(Glucose::Solver                   **solver,
+    sResult sMultirobotSolutionCompressor::incompute_CostSolvability_avoid(sSATSolver_Type                   **solver,
 									   sMultirobotInstance               &instance,
 									   int                                total_cost,
 									   const Arrangements_vector         &blocking_solution,									 
@@ -9794,10 +9863,10 @@ namespace sReloc
 	}
 	
 	//Glucose::vec<Glucose::Lit> dummy;
-	//Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	//sSATSolverBool_Type ret = (*solver)->solveLimited(dummy);
 
 	(*solver)->s_Glucose_timeout = m_minisat_timeout;		    
-	Glucose::lbool ret = (*solver)->solve_();	
+	sSATSolverBool_Type ret = (*solver)->solve_();	
 	
 	if (ret == l_True)
 	{
@@ -10063,7 +10132,7 @@ namespace sReloc
     }
 
     
-    sResult sMultirobotSolutionCompressor::incompute_MakespanSolvability_avoid(Glucose::Solver                   **solver,
+    sResult sMultirobotSolutionCompressor::incompute_MakespanSolvability_avoid(sSATSolver_Type                   **solver,
 									       sMultirobotInstance               &instance,
 									       int                                makespan,
 									       const Arrangements_vector         &blocking_solution,
@@ -10139,10 +10208,10 @@ namespace sReloc
 	}
 	
 	//Glucose::vec<Glucose::Lit> dummy;
-	//Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	//sSATSolverBool_Type ret = (*solver)->solveLimited(dummy);
 
 	(*solver)->s_Glucose_timeout = m_minisat_timeout;		    
-	Glucose::lbool ret = (*solver)->solve_();	
+	sSATSolverBool_Type ret = (*solver)->solve_();	
 	
 	if (ret == l_True)
 	{
@@ -10177,7 +10246,7 @@ namespace sReloc
     }        
     
 
-    sResult sMultirobotSolutionCompressor::incompute_OptimalCost_binary(Glucose::Solver                   **solver,
+    sResult sMultirobotSolutionCompressor::incompute_OptimalCost_binary(sSATSolver_Type                   **solver,
 									const sRobotArrangement           &start_arrangement,
 									const sRobotGoal                  &final_arrangement,
 									sUndirectedGraph                  &environment,
@@ -10234,7 +10303,7 @@ namespace sReloc
 	    {
 		delete *solver;
 	    }
-	    *solver = new Glucose::Solver;
+	    *solver = new sSATSolver_Type;
 	    
 	    printf("Lower bound: %d\n", lower_bound);
 	    printf("Upper bound: %d\n", upper_bound);
@@ -10301,10 +10370,10 @@ namespace sReloc
 	    }
 	    
 	    //Glucose::vec<Glucose::Lit> dummy;
-	    //Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	    //sSATSolverBool_Type ret = (*solver)->solveLimited(dummy);
 
 	    (*solver)->s_Glucose_timeout = m_minisat_timeout;		    
-	    Glucose::lbool ret = (*solver)->solve_();	    
+	    sSATSolverBool_Type ret = (*solver)->solve_();	    
 	    
 	    if (ret == l_True)
 	    {
@@ -10696,7 +10765,7 @@ namespace sReloc
     }
     
 /*
-    sResult sMultirobotSolutionCompressor::incompute_OptimalCost_binary(Glucose::Solver                   **solver,
+    sResult sMultirobotSolutionCompressor::incompute_OptimalCost_binary(sSATSolver_Type                   **solver,
 									const sRobotArrangement           &start_arrangement,
 									const sRobotGoal                  &final_arrangement,
 									sUndirectedGraph                  &environment,
@@ -10748,7 +10817,7 @@ namespace sReloc
 	    {
 		delete *solver;
 	    }
-	    *solver = new Glucose::Solver;
+	    *solver = new sSATSolver_Type;
 	    
 	    printf("Lower bound: %d\n", lower_bound);
 	    printf("Upper bound: %d\n", upper_bound);
@@ -10807,7 +10876,7 @@ namespace sReloc
 	    }
 	    
 	    Glucose::vec<Glucose::Lit> dummy;
-	    Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	    sSATSolverBool_Type ret = (*solver)->solveLimited(dummy);
 	    
 	    if (ret == l_True)
 	    {
@@ -11643,7 +11712,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_CostSolvability(Glucose::Solver                   **solver,
+    sResult sMultirobotSolutionCompressor::incompute_CostSolvability(sSATSolver_Type                   **solver,
 								     sMultirobotInstance               &instance,
 								     int                                total_cost,
 								     int                                extra_cost,
@@ -11800,10 +11869,10 @@ namespace sReloc
 	}
 
 	//Glucose::vec<Glucose::Lit> dummy;
-	//Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	//sSATSolverBool_Type ret = (*solver)->solveLimited(dummy);
 
 	(*solver)->s_Glucose_timeout = m_minisat_timeout;		    
-	Glucose::lbool ret = (*solver)->solve_();	
+	sSATSolverBool_Type ret = (*solver)->solve_();	
 
 	if (ret == l_True)
 	{
@@ -12163,7 +12232,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_BestExtraCost_binary(Glucose::Solver                   **solver,
+    sResult sMultirobotSolutionCompressor::incompute_BestExtraCost_binary(sSATSolver_Type                   **solver,
 									  sMultirobotInstance               &instance,
 									  int                                total_cost,
 									  int                                lower_extra_cost,
@@ -12185,7 +12254,7 @@ namespace sReloc
 	    {
 		delete *solver;
 	    }
-	    *solver = new Glucose::Solver;
+	    *solver = new sSATSolver_Type;
 	    
 	    printf("Lower extra bound: %d\n", lower_extra_cost);
 	    printf("Upper extra bound: %d\n", upper_extra_cost);
@@ -12666,7 +12735,7 @@ namespace sReloc
 */
 
     
-    sResult sMultirobotSolutionCompressor::incompute_BestExtraCost_linear(Glucose::Solver                   **solver,
+    sResult sMultirobotSolutionCompressor::incompute_BestExtraCost_linear(sSATSolver_Type                   **solver,
 									  sMultirobotInstance               &instance,
 									  int                                total_cost,
 									  int                                lower_extra_cost,
@@ -12689,7 +12758,7 @@ namespace sReloc
 	    {
 		delete *solver;
 	    }
-	    *solver = new Glucose::Solver;
+	    *solver = new sSATSolver_Type;
 	    
 //	    printf("Lower extra bound: %d\n", lower_extra_cost);
 //	    printf("Upper extra bound: %d\n", upper_extra_cost);
@@ -12838,7 +12907,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_CostReduction(Glucose::Solver     **solver,
+    sResult sMultirobotSolutionCompressor::incompute_CostReduction(sSATSolver_Type     **solver,
 								   sMultirobotInstance &instance,
 								   int                  max_total_cost,
 								   int                 &cost_reduction,
@@ -13141,7 +13210,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_BestCost(Glucose::Solver                   **solver,
+    sResult sMultirobotSolutionCompressor::incompute_BestCost(sSATSolver_Type                   **solver,
 							      const sRobotArrangement           &start_arrangement,
 							      const sRobotGoal                  &final_arrangement,
 							      sUndirectedGraph                  &environment,
@@ -13186,7 +13255,7 @@ namespace sReloc
 	    {
 		delete *solver;
 	    }
-	    *solver = new Glucose::Solver;
+	    *solver = new sSATSolver_Type;
 	    
 	    int lower_extra_cost = lower_total_bound - min_total_cost;
 	    int upper_extra_cost = upper_total_bound - min_total_cost;
@@ -13620,7 +13689,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_UpperCost(Glucose::Solver                   **solver,
+    sResult sMultirobotSolutionCompressor::incompute_UpperCost(sSATSolver_Type                   **solver,
 							       const sRobotArrangement           &start_arrangement,
 							       const sRobotGoal                  &final_arrangement,
 							       sUndirectedGraph                  &environment,
@@ -13646,7 +13715,7 @@ namespace sReloc
 	    {
 		delete *solver;
 	    }
-	    *solver = new Glucose::Solver;
+	    *solver = new sSATSolver_Type;
 	    
 	    sMultirobotEncodingContext_CNFsat encoding_context(0);
 	    encoding_context.m_max_total_cost = total_cost;
@@ -13690,10 +13759,10 @@ namespace sReloc
 	    }
 
 	    //Glucose::vec<Glucose::Lit> dummy;
-	    //Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	    //sSATSolverBool_Type ret = (*solver)->solveLimited(dummy);
 
 	    (*solver)->s_Glucose_timeout = m_minisat_timeout;		    
-	    Glucose::lbool ret = (*solver)->solve_();	    
+	    sSATSolverBool_Type ret = (*solver)->solve_();	    
 	    
 	    if (ret == l_True)
 	    {
@@ -13844,7 +13913,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_CostOptimalSolution(Glucose::Solver                                **solver,
+    sResult sMultirobotSolutionCompressor::incompute_CostOptimalSolution(sSATSolver_Type                                **solver,
 									 const sRobotArrangement                        &start_arrangement,
 									 const sRobotGoal                               &final_arrangement,
 									 const sUndirectedGraph                         &environment,
@@ -14250,7 +14319,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_CostOptimalSolution(Glucose::Solver                                **solver,
+    sResult sMultirobotSolutionCompressor::incompute_CostOptimalSolution(sSATSolver_Type                                **solver,
 									 const sRobotArrangement                        &start_arrangement,
 									 const sRobotGoal                               &final_arrangement,
 									 const sUndirectedGraph                         &environment,
@@ -14661,7 +14730,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_FuelOptimalSolution(Glucose::Solver                                **solver,
+    sResult sMultirobotSolutionCompressor::incompute_FuelOptimalSolution(sSATSolver_Type                                **solver,
 									 const sRobotArrangement                        &start_arrangement,
 									 const sRobotGoal                               &final_arrangement,
 									 const sUndirectedGraph                         &environment,
@@ -14837,7 +14906,7 @@ namespace sReloc
     }
 
     
-    sResult sMultirobotSolutionCompressor::incompute_CostOptimalSolution_avoid(Glucose::Solver                                **solver,
+    sResult sMultirobotSolutionCompressor::incompute_CostOptimalSolution_avoid(sSATSolver_Type                                **solver,
 									       const sRobotArrangement                        &start_arrangement,
 									       const sRobotGoal                               &final_arrangement,
 									       const sUndirectedGraph                         &environment,
@@ -14856,7 +14925,7 @@ namespace sReloc
 	{
 	    delete *solver;
 	}
-	*solver = new Glucose::Solver;	
+	*solver = new sSATSolver_Type;	
 		
 	result = incompute_OptimalCost_avoid(solver, instance, blocked_solution, optimal_cost, final_encoding_context, thread_id);
 	if (sFAILED(result))
@@ -15047,7 +15116,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_MakespanOptimalSolution_avoid(Glucose::Solver                                **solver,
+    sResult sMultirobotSolutionCompressor::incompute_MakespanOptimalSolution_avoid(sSATSolver_Type                                **solver,
 										   const sRobotArrangement                        &start_arrangement,
 										   const sRobotGoal                               &final_arrangement,
 										   const sUndirectedGraph                         &environment,
@@ -15066,7 +15135,7 @@ namespace sReloc
 	{
 	    delete *solver;
 	}
-	*solver = new Glucose::Solver;	
+	*solver = new sSATSolver_Type;	
 
 	result = incompute_OptimalMakespan_avoid(solver, instance, blocked_solution, optimal_makespan, final_encoding_context, thread_id);
 		
@@ -15853,7 +15922,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_CostOptimalSolutionID(Glucose::Solver                                **solver,
+    sResult sMultirobotSolutionCompressor::incompute_CostOptimalSolutionID(sSATSolver_Type                                **solver,
 									   const sRobotArrangement                        &start_arrangement,
 									   const sRobotGoal                               &final_arrangement,
 									   const sUndirectedGraph                         &environment,
@@ -16207,7 +16276,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::inresolve_GroupDependency(Glucose::Solver            **solver,
+    sResult sMultirobotSolutionCompressor::inresolve_GroupDependency(sSATSolver_Type            **solver,
 								     RobotGroups_vector         &robot_Groups,
 								     int                         group_A_idx,
 								     int                         group_B_idx,
@@ -16555,7 +16624,7 @@ namespace sReloc
     }
 
     
-    sResult sMultirobotSolutionCompressor::inresolve_MakespanGroupDependency(Glucose::Solver            **solver,
+    sResult sMultirobotSolutionCompressor::inresolve_MakespanGroupDependency(sSATSolver_Type            **solver,
 									     RobotGroups_vector         &robot_Groups,
 									     int                         group_A_idx,
 									     int                         group_B_idx,
@@ -16964,7 +17033,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_CostOptimalSolutionAD(Glucose::Solver                                **solver,
+    sResult sMultirobotSolutionCompressor::incompute_CostOptimalSolutionAD(sSATSolver_Type                                **solver,
 									   const sRobotArrangement                        &start_arrangement,
 									   const sRobotGoal                               &final_arrangement,
 									   const sUndirectedGraph                         &environment,
@@ -17370,7 +17439,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_MakespanOptimalSolutionID(Glucose::Solver                                **solver,
+    sResult sMultirobotSolutionCompressor::incompute_MakespanOptimalSolutionID(sSATSolver_Type                                **solver,
 									       const sRobotArrangement                        &start_arrangement,
 									       const sRobotGoal                               &final_arrangement,
 									       const sUndirectedGraph                         &environment,
@@ -17770,7 +17839,7 @@ namespace sReloc
     }
 
     
-    sResult sMultirobotSolutionCompressor::incompute_MakespanOptimalSolutionAD(Glucose::Solver         **solver,
+    sResult sMultirobotSolutionCompressor::incompute_MakespanOptimalSolutionAD(sSATSolver_Type         **solver,
 									       const sRobotArrangement &start_arrangement,
 									       const sRobotGoal        &final_arrangement,
 									       const sUndirectedGraph  &environment,
@@ -18062,7 +18131,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_CostOptimalSolution_binary(Glucose::Solver                                **solver,
+    sResult sMultirobotSolutionCompressor::incompute_CostOptimalSolution_binary(sSATSolver_Type                                **solver,
 										const sRobotArrangement                        &start_arrangement,
 										const sRobotGoal                               &final_arrangement,
 										sUndirectedGraph                               &environment,
@@ -18143,7 +18212,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_BestCostSolution(Glucose::Solver                               **solver,
+    sResult sMultirobotSolutionCompressor::incompute_BestCostSolution(sSATSolver_Type                               **solver,
 								      const sRobotArrangement                        &start_arrangement,
 								      const sRobotGoal                               &final_arrangement,
 								      sUndirectedGraph                               &environment,
@@ -18392,7 +18461,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_UnirobotMakespan(Glucose::Solver                   **solver,
+    sResult sMultirobotSolutionCompressor::incompute_UnirobotMakespan(sSATSolver_Type                   **solver,
 								      const sRobotArrangement           &start_arrangement,
 								      const sRobotGoal                  &final_arrangement,
 								      const sUndirectedGraph            &environment,
@@ -18417,7 +18486,7 @@ namespace sReloc
 	    {
 		delete *solver;
 	    }
-	    *solver = new Glucose::Solver;
+	    *solver = new sSATSolver_Type;
 	    
 	    sMultirobotEncodingContext_CNFsat encoding_context(N_Layers);
 
@@ -18454,10 +18523,10 @@ namespace sReloc
 	    }
 
 	    //Glucose::vec<Glucose::Lit> dummy;
-	    //Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	    //sSATSolverBool_Type ret = (*solver)->solveLimited(dummy);
 
 	    (*solver)->s_Glucose_timeout = m_minisat_timeout;		    
-	    Glucose::lbool ret = (*solver)->solve_();	    
+	    sSATSolverBool_Type ret = (*solver)->solve_();	    
 	    
 	    if (ret == l_True)
 	    {
@@ -18653,7 +18722,7 @@ namespace sReloc
     }
 
     
-    sResult sMultirobotSolutionCompressor::incompute_UnirobotSolution(Glucose::Solver        **solver,
+    sResult sMultirobotSolutionCompressor::incompute_UnirobotSolution(sSATSolver_Type        **solver,
 								      int                      unirobot_id,
 								      const sRobotArrangement &start_arrangement,
 								      const sRobotGoal        &final_arrangement,
@@ -18874,7 +18943,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_UnirobotsSolution(Glucose::Solver         **solver,
+    sResult sMultirobotSolutionCompressor::incompute_UnirobotsSolution(sSATSolver_Type         **solver,
 								       const sRobotArrangement  &start_arrangement,
 								       const sRobotGoal         &final_arrangement,
 								       const sUndirectedGraph   &environment,
@@ -19011,7 +19080,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_SuboptimalMakespan(Glucose::Solver         **solver,
+    sResult sMultirobotSolutionCompressor::incompute_SuboptimalMakespan(sSATSolver_Type         **solver,
 									const sRobotArrangement  &start_arrangement,
 									const sRobotArrangement  &final_arrangement,
 									const sUndirectedGraph   &environment,
@@ -19740,7 +19809,7 @@ namespace sReloc
     }
 
 
-    sResult sMultirobotSolutionCompressor::incompute_SuboptimalMakespan(Glucose::Solver                  **solver,
+    sResult sMultirobotSolutionCompressor::incompute_SuboptimalMakespan(sSATSolver_Type                  **solver,
 									const sRobotArrangement           &start_arrangement,
 									const sRobotArrangement           &final_arrangement,
 									const sUndirectedGraph            &environment,
@@ -19767,7 +19836,7 @@ namespace sReloc
 	    {
 		delete *solver;
 	    }
-	    *solver = new Glucose::Solver;
+	    *solver = new sSATSolver_Type;
 	    
 	    int makespan_try = last_satisfiable_makespan - (last_satisfiable_makespan - first_unsatisfiable_makespan) / 2;
 	    int N_Layers = makespan_try + 1;
@@ -19934,10 +20003,10 @@ namespace sReloc
 	    }
 
 	    //Glucose::vec<Glucose::Lit> dummy;
-	    //Glucose::lbool ret = (*solver)->solveLimited(dummy);
+	    //sSATSolverBool_Type ret = (*solver)->solveLimited(dummy);
 
 	    (*solver)->s_Glucose_timeout = m_minisat_timeout;		    
-	    Glucose::lbool ret = (*solver)->solve_();	    
+	    sSATSolverBool_Type ret = (*solver)->solve_();	    
 	    
 	    if (ret == l_True)
 	    {
@@ -20309,7 +20378,7 @@ namespace sReloc
     }
 
     
-    sResult sMultirobotSolutionCompressor::incompute_SuboptimalSolution(Glucose::Solver         **solver,
+    sResult sMultirobotSolutionCompressor::incompute_SuboptimalSolution(sSATSolver_Type          **solver,
 									const sRobotArrangement  &start_arrangement,
 									const sRobotArrangement  &final_arrangement,
 									const sUndirectedGraph   &environment,

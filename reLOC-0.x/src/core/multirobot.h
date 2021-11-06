@@ -1,14 +1,14 @@
 /*============================================================================*/
 /*                                                                            */
 /*                                                                            */
-/*                              reLOC 0.21-robik                              */
+/*                              reLOC 0.22-robik                              */
 /*                                                                            */
 /*                  (C) Copyright 2011 - 2021 Pavel Surynek                   */
-/*                http://www.surynek.com | <pavel@surynek.com>                */
+/*                http://www.surynek.net | <pavel@surynek.net>                */
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* multirobot.h / 0.21-robik_056                                              */
+/* multirobot.h / 0.22-robik_095                                              */
 /*----------------------------------------------------------------------------*/
 //
 // Multirobot coordinated path-finding solving package.
@@ -568,179 +568,179 @@ namespace sReloc
 	virtual void to_Stream_bgu(FILE *fw, const sString &indent = "", int instance_id = -1) const;
 	
 	virtual void to_Stream_InverseCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
-	virtual void to_Memory_InverseCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
+	virtual void to_Memory_InverseCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
 		
 	virtual void to_Stream_AdvancedCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
-	virtual void to_Memory_AdvancedCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
+	virtual void to_Memory_AdvancedCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
 	
 	virtual void to_Stream_DifferentialCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
-	virtual void to_Memory_DifferentialCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
+	virtual void to_Memory_DifferentialCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
 	
 	virtual void to_Stream_BijectionCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
-	virtual void to_Memory_BijectionCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
+	virtual void to_Memory_BijectionCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
 	
 	virtual void to_Stream_HeuristicDifferentialCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_HeuristicDifferentialCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual void to_Memory_HeuristicDifferentialCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 	
 	virtual void to_Stream_HeuristicBijectionCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_HeuristicBijectionCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual void to_Memory_HeuristicBijectionCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 	
 	virtual void to_Stream_HeuristicAdvancedCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_HeuristicAdvancedCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual void to_Memory_HeuristicAdvancedCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 	
 	virtual void to_Stream_PuzzleCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
-	virtual void to_Memory_PuzzleCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
+	virtual void to_Memory_PuzzleCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
 	
 	virtual void to_Stream_BitwiseCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_BitwiseCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual void to_Memory_BitwiseCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 	
 	virtual void to_Stream_FlowCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
-	virtual void to_Memory_FlowCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
+	virtual void to_Memory_FlowCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
 	
 	virtual void to_Stream_MatchingCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
-	virtual void to_Memory_MatchingCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
+	virtual void to_Memory_MatchingCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
 	
 	virtual void to_Stream_HeuristicMatchingCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_HeuristicMatchingCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual void to_Memory_HeuristicMatchingCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 	
 	virtual void to_Stream_DirectCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
-	virtual void to_Memory_DirectCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
+	virtual void to_Memory_DirectCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
 	
 	virtual void to_Stream_HeuristicDirectCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_HeuristicDirectCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual void to_Memory_HeuristicDirectCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 	
 	virtual void to_Stream_SimplicialCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
-	virtual void to_Memory_SimplicialCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
+	virtual void to_Memory_SimplicialCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
 	
 	virtual void to_Stream_HeuristicSimplicialCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_HeuristicSimplicialCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual void to_Memory_HeuristicSimplicialCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 	
 	virtual void to_Stream_SingularCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
-	virtual void to_Memory_SingularCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
+	virtual void to_Memory_SingularCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
 	
 	virtual void to_Stream_PluralCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
-	virtual void to_Memory_PluralCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
+	virtual void to_Memory_PluralCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false) const;
 	
 	virtual void to_Stream_Plural2CNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_Plural2CNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual void to_Memory_Plural2CNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 	
 	virtual void to_Stream_HeightedCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_HeightedCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);	
+	virtual void to_Memory_HeightedCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);	
 	
 	virtual void to_Stream_MddCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_MddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual void to_Memory_MddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 
 	virtual void to_Stream_MddUmtexCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_MddUmtexCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual void to_Memory_MddUmtexCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 
 	virtual void to_Stream_MddMutexCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_MddMutexCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);	
+	virtual void to_Memory_MddMutexCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);	
 
 	virtual void to_Stream_GMddCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_GMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual void to_Memory_GMddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 
 	virtual void to_Stream_GEMddCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_GEMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual void to_Memory_GEMddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 
 	virtual void to_Stream_AnoCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_AnoCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual void to_Memory_AnoCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 
 	virtual void to_Stream_GAnoCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_GAnoCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);		
+	virtual void to_Memory_GAnoCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);		
 	
 	virtual void to_Stream_WaterMddCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_WaterMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual void to_Memory_WaterMddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 	
 	virtual void to_Stream_RelaxedMddCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_RelaxedMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual void to_Memory_RelaxedMddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 
 	virtual void to_Stream_TokenMddCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_TokenMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual void to_Memory_TokenMddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 
 	virtual void to_Stream_TokenEmptyMddCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_TokenEmptyMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);	
+	virtual void to_Memory_TokenEmptyMddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);	
 
 	virtual void to_Stream_PermutationMddCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_PermutationMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual void to_Memory_PermutationMddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 
 	virtual void to_Stream_CapacitatedPermutationMddCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_CapacitatedPermutationMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);			
+	virtual void to_Memory_CapacitatedPermutationMddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);			
 	
 	virtual void to_Stream_MmddCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_MmddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual void to_Memory_MmddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 	
 	virtual void to_Stream_RelaxedMmddCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_RelaxedMmddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual void to_Memory_RelaxedMmddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 
 	virtual void to_Stream_TokenMmddCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_TokenMmddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual void to_Memory_TokenMmddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 
 	virtual void to_Stream_TokenEmptyMmddCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_TokenEmptyMmddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);	
+	virtual void to_Memory_TokenEmptyMmddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);	
 
 	virtual void to_Stream_PermutationMmddCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_PermutationMmddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual void to_Memory_PermutationMmddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 
 	virtual void to_Stream_CapacitatedPermutationMmddCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_CapacitatedPermutationMmddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);			
+	virtual void to_Memory_CapacitatedPermutationMmddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);			
 	
 	virtual void to_Stream_RXMddCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_RXMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual void to_Memory_RXMddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 	
 	virtual void to_Stream_NoMddCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_NoMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual void to_Memory_NoMddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 	
 	virtual void to_Stream_RXNoMddCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_RXNoMddCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual void to_Memory_RXNoMddCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 	
 	virtual void to_Stream_MddPlusCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_MddPlusCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual void to_Memory_MddPlusCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 	
 	virtual void to_Stream_MmddPlusCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_MmddPlusCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual void to_Memory_MmddPlusCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 	
 	virtual void to_Stream_MddPlusPlusCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_MddPlusPlusCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual void to_Memory_MddPlusPlusCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 
 	virtual void to_Stream_MddPlusPlusMutexCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_MddPlusPlusMutexCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);	
+	virtual void to_Memory_MddPlusPlusMutexCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);	
 
 	virtual void to_Stream_MddPlusPlusFuelCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_MddPlusPlusFuelCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);	
+	virtual void to_Memory_MddPlusPlusFuelCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);	
 
 	virtual void to_Stream_LMddPlusPlusCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_LMddPlusPlusCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);	
+	virtual void to_Memory_LMddPlusPlusCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);	
 	
 	virtual void to_Stream_MddStarCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_MddStarCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual void to_Memory_MddStarCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 	
 	virtual void to_Stream_MmddPlusPlusCNFsat(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
-	virtual void to_Memory_MmddPlusPlusCNFsat(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
+	virtual void to_Memory_MmddPlusPlusCNFsat(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const sString &indent = "", bool verbose = false);
 	
 
 	virtual sResult to_Stream_MddCNFsat_avoid(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent = "", bool verbose = false);
-	virtual sResult to_Memory_MddCNFsat_avoid(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent = "", bool verbose = false);
+	virtual sResult to_Memory_MddCNFsat_avoid(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent = "", bool verbose = false);
 	
 	virtual sResult to_Stream_WaterMddCNFsat_avoid(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent = "", bool verbose = false);
-	virtual sResult to_Memory_WaterMddCNFsat_avoid(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent = "", bool verbose = false);
+	virtual sResult to_Memory_WaterMddCNFsat_avoid(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent = "", bool verbose = false);
 	
 	virtual sResult to_Stream_MddPlusCNFsat_avoid(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent = "", bool verbose = false);
-	virtual sResult to_Memory_MddPlusCNFsat_avoid(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent = "", bool verbose = false);
+	virtual sResult to_Memory_MddPlusCNFsat_avoid(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent = "", bool verbose = false);
 	
 	virtual sResult to_Stream_MddPlusPlusCNFsat_avoid(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent = "", bool verbose = false);
-	virtual sResult to_Memory_MddPlusPlusCNFsat_avoid(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent = "", bool verbose = false);
+	virtual sResult to_Memory_MddPlusPlusCNFsat_avoid(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent = "", bool verbose = false);
 	
 	virtual sResult to_Stream_MddStarCNFsat_avoid(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent = "", bool verbose = false);
-	virtual sResult to_Memory_MddStarCNFsat_avoid(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent = "", bool verbose = false);		
+	virtual sResult to_Memory_MddStarCNFsat_avoid(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent = "", bool verbose = false);		
 
 	virtual sResult to_Stream_MmddCNFsat_avoid(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent = "", bool verbose = false);
-	virtual sResult to_Memory_MmddCNFsat_avoid(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent = "", bool verbose = false);
+	virtual sResult to_Memory_MmddCNFsat_avoid(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent = "", bool verbose = false);
 	
 	virtual sResult to_Stream_MmddPlusCNFsat_avoid(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent = "", bool verbose = false);
-	virtual sResult to_Memory_MmddPlusCNFsat_avoid(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent = "", bool verbose = false);
+	virtual sResult to_Memory_MmddPlusCNFsat_avoid(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent = "", bool verbose = false);
 	
 	virtual sResult to_Stream_MmddPlusPlusCNFsat_avoid(FILE *fw, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent = "", bool verbose = false);
-	virtual sResult to_Memory_MmddPlusPlusCNFsat_avoid(Glucose::Solver *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent = "", bool verbose = false);	
+	virtual sResult to_Memory_MmddPlusPlusCNFsat_avoid(sSATSolver_Type *solver, sMultirobotEncodingContext_CNFsat &encoding_context, const Arrangements_vector &unfolded_solution, const sString &indent = "", bool verbose = false);	
 	
 
 	virtual void to_Stream_MddCNFsat(FILE                              *fw,
@@ -751,7 +751,7 @@ namespace sReloc
 					 const MDD_vector                  &extra_MDD,
 					 const sString                     &indent = "",
 					 bool                              verbose = false);
-	virtual void to_Memory_MddCNFsat(Glucose::Solver                   *solver,
+	virtual void to_Memory_MddCNFsat(sSATSolver_Type                   *solver,
 					 sMultirobotEncodingContext_CNFsat &encoding_context,
 					 int                                extra_cost,
 					 int                                mdd_depth,
@@ -768,7 +768,7 @@ namespace sReloc
 					      const MDD_vector                  &extra_MDD,
 					      const sString                     &indent = "",
 					      bool                              verbose = false);
-	virtual void to_Memory_MddUmtexCNFsat(Glucose::Solver                   *solver,
+	virtual void to_Memory_MddUmtexCNFsat(sSATSolver_Type                   *solver,
 					      sMultirobotEncodingContext_CNFsat &encoding_context,
 					      int                                extra_cost,
 					      int                                mdd_depth,
@@ -785,7 +785,7 @@ namespace sReloc
 					      const MDD_vector                  &extra_MDD,
 					      const sString                     &indent = "",
 					      bool                              verbose = false);
-	virtual void to_Memory_MddMutexCNFsat(Glucose::Solver                   *solver,
+	virtual void to_Memory_MddMutexCNFsat(sSATSolver_Type                   *solver,
 					      sMultirobotEncodingContext_CNFsat &encoding_context,
 					      int                                extra_cost,
 					      int                                mdd_depth,
@@ -802,7 +802,7 @@ namespace sReloc
 					  const MDD_vector                  &extra_MDD,
 					  const sString                     &indent = "",
 					  bool                              verbose = false);
-	virtual void to_Memory_GMddCNFsat(Glucose::Solver                   *solver,
+	virtual void to_Memory_GMddCNFsat(sSATSolver_Type                   *solver,
 					  sMultirobotEncodingContext_CNFsat &encoding_context,
 					  int                                extra_cost,
 					  int                                mdd_depth,
@@ -820,7 +820,7 @@ namespace sReloc
 					   const RobotMDD_vector             &unified_MDD,
 					   const sString                     &indent = "",
 					   bool                              verbose = false);
-	virtual void to_Memory_GEMddCNFsat(Glucose::Solver                   *solver,
+	virtual void to_Memory_GEMddCNFsat(sSATSolver_Type                   *solver,
 					   sMultirobotEncodingContext_CNFsat &encoding_context,
 					   int                                extra_cost,
 					   int                                mdd_depth,
@@ -836,7 +836,7 @@ namespace sReloc
 					 const RobotMDD_vector             &unified_MDD,
 					 const sString                     &indent = "",
 					 bool                              verbose = false);
-	virtual void to_Memory_AnoCNFsat(Glucose::Solver                   *solver,
+	virtual void to_Memory_AnoCNFsat(sSATSolver_Type                   *solver,
 					 sMultirobotEncodingContext_CNFsat &encoding_context,
 					 const MDD_vector                  &MDD,
 					 const RobotMDD_vector             &unified_MDD,
@@ -849,7 +849,7 @@ namespace sReloc
 					  const RobotMDD_vector             &unified_MDD,
 					  const sString                     &indent = "",
 					  bool                              verbose = false);
-	virtual void to_Memory_GAnoCNFsat(Glucose::Solver                   *solver,
+	virtual void to_Memory_GAnoCNFsat(sSATSolver_Type                   *solver,
 					  sMultirobotEncodingContext_CNFsat &encoding_context,
 					  const MDD_vector                  &MDD,
 					  const RobotMDD_vector             &unified_MDD, 
@@ -864,7 +864,7 @@ namespace sReloc
 					      const MDD_vector                  &extra_MDD,
 					      const sString                     &indent = "",
 					      bool                              verbose = false);
-	virtual void to_Memory_WaterMddCNFsat(Glucose::Solver                   *solver,
+	virtual void to_Memory_WaterMddCNFsat(sSATSolver_Type                   *solver,
 					      sMultirobotEncodingContext_CNFsat &encoding_context,
 					      int                                extra_cost,
 					      int                                mdd_depth,
@@ -881,7 +881,7 @@ namespace sReloc
 						const MDD_vector                  &extra_MDD,
 						const sString                     &indent = "",
 						bool                              verbose = false);
-	virtual void to_Memory_RelaxedMddCNFsat(Glucose::Solver                   *solver,
+	virtual void to_Memory_RelaxedMddCNFsat(sSATSolver_Type                   *solver,
 						sMultirobotEncodingContext_CNFsat &encoding_context,
 						int                                extra_cost,
 						int                                mdd_depth,
@@ -898,7 +898,7 @@ namespace sReloc
 					      const MDD_vector                  &extra_MDD,
 					      const sString                     &indent = "",
 					      bool                              verbose = false);	
-	virtual void to_Memory_TokenMddCNFsat(Glucose::Solver                   *solver,
+	virtual void to_Memory_TokenMddCNFsat(sSATSolver_Type                   *solver,
 					      sMultirobotEncodingContext_CNFsat &encoding_context,
 					      int                                extra_cost,
 					      int                                mdd_depth,
@@ -915,7 +915,7 @@ namespace sReloc
 						   const MDD_vector                  &extra_MDD,
 						   const sString                     &indent = "",
 						   bool                              verbose = false);	
-	virtual void to_Memory_TokenEmptyMddCNFsat(Glucose::Solver                   *solver,
+	virtual void to_Memory_TokenEmptyMddCNFsat(sSATSolver_Type                   *solver,
 						   sMultirobotEncodingContext_CNFsat &encoding_context,
 						   int                                extra_cost,
 						   int                                mdd_depth,
@@ -932,7 +932,7 @@ namespace sReloc
 						    const MDD_vector                  &extra_MDD,
 						    const sString                     &indent = "",
 						    bool                              verbose = false);	
-	virtual void to_Memory_PermutationMddCNFsat(Glucose::Solver                   *solver,
+	virtual void to_Memory_PermutationMddCNFsat(sSATSolver_Type                   *solver,
 						    sMultirobotEncodingContext_CNFsat &encoding_context,
 						    int                                extra_cost,
 						    int                                mdd_depth,
@@ -949,7 +949,7 @@ namespace sReloc
 							       const MDD_vector                  &extra_MDD,
 							       const sString                     &indent = "",
 							       bool                              verbose = false);	
-	virtual void to_Memory_CapacitatedPermutationMddCNFsat(Glucose::Solver                   *solver,
+	virtual void to_Memory_CapacitatedPermutationMddCNFsat(sSATSolver_Type                   *solver,
 							       sMultirobotEncodingContext_CNFsat &encoding_context,
 							       int                                extra_cost,
 							       int                                mdd_depth,
@@ -963,7 +963,7 @@ namespace sReloc
 					  const MDD_vector                  &MDD,
 					  const sString                     &indent = "",
 					  bool                              verbose = false);
-	virtual void to_Memory_MmddCNFsat(Glucose::Solver                   *solver,
+	virtual void to_Memory_MmddCNFsat(sSATSolver_Type                   *solver,
 					  sMultirobotEncodingContext_CNFsat &encoding_context,
 					  const MDD_vector                  &MDD,
 					  const sString                     &indent = "",
@@ -974,7 +974,7 @@ namespace sReloc
 						 const MDD_vector                  &MDD,
 						 const sString                     &indent = "",
 						 bool                              verbose = false);
-	virtual void to_Memory_RelaxedMmddCNFsat(Glucose::Solver                   *solver,
+	virtual void to_Memory_RelaxedMmddCNFsat(sSATSolver_Type                   *solver,
 						 sMultirobotEncodingContext_CNFsat &encoding_context,
 						 const MDD_vector                  &MDD,
 						 const sString                     &indent = "",
@@ -985,7 +985,7 @@ namespace sReloc
 					       const MDD_vector                  &MDD,
 					       const sString                     &indent = "",
 					       bool                              verbose = false);
-	virtual void to_Memory_TokenMmddCNFsat(Glucose::Solver                   *solver,
+	virtual void to_Memory_TokenMmddCNFsat(sSATSolver_Type                   *solver,
 					       sMultirobotEncodingContext_CNFsat &encoding_context,
 					       const MDD_vector                  &MDD,
 					       const sString                     &indent = "",
@@ -996,7 +996,7 @@ namespace sReloc
 						    const MDD_vector                  &MDD,
 						    const sString                     &indent = "",
 						    bool                              verbose = false);
-	virtual void to_Memory_TokenEmptyMmddCNFsat(Glucose::Solver                   *solver,
+	virtual void to_Memory_TokenEmptyMmddCNFsat(sSATSolver_Type                   *solver,
 						    sMultirobotEncodingContext_CNFsat &encoding_context,
 						    const MDD_vector                  &MDD,
 						    const sString                     &indent = "",
@@ -1007,7 +1007,7 @@ namespace sReloc
 						     const MDD_vector                  &MDD,
 						     const sString                     &indent = "",
 						     bool                              verbose = false);
-	virtual void to_Memory_PermutationMmddCNFsat(Glucose::Solver                   *solver,
+	virtual void to_Memory_PermutationMmddCNFsat(sSATSolver_Type                   *solver,
 						     sMultirobotEncodingContext_CNFsat &encoding_context,
 						     const MDD_vector                  &MDD,
 						     const sString                     &indent = "",
@@ -1018,7 +1018,7 @@ namespace sReloc
 								const MDD_vector                  &MDD,
 								const sString                     &indent = "",
 								bool                              verbose = false);
-	virtual void to_Memory_CapacitatedPermutationMmddCNFsat(Glucose::Solver                   *solver,
+	virtual void to_Memory_CapacitatedPermutationMmddCNFsat(sSATSolver_Type                   *solver,
 								sMultirobotEncodingContext_CNFsat &encoding_context,
 								const MDD_vector                  &MDD,
 								const sString                     &indent = "",
@@ -1032,7 +1032,7 @@ namespace sReloc
 					   const MDD_vector                  &extra_MDD,
 					   const sString                     &indent = "",
 					   bool                              verbose = false);
-	virtual void to_Memory_RXMddCNFsat(Glucose::Solver                   *solver,
+	virtual void to_Memory_RXMddCNFsat(sSATSolver_Type                   *solver,
 					   sMultirobotEncodingContext_CNFsat &encoding_context,
 					   int                                extra_cost,
 					   int                                mdd_depth,
@@ -1049,7 +1049,7 @@ namespace sReloc
 					     const MDD_vector                  &extra_MDD,
 					     const sString                     &indent = "",
 					     bool                              verbose = false);
-	virtual void to_Memory_MddPlusCNFsat(Glucose::Solver                   *solver,
+	virtual void to_Memory_MddPlusCNFsat(sSATSolver_Type                   *solver,
 					     sMultirobotEncodingContext_CNFsat &encoding_context,
 					     int                                extra_cost,
 					     int                                mdd_depth,
@@ -1063,7 +1063,7 @@ namespace sReloc
 					      const MDD_vector                  &MDD,
 					      const sString                     &indent = "",
 					      bool                              verbose = false);
-	virtual void to_Memory_MmddPlusCNFsat(Glucose::Solver                   *solver,
+	virtual void to_Memory_MmddPlusCNFsat(sSATSolver_Type                   *solver,
 					      sMultirobotEncodingContext_CNFsat &encoding_context,
 					      const MDD_vector                  &MDD,
 					      const sString                     &indent = "",
@@ -1077,7 +1077,7 @@ namespace sReloc
 						 const MDD_vector                  &extra_MDD,
 						 const sString                     &indent = "",
 						 bool                              verbose = false);
-	virtual void to_Memory_MddPlusPlusCNFsat(Glucose::Solver                   *solver,
+	virtual void to_Memory_MddPlusPlusCNFsat(sSATSolver_Type                   *solver,
 						 sMultirobotEncodingContext_CNFsat &encoding_context,
 						 int                                extra_cost,
 						 int                                mdd_depth,
@@ -1094,7 +1094,7 @@ namespace sReloc
 						      const MDD_vector                  &extra_MDD,
 						      const sString                     &indent = "",
 						      bool                              verbose = false);
-	virtual void to_Memory_MddPlusPlusMutexCNFsat(Glucose::Solver                   *solver,
+	virtual void to_Memory_MddPlusPlusMutexCNFsat(sSATSolver_Type                   *solver,
 						      sMultirobotEncodingContext_CNFsat &encoding_context,
 						      int                                extra_cost,
 						      int                                mdd_depth,
@@ -1111,7 +1111,7 @@ namespace sReloc
 						     const MDD_vector                  &extra_MDD,
 						     const sString                     &indent = "",
 						     bool                              verbose = false);
-	virtual void to_Memory_MddPlusPlusFuelCNFsat(Glucose::Solver                   *solver,
+	virtual void to_Memory_MddPlusPlusFuelCNFsat(sSATSolver_Type                   *solver,
 						     sMultirobotEncodingContext_CNFsat &encoding_context,
 						     int                                extra_fuel,
 						     int                                mdd_depth,
@@ -1129,7 +1129,7 @@ namespace sReloc
 						  const MDD_vector                  &extra_MDD,
 						  const sString                     &indent = "",
 						  bool                              verbose = false);
-	virtual void to_Memory_LMddPlusPlusCNFsat(Glucose::Solver                   *solver,
+	virtual void to_Memory_LMddPlusPlusCNFsat(sSATSolver_Type                   *solver,
 						  sMultirobotEncodingContext_CNFsat &encoding_context,
 						  int                                extra_cost,
 						  int                                mdd_depth,
@@ -1147,7 +1147,7 @@ namespace sReloc
 					     const MDD_vector                  &extra_MDD,
 					     const sString                     &indent = "",
 					     bool                              verbose = false);
-	virtual void to_Memory_MddStarCNFsat(Glucose::Solver                   *solver,
+	virtual void to_Memory_MddStarCNFsat(sSATSolver_Type                   *solver,
 					     sMultirobotEncodingContext_CNFsat &encoding_context,
 					     int                                extra_cost,
 					     int                                mdd_depth,
@@ -1161,7 +1161,7 @@ namespace sReloc
 						  const MDD_vector                  &MDD,
 						  const sString                     &indent = "",
 						  bool                              verbose = false);
-	virtual void to_Memory_MmddPlusPlusCNFsat(Glucose::Solver                   *solver,
+	virtual void to_Memory_MmddPlusPlusCNFsat(sSATSolver_Type                   *solver,
 						  sMultirobotEncodingContext_CNFsat &encoding_context,
 						  const MDD_vector                  &MDD,
 						  const sString                     &indent = "",
