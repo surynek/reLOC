@@ -8,7 +8,7 @@
 /*                                                                            */
 /*                                                                            */
 /*============================================================================*/
-/* encodings_mdd.cpp / 0.22-robik_096                                         */
+/* encodings_mdd.cpp / 0.22-robik_100                                         */
 /*----------------------------------------------------------------------------*/
 //
 // Multi-robot path-finding encodings based on
@@ -21958,10 +21958,10 @@ namespace sReloc
 		}
 	    }
 	}
-
-        #define TEST_MUTEX 1
+	
         #ifdef TEST_MUTEX
-	{	
+	{
+	s_GlobalPhaseStatistics.enter_Phase("Mutexing");
 
 	ScheduledMTXs_list scheduled_Mutexes;
 
@@ -22261,7 +22261,8 @@ namespace sReloc
 	}
 	printf("Mutexes found in total: %d\n", N_mutexes);
 	
-	/*
+	#ifdef SUPER_MUTEX
+	{
 	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
 	{
 	    for (int layer = 0; layer < N_Layers; ++layer)
@@ -22343,12 +22344,10 @@ namespace sReloc
 					    break;
 					}
 				    }
-				}
-	*/
+				}	
                                 //----
 			
 				//----
-				/*
 				for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
 				{ 
 				    if (m_environment.is_Adjacent(MDD[robot_id][layer][u], MDD[robot_id][layer + 1][v]) || MDD[robot_id][layer][u] == MDD[robot_id][layer + 1][v])
@@ -22394,10 +22393,8 @@ namespace sReloc
 					    break;
 					}
 				    }
-				}
-				*/				
+				}								
 				//----
-                                /*
 				if (all_mutex)
 				{
 				    printf("  --> yes Mutex: [%d, %d, %d] and [%d, %d, %d]\n", robot_id, layer + 1, MDD[robot_id][layer + 1][v], other_robot_id, layer + 1, MDD[other_robot_id][layer + 1][z]);
@@ -22444,9 +22441,11 @@ namespace sReloc
 		}
 	    }
 	}
-	*/
+	}
+        #endif /* SUPER_MUTEX */
+	
 	printf("Mutexes found in total: %d\n", N_mutexes);
-
+	s_GlobalPhaseStatistics.leave_Phase();
 	}	
         #endif /* TEST_MUTEX */	
 	
@@ -24580,9 +24579,11 @@ namespace sReloc
 	}
 
         #define TEST_MUTEX 1
+	#define SUPER_MUTEX 1
+	
         #ifdef TEST_MUTEX
 	{
-	    //s_GlobalPhaseStatistics.enter_Phase("Mutex");
+	s_GlobalPhaseStatistics.enter_Phase("Mutexing");
 	
 	ScheduledMTXs_list scheduled_Mutexes;
 
@@ -24919,13 +24920,24 @@ namespace sReloc
 	    }
 	}
 
-	/*
+        #ifdef SUPER_MUTEX
+	{
 	for (int robot_id = 1; robot_id <= N_Robots; ++robot_id)
 	{
 	    for (int layer = 0; layer < N_Layers; ++layer)
 	    {
 		for (int v = 0; v < MDD[robot_id][layer + 1].size(); ++v)
-		{		    
+		{
+		    /*
+		    sVertex::Neighbors_list &v_Neighbors = m_environment.m_Vertices[MDD[robot_id][layer + 1][v]].m_Neighbors;
+		    VertexIDs_vector v_neighbor_IDs;
+		    for (sVertex::Neighbors_list::const_iterator v_neighbor = v_Neighbors.begin(); v_neighbor != v_Neighbors.end(); ++v_neighbor)
+		    {
+			v_neighbor_IDs.push_back((*v_neighbor)->m_target->m_id);
+		    }
+		    v_neighbor_IDs.push_back(MDD[robot_id][layer + 1][v]);
+		    */
+		    
 		    for (int other_robot_id = 1; other_robot_id <= N_Robots; ++other_robot_id)
 		    {
 			if (other_robot_id < robot_id)
@@ -24934,35 +24946,45 @@ namespace sReloc
 			    {
 				bool all_mutex = true;
 //				printf("Checking mutex: [%d, %d, %d] and [%d, %d, %d]\n", robot_id, layer + 1, MDD[robot_id][layer + 1][v], other_robot_id, layer + 1, MDD[other_robot_id][layer + 1][z]);
-
-				//----
-				sVertex::Neighbors_list &v_Neighbors = m_environment.m_Vertices[MDD[robot_id][layer + 1][v]].m_Neighbors;
-				VertexIDs_vector v_neighbor_IDs;
-				for (sVertex::Neighbors_list::const_iterator v_neighbor = v_Neighbors.begin(); v_neighbor != v_Neighbors.end(); ++v_neighbor)
-				{
-				    v_neighbor_IDs.push_back((*v_neighbor)->m_target->m_id);
-				}
-				v_neighbor_IDs.push_back(MDD[robot_id][layer + 1][v]);
 				
+				//----				
+				sVertex::Neighbors_list &z_Neighbors = m_environment.m_Vertices[MDD[other_robot_id][layer + 1][z]].m_Neighbors;
+				/*
+				VertexIDs_vector z_neighbor_IDs;
+
+				for (sVertex::Neighbors_list::const_iterator z_neighbor = z_Neighbors.begin(); z_neighbor != z_Neighbors.end(); ++z_neighbor)
+				{
+				    z_neighbor_IDs.push_back((*z_neighbor)->m_target->m_id);
+				}
+				z_neighbor_IDs.push_back(MDD[other_robot_id][layer + 1][z]);				
+				*/
+				/*
 				for (VertexIDs_vector::const_iterator v_neighbor = v_neighbor_IDs.begin(); v_neighbor != v_neighbor_IDs.end(); ++v_neighbor)
 				{
 				    sInt_32 u_mdd_idx = inverse_MDD[robot_id][layer][(*v_neighbor)];
+				*/
+				sVertex::Neighbors_list &v_Neighbors = m_environment.m_Vertices[MDD[robot_id][layer + 1][v]].m_Neighbors;
+				for (sVertex::Neighbors_list::const_iterator v_neighbor = v_Neighbors.begin(); v_neighbor != v_Neighbors.end(); ++v_neighbor)
+				{
+				    sInt_32 v_neigh = (*v_neighbor)->m_target->m_id;				    
+				    sInt_32 u_mdd_idx = inverse_MDD[robot_id][layer][v_neigh];				    
 
 				    if (u_mdd_idx >= 0)
 				    {
 					bool u_all_mutex = true;
 
-					sVertex::Neighbors_list &z_Neighbors = m_environment.m_Vertices[MDD[other_robot_id][layer + 1][z]].m_Neighbors;
-					VertexIDs_vector z_neighbor_IDs;
+//					sVertex::Neighbors_list &z_Neighbors = m_environment.m_Vertices[MDD[other_robot_id][layer + 1][z]].m_Neighbors;
+
 					for (sVertex::Neighbors_list::const_iterator z_neighbor = z_Neighbors.begin(); z_neighbor != z_Neighbors.end(); ++z_neighbor)
 					{
-					    z_neighbor_IDs.push_back((*z_neighbor)->m_target->m_id);
-					}
-					z_neighbor_IDs.push_back(MDD[other_robot_id][layer + 1][z]);
-					
+					    sInt_32 z_neigh = (*z_neighbor)->m_target->m_id;
+
+/*					    
 					for (VertexIDs_vector::const_iterator z_neighbor = z_neighbor_IDs.begin(); z_neighbor != z_neighbor_IDs.end(); ++z_neighbor)
 					{
 					    sInt_32 w_mdd_idx = inverse_MDD[other_robot_id][layer][(*z_neighbor)];
+*/
+					    sInt_32 w_mdd_idx = inverse_MDD[other_robot_id][layer][z_neigh];					    
 					    
 					    if (w_mdd_idx >= 0)
 					    {
@@ -24995,6 +25017,41 @@ namespace sReloc
 						}
 					    }
 					}
+					{
+					    sInt_32 z_neigh = MDD[other_robot_id][layer + 1][z];
+					    sInt_32 w_mdd_idx = inverse_MDD[other_robot_id][layer][z_neigh];					    
+					    
+					    if (w_mdd_idx >= 0)
+					    {
+						bool mutex_found = false;						
+
+						if (MDD[robot_id][layer][u_mdd_idx] == MDD[other_robot_id][layer][w_mdd_idx])
+						{
+						    mutex_found = true;
+						}
+						else
+						{
+						    VertexMutexes_umap::const_iterator mutexes_u = Mutexes[robot_id][layer].find(MDD[robot_id][layer][u_mdd_idx]);
+						    
+						    if (mutexes_u != Mutexes[robot_id][layer].end())
+						    {
+							for (Mutexes_set::const_iterator mutex_u = mutexes_u->second.begin(); mutex_u != mutexes_u->second.end(); ++mutex_u)
+							{
+							    if (mutex_u->m_robot_id == other_robot_id && mutex_u->m_vertex_id == MDD[other_robot_id][layer][w_mdd_idx])
+							    {
+								mutex_found = true;
+								break;
+							    }
+							}
+						    }
+						}
+						if (!mutex_found)
+						{
+						    u_all_mutex = false;
+						}
+					    }					    
+					}
+					
 					if (!u_all_mutex)
 					{
 					    all_mutex = false;
@@ -25002,9 +25059,105 @@ namespace sReloc
 					}
 				    }
 				}
+
+				{
+				    sInt_32 v_neigh = MDD[robot_id][layer + 1][v];				    
+				    sInt_32 u_mdd_idx = inverse_MDD[robot_id][layer][v_neigh];				    
+
+				    if (u_mdd_idx >= 0)
+				    {
+					bool u_all_mutex = true;
+
+//					sVertex::Neighbors_list &z_Neighbors = m_environment.m_Vertices[MDD[other_robot_id][layer + 1][z]].m_Neighbors;
+
+					for (sVertex::Neighbors_list::const_iterator z_neighbor = z_Neighbors.begin(); z_neighbor != z_Neighbors.end(); ++z_neighbor)
+					{
+					    sInt_32 z_neigh = (*z_neighbor)->m_target->m_id;
+
+/*					    
+					for (VertexIDs_vector::const_iterator z_neighbor = z_neighbor_IDs.begin(); z_neighbor != z_neighbor_IDs.end(); ++z_neighbor)
+					{
+					    sInt_32 w_mdd_idx = inverse_MDD[other_robot_id][layer][(*z_neighbor)];
+*/
+					    sInt_32 w_mdd_idx = inverse_MDD[other_robot_id][layer][z_neigh];					    
+					    
+					    if (w_mdd_idx >= 0)
+					    {
+						bool mutex_found = false;						
+
+						if (MDD[robot_id][layer][u_mdd_idx] == MDD[other_robot_id][layer][w_mdd_idx])
+						{
+						    mutex_found = true;
+						}
+						else
+						{
+						    VertexMutexes_umap::const_iterator mutexes_u = Mutexes[robot_id][layer].find(MDD[robot_id][layer][u_mdd_idx]);
+						    
+						    if (mutexes_u != Mutexes[robot_id][layer].end())
+						    {
+							for (Mutexes_set::const_iterator mutex_u = mutexes_u->second.begin(); mutex_u != mutexes_u->second.end(); ++mutex_u)
+							{
+							    if (mutex_u->m_robot_id == other_robot_id && mutex_u->m_vertex_id == MDD[other_robot_id][layer][w_mdd_idx])
+							    {
+								mutex_found = true;
+								break;
+							    }
+							}
+						    }
+						}
+						if (!mutex_found)
+						{
+						    u_all_mutex = false;
+						    break;
+						}
+					    }
+					}
+					{
+					    sInt_32 z_neigh = MDD[other_robot_id][layer + 1][z];
+					    sInt_32 w_mdd_idx = inverse_MDD[other_robot_id][layer][z_neigh];					    
+					    
+					    if (w_mdd_idx >= 0)
+					    {
+						bool mutex_found = false;						
+
+						if (MDD[robot_id][layer][u_mdd_idx] == MDD[other_robot_id][layer][w_mdd_idx])
+						{
+						    mutex_found = true;
+						}
+						else
+						{
+						    VertexMutexes_umap::const_iterator mutexes_u = Mutexes[robot_id][layer].find(MDD[robot_id][layer][u_mdd_idx]);
+						    
+						    if (mutexes_u != Mutexes[robot_id][layer].end())
+						    {
+							for (Mutexes_set::const_iterator mutex_u = mutexes_u->second.begin(); mutex_u != mutexes_u->second.end(); ++mutex_u)
+							{
+							    if (mutex_u->m_robot_id == other_robot_id && mutex_u->m_vertex_id == MDD[other_robot_id][layer][w_mdd_idx])
+							    {
+								mutex_found = true;
+								break;
+							    }
+							}
+						    }
+						}
+						if (!mutex_found)
+						{
+						    u_all_mutex = false;
+						}
+					    }					    
+					}
+					
+					if (!u_all_mutex)
+					{
+					    all_mutex = false;
+					    break;
+					}
+				    }
+				}				
 				//----
 				
 				//----
+				/*
 				for (int u = 0; u < MDD[robot_id][layer].size(); ++u)
 				{				    
 				    if (m_environment.is_Adjacent(MDD[robot_id][layer][u], MDD[robot_id][layer + 1][v]) || MDD[robot_id][layer][u] == MDD[robot_id][layer + 1][v])
@@ -25052,14 +25205,16 @@ namespace sReloc
 					}
 				    }
 				}
+				*/
                                 //----
-
+				/*
 				if (all_mutex)
 				{
-				    printf("  --> yes Mutex: [%d, %d, %d] and [%d, %d, %d]\n", robot_id, layer + 1, MDD[robot_id][layer + 1][v], other_robot_id, layer + 1, MDD[other_robot_id][layer + 1][z]);
+//				    printf("  --> yes Mutex: [%d, %d, %d] and [%d, %d, %d]\n", robot_id, layer + 1, MDD[robot_id][layer + 1][v], other_robot_id, layer + 1, MDD[other_robot_id][layer + 1][z]);
 				    Mutexes[robot_id][layer + 1][MDD[robot_id][layer + 1][v]].insert(Mutex(other_robot_id, MDD[other_robot_id][layer + 1][z], z, v));
 				    Mutexes[other_robot_id][layer + 1][MDD[other_robot_id][layer + 1][z]].insert(Mutex(robot_id, MDD[robot_id][layer + 1][v], v, z));				    
 				}
+				*/
 			    }
 			}
 		    }
@@ -25091,16 +25246,20 @@ namespace sReloc
 												 sIntegerIndex(vertex_u_idx)),
 									 sSpecifiedBitIdentifier(&encoding_context.m_vertex_occupancy_by_water_[other_robot_id][layer],
 												 sIntegerIndex(vertex_v_idx)));
-			    printf(" 	 Mutex: at level %d - [%d, %d (%d)] x [%d, %d (%d)]\n", layer, robot_id, vertex_u_id, vertex_u_idx, other_robot_id, vertex_v_id, vertex_v_idx);
+			    // printf(" 	 Mutex: at level %d - [%d, %d (%d)] x [%d, %d (%d)]\n", layer, robot_id, vertex_u_id, vertex_u_idx, other_robot_id, vertex_v_id, vertex_v_idx);
 			    ++N_mutexes;
 			}
 		    }
 		}
 	    }
 	}
-	printf("Mutexes found in total: %d\n", N_mutexes);
-	*/
-	//s_GlobalPhaseStatistics.leave_Phase();	
+
+	printf("Mutexes found in total (super): %d\n", N_mutexes);
+	}
+        #endif /* SUPER_MUTEX */
+
+	s_GlobalPhaseStatistics.leave_Phase();
+	
 	printf("Mutexes found in total: %d\n", N_mutexes);
 	}
 
